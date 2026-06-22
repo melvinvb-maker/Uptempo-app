@@ -115,7 +115,26 @@ function leaveGroup() {
   festivals = [];
   friends = [];
   save();
+function applyTheme() {
+  if (theme.bg) document.documentElement.style.setProperty('--bg', theme.bg);
+  if (theme.card) document.documentElement.style.setProperty('--card', theme.card);
+  if (theme.accent) document.documentElement.style.setProperty('--pink', theme.accent);
+  if (theme.purple) document.documentElement.style.setProperty('--purple', theme.purple);
 
+  if (theme.bg) {
+    document.body.style.background =
+      `radial-gradient(circle at 20% 0%, ${theme.purple || '#30105c'} 0, ${theme.bg} 35%, #05050b 100%)`;
+  }
+}
+
+function renderTheme() {
+  if (!$('#themeBg')) return;
+
+  $('#themeBg').value = theme.bg || '#090913';
+  $('#themeCard').value = theme.card || '#151522';
+  $('#themeAccent').value = theme.accent || '#ff2fb3';
+  $('#themePurple').value = theme.purple || '#8b35ff';
+}
   renderAll();
 }
 
