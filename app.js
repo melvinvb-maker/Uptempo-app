@@ -213,16 +213,37 @@ function nextFest() {
 }
 
 function festivalCard(f) {
+  const going = f.going || [];
+
   return `
     <div class="card">
       <div class="row">
         <div class="thumb"></div>
+
         <div class="grow">
           <b>${esc(f.name)}</b>
-          <div class="muted">${fmt(f.date)} · ${esc(f.location || '')}</div>
-          <span class="tag ${String(f.genre || '').toLowerCase()}">${esc(f.genre || 'Uptempo')}</span>
+          <div class="muted">
+            ${fmt(f.date)} · ${esc(f.location || '')}
+          </div>
+
+          <span class="tag ${String(f.genre || '').toLowerCase()}">
+            ${esc(f.genre || 'Uptempo')}
+          </span>
+
+          <div style="margin-top:10px">
+            <button class="btn2" onclick="toggleGoing('${f.id}')">
+              🙋 Ik ga
+            </button>
+
+            <small style="display:block;margin-top:6px">
+              ${going.length} personen gaan
+            </small>
+          </div>
         </div>
-        <button class="btn2" onclick="removeFestival('${f.id}')">Wis</button>
+
+        <button class="btn2" onclick="removeFestival('${f.id}')">
+          Wis
+        </button>
       </div>
     </div>
   `;
