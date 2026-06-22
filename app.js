@@ -15,6 +15,65 @@ let uid = null;
 let unsubscribeFestivals = null;
 let unsubscribeFriends = null;
 
+function save() {
+  localStorage.festivals = JSON.stringify(festivals);
+  localStorage.friends = JSON.stringify(friends);
+  localStorage.profile = JSON.stringify(profile);
+  localStorage.groupId = groupId;
+}
+
+function applyTheme() {
+  if (theme.bg) document.documentElement.style.setProperty('--bg', theme.bg);
+  if (theme.card) document.documentElement.style.setProperty('--card', theme.card);
+  if (theme.accent) document.documentElement.style.setProperty('--pink', theme.accent);
+  if (theme.purple) document.documentElement.style.setProperty('--purple', theme.purple);
+
+  if (theme.card) {
+    document.querySelectorAll('.card,.stat,.sheet').forEach(el => {
+      el.style.background = theme.card;
+    });
+  }
+
+  if (theme.bg) {
+    document.body.style.background =
+      `radial-gradient(circle at 20% 0%, ${theme.purple || '#30105c'} 0, ${theme.bg} 35%, #05050b 100%)`;
+  }
+}
+
+function renderTheme() {
+  if (!$('#themeBg')) return;
+  $('#themeBg').value = theme.bg || '#090913';
+  $('#themeCard').value = theme.card || '#151522';
+  $('#themeAccent').value = theme.accent || '#ff2fb3';
+  $('#themePurple').value = theme.purple || '#8b35ff';
+}
+
+function launchConfetti() {
+  const emojis = ['🎉','🎊','✨','💜','🎵'];
+
+  for (let i = 0; i < 40; i++) {
+    const piece = document.createElement('div');
+    piece.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+    piece.style.position = 'fixed';
+    piece.style.left = Math.random() * window.innerWidth + 'px';
+    piece.style.top = '-40px';
+    piece.style.fontSize = (20 + Math.random() * 20) + 'px';
+    piece.style.zIndex = '99999';
+    piece.style.pointerEvents = 'none';
+    piece.style.transition = 'transform 2s ease-out, opacity 2s ease-out';
+
+    document.body.appendChild(piece);
+
+    requestAnimationFrame(() => {
+      piece.style.transform =
+        `translateY(${window.innerHeight + 100}px) rotate(${Math.random() * 1080}deg)`;
+      piece.style.opacity = '0';
+    });
+
+    setTimeout(() => piece.remove(), 2000);
+  }
+}
+
 async function initFirebase() {
   if (!firebaseEnabled) return;
 
@@ -47,13 +106,6 @@ async function initFirebase() {
   }
 }
 
-function save() {
-  localStorage.festivals = JSON.stringify(festivals);
-  localStorage.friends = JSON.stringify(friends);
-  localStorage.profile = JSON.stringify(profile);
-  localStorage.groupId = groupId;
-}
-
 function groupPath(type) {
   return window.fb.collection(db, 'groups', groupId, type);
 }
@@ -80,8 +132,7 @@ async function createGroup() {
   if (profile.name) await saveProfileLive();
 
   liveSync();
-  renderGroupBox();
-  updateFirebaseNotice();
+  renderAll();
   alert('Groep aangemaakt: ' + groupId);
 }
 
@@ -101,8 +152,7 @@ async function joinGroup() {
   if (profile.name) await saveProfileLive();
 
   liveSync();
-  renderGroupBox();
-  updateFirebaseNotice();
+  renderAll();
 }
 
 function leaveGroup() {
@@ -115,56 +165,6 @@ function leaveGroup() {
   festivals = [];
   friends = [];
   save();
-function applyTheme() {
-  if (theme.bg) document.documentElement.style.setProperty('--bg', theme.bg);
-  if (theme.card) document.documentElement.style.setProperty('--card', theme.card);
-  if (theme.accent) document.documentElement.style.setProperty('--pink', theme.accent);
-  if (theme.purple) document.documentElement.style.setProperty('--purple', theme.purple);
-
-  if (theme.bg) {
-    document.body.style.background =
-      `radial-gradient(circle at 20% 0%, ${theme.purple || '#30105c'} 0, ${theme.bg} 35%, #05050b 100%)`;
-  }
-}
-
-function renderTheme() {
-  if (!$('#themeBg')) return;
-
-  $('#themeBg').value = theme.bg || '#090913';
-  $('#themeCard').value = theme.card || '#151522';
-  $('#themeAccent').value = theme.accent || '#ff2fb3';
-  $('#themePurple').value = theme.purple || '#8b35ff';
-}
-function launchConfetti() {
-  const emojis = ['🎉','🎊','✨','💜','🎵'];
-
-  for (let i = 0; i < 40; i++) {
-    const piece = document.createElement('div');
-
-    piece.textContent =
-      emojis[Math.floor(Math.random() * emojis.length)];
-
-    piece.style.position = 'fixed';
-    piece.style.left = Math.random() * window.innerWidth + 'px';
-    piece.style.top = '-40px';
-    piece.style.fontSize = (20 + Math.random() * 20) + 'px';
-    piece.style.zIndex = '99999';
-    piece.style.pointerEvents = 'none';
-    piece.style.transition =
-      'transform 2s ease-out, opacity 2s ease-out';
-
-    document.body.appendChild(piece);
-
-    requestAnimationFrame(() => {
-      piece.style.transform =
-        `translateY(${window.innerHeight + 100}px)
-         rotate(${Math.random() * 1080}deg)`;
-      piece.style.opacity = '0';
-    });
-
-    setTimeout(() => piece.remove(), 2000);
-  }
-}  
   renderAll();
 }
 
@@ -242,6 +242,19 @@ async function addFriendLive(name) {
   }
 }
 
+async function updateFestival(fest) {
+  if (db && groupId) {
+    await window.fb.setDoc(
+      window.fb.doc(db, 'groups', groupId, 'festivals', fest.id),
+      fest,
+      { merge: true }
+    );
+  }
+
+  save();
+  renderAll();
+}
+
 window.removeFestival = async id => {
   if (!confirm('Festival verwijderen?')) return;
 
@@ -262,29 +275,15 @@ window.toggleGoing = async id => {
   fest.going = fest.going || [];
 
   if (fest.going.includes(myName)) {
-  fest.going = fest.going.filter(x => x !== myName);
-} else {
-  fest.going.push(myName);
-
-  launchConfetti();
-
-  if (navigator.vibrate) {
-    navigator.vibrate([100, 50, 100]);
-  }
-}
-
-async function updateFestival(fest) {
-  if (db && groupId) {
-    await window.fb.setDoc(
-      window.fb.doc(db, 'groups', groupId, 'festivals', fest.id),
-      fest,
-      { merge: true }
-    );
+    fest.going = fest.going.filter(x => x !== myName);
+  } else {
+    fest.going.push(myName);
+    launchConfetti();
+    if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
   }
 
-  save();
-  renderAll();
-}
+  await updateFestival(fest);
+};
 
 window.changeMonth = amount => {
   calendarDate.setMonth(calendarDate.getMonth() + amount);
@@ -625,6 +624,8 @@ function renderAll() {
   renderProfile();
   renderLeaderboard();
   renderLineup();
+  renderTheme();
+  applyTheme();
   updateFirebaseNotice();
 }
 
@@ -688,6 +689,29 @@ if ($('#addFriend')) {
 
 if ($('#addLineup')) $('#addLineup').onclick = addLineupItem;
 
+if ($('#saveTheme')) {
+  $('#saveTheme').onclick = () => {
+    theme = {
+      bg: $('#themeBg').value,
+      card: $('#themeCard').value,
+      accent: $('#themeAccent').value,
+      purple: $('#themePurple').value
+    };
+
+    localStorage.theme = JSON.stringify(theme);
+    applyTheme();
+    alert('Thema opgeslagen.');
+  };
+}
+
+if ($('#resetTheme')) {
+  $('#resetTheme').onclick = () => {
+    localStorage.removeItem('theme');
+    theme = {};
+    location.reload();
+  };
+}
+
 let lastTouchEnd = 0;
 
 document.addEventListener('touchend', function(event) {
@@ -704,5 +728,4 @@ setInterval(countdown, 1000);
 
 applyTheme();
 renderAll();
-renderTheme();
 initFirebase();
