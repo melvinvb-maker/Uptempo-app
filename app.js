@@ -1,7 +1,6 @@
 import { firebaseEnabled, firebaseConfig } from './firebase-config.js';
 
 const STAGE_PHOTO = "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?auto=format&fit=crop&w=1200&q=80";
-
 const $ = s => document.querySelector(s);
 
 let festivals = JSON.parse(localStorage.festivals || '[]');
@@ -12,6 +11,8 @@ let calendarDate = new Date();
 
 let db = null;
 let uid = null;
+let unsubscribeFestivals = null;
+let unsubscribeFriends = null;
 
 async function initFirebase() {
   if (!firebaseEnabled) return;
@@ -56,7 +57,9 @@ async function initFirebase() {
       }
     });
   } catch (e) {
-    $('#firebaseNotice').textContent = 'Firebase kon niet starten. Controleer firebase-config.js.';
+    if ($('#firebaseNotice')) {
+      $('#firebaseNotice').textContent = 'Firebase kon niet starten. Controleer firebase-config.js.';
+    }
     console.error(e);
   }
 }
@@ -69,6 +72,8 @@ function save() {
 }
 
 function updateFirebaseNotice() {
+  if (!$('#firebaseNotice')) return;
+
   if (!db) {
     $('#firebaseNotice').innerHTML = 'Live database staat klaar. Controleer Firebase.';
     return;
@@ -107,7 +112,7 @@ async function createGroup() {
 }
 
 async function joinGroup() {
-  const code = ($('#joinGroupCode').value || '').trim().toUpperCase();
+  const code = ($('#joinGroupCode')?.value || '').trim().toUpperCase();
 
   if (!code) return alert('Vul een groepscode in.');
   if (!db || !uid) return alert('Firebase is nog niet actief.');
@@ -119,6 +124,8 @@ async function joinGroup() {
   }
 
   groupId = code;
+  festivals = [];
+  friends = [];
   save();
 
   if (profile.name) await saveProfileLive();
@@ -131,6 +138,9 @@ async function joinGroup() {
 
 function leaveGroup() {
   if (!confirm('Groep verlaten? Je ziet daarna deze planning niet meer.')) return;
+
+  if (unsubscribeFestivals) unsubscribeFestivals();
+  if (unsubscribeFriends) unsubscribeFriends();
 
   groupId = "";
   festivals = [];
@@ -146,13 +156,16 @@ function leaveGroup() {
 function liveSync() {
   if (!db || !groupId) return;
 
-  window.fb.onSnapshot(groupPath('festivals'), snap => {
+  if (unsubscribeFestivals) unsubscribeFestivals();
+  if (unsubscribeFriends) unsubscribeFriends();
+
+  unsubscribeFestivals = window.fb.onSnapshot(groupPath('festivals'), snap => {
     festivals = snap.docs.map(d => ({ id: d.id, ...d.data() }));
     save();
     render();
   });
 
-  window.fb.onSnapshot(groupPath('friends'), snap => {
+  unsubscribeFriends = window.fb.onSnapshot(groupPath('friends'), snap => {
     friends = snap.docs.map(d => ({ id: d.id, ...d.data() }));
     save();
     renderFriends();
@@ -216,6 +229,8 @@ async function addFriendLive(name) {
 }
 
 window.removeFestival = async id => {
+  if (!confirm('Festival verwijderen?')) return;
+
   if (db && groupId) {
     await window.fb.deleteDoc(window.fb.doc(db, 'groups', groupId, 'festivals', id));
   } else {
@@ -264,6 +279,8 @@ function nextFest() {
 
 function festivalCard(f) {
   const going = f.going || [];
+  const myName = profile.name || 'Anoniem';
+  const iAmGoing = going.includes(myName);
 
   return `
     <div class="card">
@@ -293,7 +310,7 @@ function festivalCard(f) {
 
           <div style="margin-top:12px">
             <button class="btn2" onclick="toggleGoing('${f.id}')">
-              ${going.includes(profile.name || 'Anoniem') ? '✅ Ik ga' : '🙋 Ik ga'}
+              ${iAmGoing ? '✅ Ik ga' : '🙋 Ik ga'}
             </button>
 
             <small style="display:block;margin-top:8px">
@@ -321,34 +338,38 @@ function festivalCard(f) {
 function render() {
   let n = nextFest();
 
-  $('#nextName').textContent = n ? n.name : 'Nog niets gepland';
-  $('#nextMeta').textContent = n ? `${fmt(n.date)} · ${n.location}` : 'Voeg je eerste festival toe';
+  if ($('#nextName')) $('#nextName').textContent = n ? n.name : 'Nog niets gepland';
+  if ($('#nextMeta')) $('#nextMeta').textContent = n ? `${fmt(n.date)} · ${n.location}` : 'Voeg je eerste festival toe';
 
-  $('#totalFest').textContent = festivals.length;
-  $('#doneFest').textContent = festivals.filter(f => new Date(f.date) < new Date()).length;
-  $('#friendCount').textContent = friends.length;
+  if ($('#totalFest')) $('#totalFest').textContent = festivals.length;
+  if ($('#doneFest')) $('#doneFest').textContent = festivals.filter(f => new Date(f.date) < new Date()).length;
+  if ($('#friendCount')) $('#friendCount').textContent = friends.length;
 
-  $('#sPlanned').textContent = festivals.length;
-  $('#sVisited').textContent = festivals.filter(f => new Date(f.date) < new Date()).length;
-  $('#sCities').textContent = new Set(festivals.map(f => f.location).filter(Boolean)).size;
+  if ($('#sPlanned')) $('#sPlanned').textContent = festivals.length;
+  if ($('#sVisited')) $('#sVisited').textContent = festivals.filter(f => new Date(f.date) < new Date()).length;
+  if ($('#sCities')) $('#sCities').textContent = new Set(festivals.map(f => f.location).filter(Boolean)).size;
 
   let up = festivals
     .slice()
     .sort((a, b) => new Date(a.date) - new Date(b.date))
     .filter(f => new Date(f.date) >= new Date(new Date().toDateString()));
 
-  $('#upcoming').innerHTML =
-    up.map(festivalCard).join('')
-    '<div class="card muted">Nog geen festivals.</div>';
+  if ($('#upcoming')) {
+    $('#upcoming').innerHTML =
+      up.map(festivalCard).join('') ||
+      '<div class="card muted">Nog geen festivals.</div>';
+  }
 
   let q = ($('#search')?.value || '').toLowerCase();
 
-  $('#festivalList').innerHTML =
-    festivals
-      .filter(f => (f.name + f.location + f.genre).toLowerCase().includes(q))
-      .map(festivalCard)
-      .join('') ||
-    '<div class="card muted">Geen festivals gevonden.</div>';
+  if ($('#festivalList')) {
+    $('#festivalList').innerHTML =
+      festivals
+        .filter(f => (f.name + f.location + f.genre).toLowerCase().includes(q))
+        .map(festivalCard)
+        .join('') ||
+      '<div class="card muted">Geen festivals gevonden.</div>';
+  }
 
   renderCal();
   renderStats();
@@ -356,6 +377,8 @@ function render() {
 }
 
 function renderCal() {
+  if (!$('#monthTitle') || !$('#calendarGrid')) return;
+
   const now = calendarDate;
 
   $('#monthTitle').innerHTML = `
@@ -372,11 +395,31 @@ function renderCal() {
   for (let d = 1; d <= days; d++) {
     let date = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
     let dayFestivals = festivals.filter(f => f.date === date);
+    let today = new Date();
+    let isToday =
+      d === today.getDate() &&
+      now.getMonth() === today.getMonth() &&
+      now.getFullYear() === today.getFullYear();
 
     html += `
-      <div class="day">
-        ${d}
-        ${dayFestivals.map(f => `<div class="dot"></div>`).join('')}
+      <div class="day" style="${isToday ? 'border-color:var(--pink);box-shadow:0 0 0 1px rgba(255,47,179,.4)' : ''}">
+        <b>${d}</b>
+        ${
+          dayFestivals.map(f => `
+            <div style="
+              margin-top:5px;
+              padding:3px 5px;
+              border-radius:8px;
+              background:rgba(255,47,179,.25);
+              font-size:10px;
+              overflow:hidden;
+              white-space:nowrap;
+              text-overflow:ellipsis;
+            ">
+              ${esc(f.name)}
+            </div>
+          `).join('')
+        }
       </div>
     `;
   }
@@ -385,6 +428,8 @@ function renderCal() {
 }
 
 function renderStats() {
+  if (!$('#bars') || !$('#genreStats')) return;
+
   let months = Array(12).fill(0);
 
   festivals.forEach(f => {
@@ -412,7 +457,9 @@ function renderStats() {
 }
 
 function renderFriends() {
-  $('#myName').value = profile.name || '';
+  if ($('#myName')) $('#myName').value = profile.name || '';
+
+  if (!$('#friendsList')) return;
 
   $('#friendsList').innerHTML =
     friends
@@ -430,6 +477,7 @@ function renderFriends() {
 }
 
 function renderGroupBox() {
+  if (!$('#friends')) return;
   if ($('#groupBox')) $('#groupBox').remove();
 
   const box = document.createElement('div');
@@ -447,7 +495,9 @@ function renderGroupBox() {
     ${groupId ? '<button class="btn2" id="leaveGroupBtn">Groep verlaten</button>' : ''}
   `;
 
-  $('#friends').insertBefore(box, $('#friends').children[2]);
+  const friendsScreen = $('#friends');
+  const insertBeforeEl = friendsScreen.children[2] || null;
+  friendsScreen.insertBefore(box, insertBeforeEl);
 
   $('#createGroupBtn').onclick = createGroup;
   $('#joinGroupBtn').onclick = joinGroup;
@@ -459,7 +509,14 @@ function renderGroupBox() {
 
 function countdown() {
   let n = nextFest();
-  if (!n) return;
+
+  if (!n) {
+    if ($('#cdD')) $('#cdD').textContent = '00';
+    if ($('#cdH')) $('#cdH').textContent = '00';
+    if ($('#cdM')) $('#cdM').textContent = '00';
+    if ($('#cdS')) $('#cdS').textContent = '00';
+    return;
+  }
 
   let diff = Math.max(0, new Date(n.date) - new Date());
   let d = Math.floor(diff / 864e5);
@@ -467,10 +524,10 @@ function countdown() {
   let m = Math.floor(diff / 6e4) % 60;
   let s = Math.floor(diff / 1e3) % 60;
 
-  $('#cdD').textContent = String(d).padStart(2, '0');
-  $('#cdH').textContent = String(h).padStart(2, '0');
-  $('#cdM').textContent = String(m).padStart(2, '0');
-  $('#cdS').textContent = String(s).padStart(2, '0');
+  if ($('#cdD')) $('#cdD').textContent = String(d).padStart(2, '0');
+  if ($('#cdH')) $('#cdH').textContent = String(h).padStart(2, '0');
+  if ($('#cdM')) $('#cdM').textContent = String(m).padStart(2, '0');
+  if ($('#cdS')) $('#cdS').textContent = String(s).padStart(2, '0');
 }
 
 function fmt(d) {
@@ -492,57 +549,89 @@ function esc(s) {
   }[m]));
 }
 
-$('.tabs').onclick = e => {
-  let b = e.target.closest('.tab');
-  if (!b) return;
+if ($('.tabs')) {
+  $('.tabs').onclick = e => {
+    let b = e.target.closest('.tab');
+    if (!b) return;
 
-  document.querySelectorAll('.tab,.screen').forEach(x => x.classList.remove('active'));
-  b.classList.add('active');
-  $('#' + b.dataset.tab).classList.add('active');
-};
+    document.querySelectorAll('.tab,.screen').forEach(x => x.classList.remove('active'));
+    b.classList.add('active');
 
-$('#openAdd').onclick = () => $('#modal').classList.add('active');
-$('#closeModal').onclick = () => $('#modal').classList.remove('active');
-
-$('#saveFestival').onclick = async () => {
-  let f = {
-    name: $('#fName').value.trim(),
-    date: $('#fDate').value,
-    location: $('#fLocation').value.trim(),
-    genre: $('#fGenre').value,
-    notes: $('#fNotes').value.trim()
+    if ($('#' + b.dataset.tab)) {
+      $('#' + b.dataset.tab).classList.add('active');
+    }
   };
+}
 
-  if (!f.name || !f.date) {
-    return alert('Vul minimaal naam en datum in.');
+if ($('#openAdd')) {
+  $('#openAdd').onclick = () => $('#modal').classList.add('active');
+}
+
+if ($('#closeModal')) {
+  $('#closeModal').onclick = () => $('#modal').classList.remove('active');
+}
+
+if ($('#saveFestival')) {
+  $('#saveFestival').onclick = async () => {
+    let f = {
+      name: $('#fName').value.trim(),
+      date: $('#fDate').value,
+      location: $('#fLocation').value.trim(),
+      genre: $('#fGenre').value,
+      notes: $('#fNotes').value.trim()
+    };
+
+    if (!f.name || !f.date) {
+      return alert('Vul minimaal naam en datum in.');
+    }
+
+    await addFestivalLive(f);
+
+    if ($('#modal')) $('#modal').classList.remove('active');
+
+    ['#fName', '#fDate', '#fLocation', '#fNotes'].forEach(s => {
+      if ($(s)) $(s).value = '';
+    });
+  };
+}
+
+if ($('#search')) {
+  $('#search').oninput = render;
+}
+
+if ($('#saveProfile')) {
+  $('#saveProfile').onclick = async () => {
+    profile.name = $('#myName').value.trim();
+    save();
+
+    if (db && groupId) await saveProfileLive();
+
+    renderFriends();
+    render();
+  };
+}
+
+if ($('#addFriend')) {
+  $('#addFriend').onclick = async () => {
+    let n = $('#friendName').value.trim();
+    if (!n) return;
+
+    await addFriendLive(n);
+    $('#friendName').value = '';
+  };
+}
+
+let lastTouchEnd = 0;
+
+document.addEventListener('touchend', function(event) {
+  const now = Date.now();
+
+  if (now - lastTouchEnd <= 300) {
+    event.preventDefault();
   }
 
-  await addFestivalLive(f);
-
-  $('#modal').classList.remove('active');
-  ['#fName', '#fDate', '#fLocation', '#fNotes'].forEach(s => $(s).value = '');
-};
-
-$('#search').oninput = render;
-
-$('#saveProfile').onclick = async () => {
-  profile.name = $('#myName').value.trim();
-  save();
-
-  if (db && groupId) await saveProfileLive();
-
-  renderFriends();
-};
-
-$('#addFriend').onclick = async () => {
-  let n = $('#friendName').value.trim();
-  if (!n) return;
-
-  await addFriendLive(n);
-  $('#friendName').value = '';
-};
-
-
+  lastTouchEnd = now;
+}, { passive: false });
 
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('service-worker.js');
