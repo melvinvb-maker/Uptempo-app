@@ -1,12 +1,13 @@
 <!doctype html>
 <html lang="nl">
 <head>
-  <meta charset="utf-8" />
+  <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
   <title>UPTEMPO</title>
-  <link rel="manifest" href="manifest.json" />
-  <meta name="theme-color" content="#101018" />
-  <link rel="apple-touch-icon" href="icon-192.png" />
+
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#101018">
+  <link rel="apple-touch-icon" href="icon-192.png">
 
   <style>
     :root{
@@ -41,7 +42,7 @@
       max-width:520px;
       margin:0 auto;
       min-height:100vh;
-      padding:calc(25px + env(safe-area-inset-top)) 14px 140px;
+      padding:calc(25px + env(safe-area-inset-top)) 14px 145px;
     }
 
     .top{
@@ -346,8 +347,6 @@
       color:#f4d7eb;
       font-size:13px;
     }
-
-    a{color:#ff7ccc}
   </style>
 </head>
 
@@ -363,6 +362,7 @@
           <div class="label">Volgend festival</div>
           <div id="nextName" class="h1">Nog niets gepland</div>
           <div id="nextMeta" class="muted">Voeg je eerste festival toe</div>
+
           <div class="count">
             <div><b id="cdD">00</b><span>Dagen</span></div>
             <div><b id="cdH">00</b><span>Uur</span></div>
@@ -422,7 +422,7 @@
       <div class="section">Vrienden</div>
 
       <div class="notice" id="firebaseNotice">
-        Live database staat klaar. Vul jouw Firebase-config in <b>firebase-config.js</b> in om live vrienden te gebruiken.
+        Live database staat klaar.
       </div>
 
       <div class="card form">
@@ -476,6 +476,5 @@
   </div>
 
   <script type="module" src="app.js"></script>
-  <script src="firebase-config.js"></script>
 </body>
 </html>
