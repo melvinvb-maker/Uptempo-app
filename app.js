@@ -238,6 +238,7 @@ function festivalCard(f) {
 
         <div class="grow">
           <b>${esc(f.name)}</b>
+
           <div class="muted">
             ${fmt(f.date)} · ${esc(f.location || '')}
           </div>
@@ -251,9 +252,17 @@ function festivalCard(f) {
               🙋 Ik ga
             </button>
 
-            <small style="display:block;margin-top:6px">
+            <small style="display:block;margin-top:8px">
               ${going.length} personen gaan
             </small>
+
+            <div style="margin-top:8px;font-size:12px">
+              ${
+                going.length
+                  ? going.map(name => `<div>🙋 ${esc(name)}</div>`).join('')
+                  : '<div class="muted">Nog niemand gaat</div>'
+              }
+            </div>
           </div>
         </div>
 
