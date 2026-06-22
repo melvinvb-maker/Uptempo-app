@@ -669,5 +669,7 @@ if ('serviceWorker' in navigator) {
 
 setInterval(countdown, 1000);
 
+applyTheme();
 renderAll();
+renderTheme();
 initFirebase();
