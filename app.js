@@ -338,7 +338,7 @@ function render() {
     .filter(f => new Date(f.date) >= new Date(new Date().toDateString()));
 
   $('#upcoming').innerHTML =
-    up.slice(0, 5).map(festivalCard).join('') ||
+    up.map(festivalCard).join('')
     '<div class="card muted">Nog geen festivals.</div>';
 
   let q = ($('#search')?.value || '').toLowerCase();
