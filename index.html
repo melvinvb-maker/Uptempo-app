@@ -11,16 +11,9 @@
 
   <style>
     :root{
-      --bg:#090913;
-      --card:#151522;
-      --muted:#9b9bb3;
-      --txt:#fff;
-      --pink:#ff2fb3;
-      --purple:#8b35ff;
-      --line:#29293a;
-      --green:#30db6d;
-      --orange:#ff6b2c;
-      --blue:#2aa8ff;
+      --bg:#090913;--card:#151522;--muted:#9b9bb3;--txt:#fff;
+      --pink:#ff2fb3;--purple:#8b35ff;--line:#29293a;
+      --green:#30db6d;--orange:#ff6b2c;--blue:#2aa8ff;
     }
 
     *{box-sizing:border-box}
@@ -157,15 +150,8 @@
       align-items:center;
     }
 
-    .grow{
-      flex:1;
-      min-width:0;
-    }
-
-    .muted{
-      color:var(--muted);
-      font-size:13px;
-    }
+    .grow{flex:1;min-width:0}
+    .muted{color:var(--muted);font-size:13px}
 
     .tag{
       display:inline-block;
@@ -241,19 +227,12 @@
       padding:7px 2px;
     }
 
-    .tab b{
-      display:block;
-      font-size:20px;
-    }
-
+    .tab b{display:block;font-size:20px}
     .tab.active{color:var(--pink)}
     .screen{display:none}
     .screen.active{display:block}
 
-    .form{
-      display:grid;
-      gap:10px;
-    }
+    .form{display:grid;gap:10px}
 
     .form input,.form select,.form textarea{
       width:100%;
@@ -334,10 +313,7 @@
       font-weight:900;
     }
 
-    .online{
-      color:var(--green);
-      font-size:12px;
-    }
+    .online{color:var(--green);font-size:12px}
 
     .notice{
       border:1px solid rgba(255,47,179,.35);
@@ -346,6 +322,42 @@
       padding:12px;
       color:#f4d7eb;
       font-size:13px;
+    }
+
+    .menuGrid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:10px;
+    }
+
+    .menuTile{
+      background:rgba(255,255,255,.06);
+      border:1px solid var(--line);
+      border-radius:18px;
+      padding:18px;
+      text-align:center;
+      color:#fff;
+    }
+
+    .menuTile b{
+      display:block;
+      font-size:28px;
+      margin-bottom:6px;
+    }
+
+    .lineupItem{
+      display:grid;
+      grid-template-columns:70px 1fr;
+      gap:10px;
+      align-items:center;
+      border-top:1px solid var(--line);
+      padding:10px 0;
+    }
+
+    .rank{
+      font-size:22px;
+      width:34px;
+      text-align:center;
     }
   </style>
 </head>
@@ -398,26 +410,6 @@
       <div id="festivalList"></div>
     </main>
 
-    <main id="stats" class="screen">
-      <div class="section">Statistieken</div>
-
-      <div class="grid">
-        <div class="stat"><b id="sPlanned">0</b><br><span class="muted">Gepland</span></div>
-        <div class="stat"><b id="sVisited">0</b><br><span class="muted">Bezocht</span></div>
-        <div class="stat"><b id="sCities">0</b><br><span class="muted">Locaties</span></div>
-      </div>
-
-      <div class="card">
-        <b>Festivals per maand</b>
-        <div class="bar" id="bars"></div>
-      </div>
-
-      <div class="card">
-        <b>Genres</b>
-        <div id="genreStats"></div>
-      </div>
-    </main>
-
     <main id="friends" class="screen">
       <div class="section">Vrienden</div>
 
@@ -437,16 +429,86 @@
 
       <div id="friendsList"></div>
     </main>
+
+    <main id="more" class="screen">
+      <div class="section">Meer</div>
+      <div class="menuGrid">
+        <button class="menuTile" data-tab="profile"><b>👤</b>Profiel</button>
+        <button class="menuTile" data-tab="leaderboard"><b>🏆</b>Leaderboard</button>
+        <button class="menuTile" data-tab="lineup"><b>🎵</b>Line-up</button>
+        <button class="menuTile" data-tab="stats"><b>📊</b>Stats</button>
+      </div>
+    </main>
+
+    <main id="profile" class="screen">
+      <div class="section">Mijn Profiel</div>
+      <div class="card">
+        <div class="row">
+          <div class="avatar" id="profileAvatar">?</div>
+          <div class="grow">
+            <h2 id="profileName">Naamloos</h2>
+            <div class="muted" id="profileGroup">Geen groep actief</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid">
+        <div class="stat"><b id="profileFestivalCount">0</b><br><span class="muted">Festivals</span></div>
+        <div class="stat"><b id="profileGoingCount">0</b><br><span class="muted">Ik ga</span></div>
+        <div class="stat"><b id="profileFriendCount">0</b><br><span class="muted">Vrienden</span></div>
+      </div>
+    </main>
+
+    <main id="leaderboard" class="screen">
+      <div class="section">Leaderboard</div>
+      <div class="notice">Ranking op basis van aantal festivals waar iemand op “Ik ga” staat.</div>
+      <div id="leaderboardList"></div>
+    </main>
+
+    <main id="lineup" class="screen">
+      <div class="section">Line-up / Timetable</div>
+
+      <div class="card form">
+        <select id="lineupFestival"></select>
+        <input id="lineupArtist" placeholder="Artiest, bijvoorbeeld Barber">
+        <input id="lineupStage" placeholder="Stage, bijvoorbeeld Mainstage">
+        <input id="lineupStart" type="time">
+        <input id="lineupEnd" type="time">
+        <button class="btn" id="addLineup">Artiest toevoegen</button>
+      </div>
+
+      <div id="lineupList"></div>
+    </main>
+
+    <main id="stats" class="screen">
+      <div class="section">Statistieken</div>
+
+      <div class="grid">
+        <div class="stat"><b id="sPlanned">0</b><br><span class="muted">Gepland</span></div>
+        <div class="stat"><b id="sVisited">0</b><br><span class="muted">Bezocht</span></div>
+        <div class="stat"><b id="sCities">0</b><br><span class="muted">Locaties</span></div>
+      </div>
+
+      <div class="card">
+        <b>Festivals per maand</b>
+        <div class="bar" id="bars"></div>
+      </div>
+
+      <div class="card">
+        <b>Genres</b>
+        <div id="genreStats"></div>
+      </div>
+    </main>
   </div>
 
   <button class="fab" id="openAdd">+</button>
 
   <nav class="tabs">
-    <button class="tab active" data-tab="dashboard"><b>🏠</b>Dashboard</button>
-    <button class="tab" data-tab="calendar"><b>📅</b>Kalender</button>
+    <button class="tab active" data-tab="dashboard"><b>🏠</b>Home</button>
+    <button class="tab" data-tab="calendar"><b>📅</b>Agenda</button>
     <button class="tab" data-tab="festivals"><b>🎟️</b>Festivals</button>
-    <button class="tab" data-tab="stats"><b>📊</b>Stats</button>
     <button class="tab" data-tab="friends"><b>👥</b>Vrienden</button>
+    <button class="tab" data-tab="more"><b>☰</b>Meer</button>
   </nav>
 
   <div class="modal" id="modal">
@@ -476,3 +538,5 @@
   </div>
 
   <script type="module" src="app.js"></script>
+</body>
+</html>
