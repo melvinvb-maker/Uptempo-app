@@ -21,27 +21,11 @@ async function initFirebase() {
     const { initializeApp } = await import('https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js');
     const { getAuth, signInAnonymously, onAuthStateChanged } = await import('https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js');
     const {
-      getFirestore,
-      collection,
-      doc,
-      setDoc,
-      onSnapshot,
-      addDoc,
-      serverTimestamp,
-      deleteDoc,
-      getDoc
+      getFirestore, collection, doc, setDoc, onSnapshot,
+      addDoc, serverTimestamp, deleteDoc, getDoc
     } = await import('https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js');
 
-    window.fb = {
-      collection,
-      doc,
-      setDoc,
-      onSnapshot,
-      addDoc,
-      serverTimestamp,
-      deleteDoc,
-      getDoc
-    };
+    window.fb = { collection, doc, setDoc, onSnapshot, addDoc, serverTimestamp, deleteDoc, getDoc };
 
     const app = initializeApp(firebaseConfig);
     db = getFirestore(app);
@@ -57,9 +41,7 @@ async function initFirebase() {
       }
     });
   } catch (e) {
-    if ($('#firebaseNotice')) {
-      $('#firebaseNotice').textContent = 'Firebase kon niet starten. Controleer firebase-config.js.';
-    }
+    if ($('#firebaseNotice')) $('#firebaseNotice').textContent = 'Firebase kon niet starten.';
     console.error(e);
   }
 }
@@ -71,30 +53,21 @@ function save() {
   localStorage.groupId = groupId;
 }
 
-function updateFirebaseNotice() {
-  if (!$('#firebaseNotice')) return;
-
-  if (!db) {
-    $('#firebaseNotice').innerHTML = 'Live database staat klaar. Controleer Firebase.';
-    return;
-  }
-
-  if (!groupId) {
-    $('#firebaseNotice').innerHTML = '🟡 Maak of join eerst een groep. Alleen mensen met jouw code zien de planning.';
-  } else {
-    $('#firebaseNotice').innerHTML = `🟢 Live groep actief: <b>${groupId}</b>`;
-  }
-}
-
 function groupPath(type) {
   return window.fb.collection(db, 'groups', groupId, type);
+}
+
+function updateFirebaseNotice() {
+  if (!$('#firebaseNotice')) return;
+  $('#firebaseNotice').innerHTML = groupId
+    ? `🟢 Live groep actief: <b>${groupId}</b>`
+    : '🟡 Maak of join eerst een groep.';
 }
 
 async function createGroup() {
   if (!db || !uid) return alert('Firebase is nog niet actief.');
 
-  const code = 'UPT-' + Math.floor(1000 + Math.random() * 9000);
-  groupId = code;
+  groupId = 'UPT-' + Math.floor(1000 + Math.random() * 9000);
   save();
 
   await window.fb.setDoc(window.fb.doc(db, 'groups', groupId), {
@@ -113,15 +86,11 @@ async function createGroup() {
 
 async function joinGroup() {
   const code = ($('#joinGroupCode')?.value || '').trim().toUpperCase();
-
   if (!code) return alert('Vul een groepscode in.');
   if (!db || !uid) return alert('Firebase is nog niet actief.');
 
   const snap = await window.fb.getDoc(window.fb.doc(db, 'groups', code));
-
-  if (!snap.exists()) {
-    return alert('Deze groep bestaat niet.');
-  }
+  if (!snap.exists()) return alert('Deze groep bestaat niet.');
 
   groupId = code;
   festivals = [];
@@ -133,11 +102,10 @@ async function joinGroup() {
   liveSync();
   renderGroupBox();
   updateFirebaseNotice();
-  alert('Je zit nu in groep: ' + groupId);
 }
 
 function leaveGroup() {
-  if (!confirm('Groep verlaten? Je ziet daarna deze planning niet meer.')) return;
+  if (!confirm('Groep verlaten?')) return;
 
   if (unsubscribeFestivals) unsubscribeFestivals();
   if (unsubscribeFriends) unsubscribeFriends();
@@ -147,10 +115,7 @@ function leaveGroup() {
   friends = [];
   save();
 
-  render();
-  renderFriends();
-  renderGroupBox();
-  updateFirebaseNotice();
+  renderAll();
 }
 
 function liveSync() {
@@ -162,14 +127,13 @@ function liveSync() {
   unsubscribeFestivals = window.fb.onSnapshot(groupPath('festivals'), snap => {
     festivals = snap.docs.map(d => ({ id: d.id, ...d.data() }));
     save();
-    render();
+    renderAll();
   });
 
   unsubscribeFriends = window.fb.onSnapshot(groupPath('friends'), snap => {
     friends = snap.docs.map(d => ({ id: d.id, ...d.data() }));
     save();
-    renderFriends();
-    render();
+    renderAll();
   });
 
   if (profile.name) saveProfileLive();
@@ -182,8 +146,8 @@ async function saveProfileLive() {
     window.fb.doc(db, 'groups', groupId, 'friends', uid),
     {
       name: profile.name || 'Naamloos',
-      online: true,
       uid,
+      online: true,
       lastSeen: window.fb.serverTimestamp()
     },
     { merge: true }
@@ -191,19 +155,22 @@ async function saveProfileLive() {
 }
 
 async function addFestivalLive(f) {
+  const item = {
+    ...f,
+    going: [],
+    lineup: [],
+    createdBy: uid || 'local',
+    createdAt: db ? window.fb.serverTimestamp() : Date.now()
+  };
+
   if (db && groupId) {
-    await window.fb.addDoc(groupPath('festivals'), {
-      ...f,
-      going: [],
-      createdAt: window.fb.serverTimestamp(),
-      createdBy: uid
-    });
+    await window.fb.addDoc(groupPath('festivals'), item);
   } else if (db && !groupId) {
-    alert('Maak of join eerst een groep voordat je festivals toevoegt.');
+    alert('Maak of join eerst een groep.');
   } else {
-    festivals.push({ ...f, id: crypto.randomUUID(), going: [] });
+    festivals.push({ ...item, id: crypto.randomUUID() });
     save();
-    render();
+    renderAll();
   }
 }
 
@@ -218,13 +185,10 @@ async function addFriendLive(name) {
         lastSeen: window.fb.serverTimestamp()
       }
     );
-  } else if (db && !groupId) {
-    alert('Maak of join eerst een groep.');
   } else {
     friends.push({ id: crypto.randomUUID(), name, online: true });
     save();
-    renderFriends();
-    render();
+    renderAll();
   }
 }
 
@@ -236,17 +200,16 @@ window.removeFestival = async id => {
   } else {
     festivals = festivals.filter(f => f.id !== id);
     save();
-    render();
+    renderAll();
   }
 };
 
-window.toggleGoing = async function(id) {
+window.toggleGoing = async id => {
   const fest = festivals.find(f => f.id === id);
-  if (!fest) return alert('Festival niet gevonden.');
-
-  fest.going = fest.going || [];
+  if (!fest) return;
 
   const myName = profile.name || 'Anoniem';
+  fest.going = fest.going || [];
 
   if (fest.going.includes(myName)) {
     fest.going = fest.going.filter(x => x !== myName);
@@ -254,19 +217,23 @@ window.toggleGoing = async function(id) {
     fest.going.push(myName);
   }
 
+  await updateFestival(fest);
+};
+
+async function updateFestival(fest) {
   if (db && groupId) {
     await window.fb.setDoc(
-      window.fb.doc(db, 'groups', groupId, 'festivals', id),
+      window.fb.doc(db, 'groups', groupId, 'festivals', fest.id),
       fest,
       { merge: true }
     );
   }
 
   save();
-  render();
-};
+  renderAll();
+}
 
-window.changeMonth = function(amount) {
+window.changeMonth = amount => {
   calendarDate.setMonth(calendarDate.getMonth() + amount);
   renderCal();
 };
@@ -284,62 +251,46 @@ function festivalCard(f) {
 
   return `
     <div class="card">
-      <div 
-        style="
-          width:100%;
-          height:150px;
-          border-radius:18px;
-          margin-bottom:12px;
-          background-image:url('${STAGE_PHOTO}');
-          background-size:cover;
-          background-position:center;
-        ">
+      <div style="
+        width:100%;
+        height:150px;
+        border-radius:18px;
+        margin-bottom:12px;
+        background-image:url('${STAGE_PHOTO}');
+        background-size:cover;
+        background-position:center;">
       </div>
 
       <div class="row">
         <div class="grow">
           <b>${esc(f.name)}</b>
-
-          <div class="muted">
-            ${fmt(f.date)} · ${esc(f.location || '')}
-          </div>
-
-          <span class="tag ${String(f.genre || '').toLowerCase()}">
-            ${esc(f.genre || 'Uptempo')}
-          </span>
+          <div class="muted">${fmt(f.date)} · ${esc(f.location || '')}</div>
+          <span class="tag ${String(f.genre || '').toLowerCase()}">${esc(f.genre || 'Uptempo')}</span>
 
           <div style="margin-top:12px">
             <button class="btn2" onclick="toggleGoing('${f.id}')">
               ${iAmGoing ? '✅ Ik ga' : '🙋 Ik ga'}
             </button>
 
-            <small style="display:block;margin-top:8px">
-              ${going.length} personen gaan
-            </small>
+            <small style="display:block;margin-top:8px">${going.length} personen gaan</small>
 
             <div style="margin-top:8px;font-size:12px">
-              ${
-                going.length
-                  ? going.map(name => `<div>🙋 ${esc(name)}</div>`).join('')
-                  : '<div class="muted">Nog niemand gaat</div>'
-              }
+              ${going.length ? going.map(name => `<div>🙋 ${esc(name)}</div>`).join('') : '<div class="muted">Nog niemand gaat</div>'}
             </div>
           </div>
         </div>
 
-        <button class="btn2" onclick="removeFestival('${f.id}')">
-          Wis
-        </button>
+        <button class="btn2" onclick="removeFestival('${f.id}')">Wis</button>
       </div>
     </div>
   `;
 }
 
 function render() {
-  let n = nextFest();
+  const n = nextFest();
 
   if ($('#nextName')) $('#nextName').textContent = n ? n.name : 'Nog niets gepland';
-  if ($('#nextMeta')) $('#nextMeta').textContent = n ? `${fmt(n.date)} · ${n.location}` : 'Voeg je eerste festival toe';
+  if ($('#nextMeta')) $('#nextMeta').textContent = n ? `${fmt(n.date)} · ${n.location || ''}` : 'Voeg je eerste festival toe';
 
   if ($('#totalFest')) $('#totalFest').textContent = festivals.length;
   if ($('#doneFest')) $('#doneFest').textContent = festivals.filter(f => new Date(f.date) < new Date()).length;
@@ -349,30 +300,25 @@ function render() {
   if ($('#sVisited')) $('#sVisited').textContent = festivals.filter(f => new Date(f.date) < new Date()).length;
   if ($('#sCities')) $('#sCities').textContent = new Set(festivals.map(f => f.location).filter(Boolean)).size;
 
-  let up = festivals
+  const upcoming = festivals
     .slice()
     .sort((a, b) => new Date(a.date) - new Date(b.date))
     .filter(f => new Date(f.date) >= new Date(new Date().toDateString()));
 
   if ($('#upcoming')) {
-    $('#upcoming').innerHTML =
-      up.map(festivalCard).join('') ||
-      '<div class="card muted">Nog geen festivals.</div>';
+    $('#upcoming').innerHTML = upcoming.map(festivalCard).join('') || '<div class="card muted">Nog geen festivals.</div>';
   }
 
-  let q = ($('#search')?.value || '').toLowerCase();
+  const q = ($('#search')?.value || '').toLowerCase();
 
   if ($('#festivalList')) {
     $('#festivalList').innerHTML =
       festivals
         .filter(f => (f.name + f.location + f.genre).toLowerCase().includes(q))
         .map(festivalCard)
-        .join('') ||
-      '<div class="card muted">Geen festivals gevonden.</div>';
+        .join('') || '<div class="card muted">Geen festivals gevonden.</div>';
   }
 
-  renderCal();
-  renderStats();
   countdown();
 }
 
@@ -389,37 +335,21 @@ function renderCal() {
     </div>
   `;
 
-  let days = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
+  const days = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
   let html = '';
 
   for (let d = 1; d <= days; d++) {
-    let date = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
-    let dayFestivals = festivals.filter(f => f.date === date);
-    let today = new Date();
-    let isToday =
-      d === today.getDate() &&
-      now.getMonth() === today.getMonth() &&
-      now.getFullYear() === today.getFullYear();
+    const date = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+    const dayFestivals = festivals.filter(f => f.date === date);
 
     html += `
-      <div class="day" style="${isToday ? 'border-color:var(--pink);box-shadow:0 0 0 1px rgba(255,47,179,.4)' : ''}">
+      <div class="day">
         <b>${d}</b>
-        ${
-          dayFestivals.map(f => `
-            <div style="
-              margin-top:5px;
-              padding:3px 5px;
-              border-radius:8px;
-              background:rgba(255,47,179,.25);
-              font-size:10px;
-              overflow:hidden;
-              white-space:nowrap;
-              text-overflow:ellipsis;
-            ">
-              ${esc(f.name)}
-            </div>
-          `).join('')
-        }
+        ${dayFestivals.map(f => `
+          <div style="margin-top:5px;padding:3px 5px;border-radius:8px;background:rgba(255,47,179,.25);font-size:10px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;">
+            ${esc(f.name)}
+          </div>
+        `).join('')}
       </div>
     `;
   }
@@ -430,50 +360,39 @@ function renderCal() {
 function renderStats() {
   if (!$('#bars') || !$('#genreStats')) return;
 
-  let months = Array(12).fill(0);
+  const months = Array(12).fill(0);
 
   festivals.forEach(f => {
-    let d = new Date(f.date);
+    const d = new Date(f.date);
     if (!isNaN(d)) months[d.getMonth()]++;
   });
 
-  let max = Math.max(1, ...months);
+  const max = Math.max(1, ...months);
 
-  $('#bars').innerHTML = months
-    .map(m => `<div style="height:${8 + (m / max) * 88}px"></div>`)
-    .join('');
+  $('#bars').innerHTML = months.map(m => `<div style="height:${8 + (m / max) * 88}px"></div>`).join('');
 
-  let genres = {};
-
-  festivals.forEach(f => {
-    genres[f.genre || 'Uptempo'] = (genres[f.genre || 'Uptempo'] || 0) + 1;
-  });
+  const genres = {};
+  festivals.forEach(f => genres[f.genre || 'Uptempo'] = (genres[f.genre || 'Uptempo'] || 0) + 1);
 
   $('#genreStats').innerHTML =
-    Object.entries(genres)
-      .map(([g, c]) => `<p>${g}: <b>${c}</b></p>`)
-      .join('') ||
+    Object.entries(genres).map(([g, c]) => `<p>${g}: <b>${c}</b></p>`).join('') ||
     '<p class="muted">Nog geen data.</p>';
 }
 
 function renderFriends() {
   if ($('#myName')) $('#myName').value = profile.name || '';
-
   if (!$('#friendsList')) return;
 
   $('#friendsList').innerHTML =
-    friends
-      .map(fr => `
-        <div class="card friend">
-          <div class="avatar">${esc(fr.name || '?').slice(0, 1)}</div>
-          <div class="grow">
-            <b>${esc(fr.name || 'Vriend')}</b>
-            <div class="online">● Online</div>
-          </div>
+    friends.map(fr => `
+      <div class="card friend">
+        <div class="avatar">${esc(fr.name || '?').slice(0, 1)}</div>
+        <div class="grow">
+          <b>${esc(fr.name || 'Vriend')}</b>
+          <div class="online">● Online</div>
         </div>
-      `)
-      .join('') ||
-    '<div class="card muted">Nog geen vrienden.</div>';
+      </div>
+    `).join('') || '<div class="card muted">Nog geen vrienden.</div>';
 }
 
 function renderGroupBox() {
@@ -486,43 +405,137 @@ function renderGroupBox() {
 
   box.innerHTML = `
     <b>Groep</b>
-    <div class="muted">
-      ${groupId ? `Jouw groepscode: <b>${groupId}</b>` : 'Maak een groep of join met een code.'}
-    </div>
+    <div class="muted">${groupId ? `Jouw groepscode: <b>${groupId}</b>` : 'Maak een groep of join met een code.'}</div>
     <button class="btn" id="createGroupBtn">Groep aanmaken</button>
     <input id="joinGroupCode" placeholder="Groepscode, bijvoorbeeld UPT-4829">
     <button class="btn2" id="joinGroupBtn">Groep joinen</button>
     ${groupId ? '<button class="btn2" id="leaveGroupBtn">Groep verlaten</button>' : ''}
   `;
 
-  const friendsScreen = $('#friends');
-  const insertBeforeEl = friendsScreen.children[2] || null;
-  friendsScreen.insertBefore(box, insertBeforeEl);
+  $('#friends').insertBefore(box, $('#friends').children[2] || null);
 
   $('#createGroupBtn').onclick = createGroup;
   $('#joinGroupBtn').onclick = joinGroup;
+  if ($('#leaveGroupBtn')) $('#leaveGroupBtn').onclick = leaveGroup;
+}
 
-  if ($('#leaveGroupBtn')) {
-    $('#leaveGroupBtn').onclick = leaveGroup;
-  }
+function renderProfile() {
+  const name = profile.name || 'Naamloos';
+  const goingCount = festivals.filter(f => (f.going || []).includes(name)).length;
+
+  if ($('#profileName')) $('#profileName').textContent = name;
+  if ($('#profileAvatar')) $('#profileAvatar').textContent = name.slice(0, 1).toUpperCase();
+  if ($('#profileGroup')) $('#profileGroup').textContent = groupId ? `Groep: ${groupId}` : 'Geen groep actief';
+  if ($('#profileFestivalCount')) $('#profileFestivalCount').textContent = festivals.length;
+  if ($('#profileGoingCount')) $('#profileGoingCount').textContent = goingCount;
+  if ($('#profileFriendCount')) $('#profileFriendCount').textContent = friends.length;
+}
+
+function renderLeaderboard() {
+  if (!$('#leaderboardList')) return;
+
+  const scores = {};
+
+  festivals.forEach(f => {
+    (f.going || []).forEach(name => {
+      scores[name] = (scores[name] || 0) + 1;
+    });
+  });
+
+  const ranking = Object.entries(scores).sort((a, b) => b[1] - a[1]);
+
+  $('#leaderboardList').innerHTML =
+    ranking.map(([name, score], i) => `
+      <div class="card row">
+        <div class="rank">${i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : i + 1}</div>
+        <div class="grow">
+          <b>${esc(name)}</b>
+          <div class="muted">${score} festivals</div>
+        </div>
+      </div>
+    `).join('') || '<div class="card muted">Nog geen leaderboard data.</div>';
+}
+
+function renderLineup() {
+  if (!$('#lineupFestival') || !$('#lineupList')) return;
+
+  $('#lineupFestival').innerHTML =
+    festivals.map(f => `<option value="${f.id}">${esc(f.name)}</option>`).join('') ||
+    '<option value="">Geen festivals</option>';
+
+  $('#lineupList').innerHTML =
+    festivals.map(f => {
+      const lineup = f.lineup || [];
+
+      return `
+        <div class="card">
+          <b>${esc(f.name)}</b>
+          <div class="muted">${fmt(f.date)} · ${esc(f.location || '')}</div>
+
+          ${
+            lineup.length
+              ? lineup
+                  .slice()
+                  .sort((a, b) => String(a.start).localeCompare(String(b.start)))
+                  .map(item => `
+                    <div class="lineupItem">
+                      <div><b>${esc(item.start || '')}</b><br><span class="muted">${esc(item.end || '')}</span></div>
+                      <div>
+                        <b>${esc(item.artist)}</b>
+                        <div class="muted">${esc(item.stage || 'Stage onbekend')}</div>
+                      </div>
+                    </div>
+                  `).join('')
+              : '<p class="muted">Nog geen line-up toegevoegd.</p>'
+          }
+        </div>
+      `;
+    }).join('');
+}
+
+async function addLineupItem() {
+  const festivalId = $('#lineupFestival')?.value;
+  const fest = festivals.find(f => f.id === festivalId);
+
+  if (!fest) return alert('Kies eerst een festival.');
+
+  const artist = $('#lineupArtist').value.trim();
+  const stage = $('#lineupStage').value.trim();
+  const start = $('#lineupStart').value;
+  const end = $('#lineupEnd').value;
+
+  if (!artist || !start) return alert('Vul minimaal artiest en starttijd in.');
+
+  fest.lineup = fest.lineup || [];
+  fest.lineup.push({
+    id: crypto.randomUUID(),
+    artist,
+    stage,
+    start,
+    end
+  });
+
+  await updateFestival(fest);
+
+  $('#lineupArtist').value = '';
+  $('#lineupStage').value = '';
+  $('#lineupStart').value = '';
+  $('#lineupEnd').value = '';
 }
 
 function countdown() {
-  let n = nextFest();
+  const n = nextFest();
 
   if (!n) {
-    if ($('#cdD')) $('#cdD').textContent = '00';
-    if ($('#cdH')) $('#cdH').textContent = '00';
-    if ($('#cdM')) $('#cdM').textContent = '00';
-    if ($('#cdS')) $('#cdS').textContent = '00';
+    ['#cdD', '#cdH', '#cdM', '#cdS'].forEach(x => { if ($(x)) $(x).textContent = '00'; });
     return;
   }
 
-  let diff = Math.max(0, new Date(n.date) - new Date());
-  let d = Math.floor(diff / 864e5);
-  let h = Math.floor(diff / 36e5) % 24;
-  let m = Math.floor(diff / 6e4) % 60;
-  let s = Math.floor(diff / 1e3) % 60;
+  const diff = Math.max(0, new Date(n.date) - new Date());
+  const d = Math.floor(diff / 864e5);
+  const h = Math.floor(diff / 36e5) % 24;
+  const m = Math.floor(diff / 6e4) % 60;
+  const s = Math.floor(diff / 1e3) % 60;
 
   if ($('#cdD')) $('#cdD').textContent = String(d).padStart(2, '0');
   if ($('#cdH')) $('#cdH').textContent = String(h).padStart(2, '0');
@@ -531,49 +544,56 @@ function countdown() {
 }
 
 function fmt(d) {
-  return d
-    ? new Date(d).toLocaleDateString('nl-NL', {
-        day: 'numeric',
-        month: 'long',
-        year: 'numeric'
-      })
-    : '';
+  return d ? new Date(d).toLocaleDateString('nl-NL', { day: 'numeric', month: 'long', year: 'numeric' }) : '';
 }
 
 function esc(s) {
-  return String(s || '').replace(/[&<>"]/g, m => ({
-    '&': '&amp;',
-    '<': '&lt;',
-    '>': '&gt;',
-    '"': '&quot;'
-  }[m]));
+  return String(s || '').replace(/[&<>"]/g, m => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;' }[m]));
+}
+
+function switchTab(tab) {
+  document.querySelectorAll('.tab,.screen').forEach(x => x.classList.remove('active'));
+
+  const mainTab = document.querySelector(`.tab[data-tab="${tab}"]`);
+  if (mainTab) mainTab.classList.add('active');
+
+  const screen = $('#' + tab);
+  if (screen) screen.classList.add('active');
+
+  renderAll();
+}
+
+function renderAll() {
+  render();
+  renderCal();
+  renderStats();
+  renderFriends();
+  renderGroupBox();
+  renderProfile();
+  renderLeaderboard();
+  renderLineup();
+  updateFirebaseNotice();
 }
 
 if ($('.tabs')) {
   $('.tabs').onclick = e => {
-    let b = e.target.closest('.tab');
+    const b = e.target.closest('.tab');
     if (!b) return;
-
-    document.querySelectorAll('.tab,.screen').forEach(x => x.classList.remove('active'));
-    b.classList.add('active');
-
-    if ($('#' + b.dataset.tab)) {
-      $('#' + b.dataset.tab).classList.add('active');
-    }
+    switchTab(b.dataset.tab);
   };
 }
 
-if ($('#openAdd')) {
-  $('#openAdd').onclick = () => $('#modal').classList.add('active');
-}
+document.addEventListener('click', e => {
+  const tile = e.target.closest('.menuTile');
+  if (tile) switchTab(tile.dataset.tab);
+});
 
-if ($('#closeModal')) {
-  $('#closeModal').onclick = () => $('#modal').classList.remove('active');
-}
+if ($('#openAdd')) $('#openAdd').onclick = () => $('#modal').classList.add('active');
+if ($('#closeModal')) $('#closeModal').onclick = () => $('#modal').classList.remove('active');
 
 if ($('#saveFestival')) {
   $('#saveFestival').onclick = async () => {
-    let f = {
+    const f = {
       name: $('#fName').value.trim(),
       date: $('#fDate').value,
       location: $('#fLocation').value.trim(),
@@ -581,23 +601,16 @@ if ($('#saveFestival')) {
       notes: $('#fNotes').value.trim()
     };
 
-    if (!f.name || !f.date) {
-      return alert('Vul minimaal naam en datum in.');
-    }
+    if (!f.name || !f.date) return alert('Vul minimaal naam en datum in.');
 
     await addFestivalLive(f);
 
-    if ($('#modal')) $('#modal').classList.remove('active');
-
-    ['#fName', '#fDate', '#fLocation', '#fNotes'].forEach(s => {
-      if ($(s)) $(s).value = '';
-    });
+    $('#modal').classList.remove('active');
+    ['#fName', '#fDate', '#fLocation', '#fNotes'].forEach(s => { if ($(s)) $(s).value = ''; });
   };
 }
 
-if ($('#search')) {
-  $('#search').oninput = render;
-}
+if ($('#search')) $('#search').oninput = render;
 
 if ($('#saveProfile')) {
   $('#saveProfile').onclick = async () => {
@@ -606,30 +619,27 @@ if ($('#saveProfile')) {
 
     if (db && groupId) await saveProfileLive();
 
-    renderFriends();
-    render();
+    renderAll();
   };
 }
 
 if ($('#addFriend')) {
   $('#addFriend').onclick = async () => {
-    let n = $('#friendName').value.trim();
-    if (!n) return;
+    const name = $('#friendName').value.trim();
+    if (!name) return;
 
-    await addFriendLive(n);
+    await addFriendLive(name);
     $('#friendName').value = '';
   };
 }
+
+if ($('#addLineup')) $('#addLineup').onclick = addLineupItem;
 
 let lastTouchEnd = 0;
 
 document.addEventListener('touchend', function(event) {
   const now = Date.now();
-
-  if (now - lastTouchEnd <= 300) {
-    event.preventDefault();
-  }
-
+  if (now - lastTouchEnd <= 300) event.preventDefault();
   lastTouchEnd = now;
 }, { passive: false });
 
@@ -639,7 +649,5 @@ if ('serviceWorker' in navigator) {
 
 setInterval(countdown, 1000);
 
-render();
-renderFriends();
-renderGroupBox();
+renderAll();
 initFirebase();
