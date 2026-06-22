@@ -1,11 +1,17 @@
 import { firebaseEnabled, firebaseConfig } from './firebase-config.js';
 
+const STAGE_PHOTO = "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?auto=format&fit=crop&w=1200&q=80";
+
 const $ = s => document.querySelector(s);
+
 let festivals = JSON.parse(localStorage.festivals || '[]');
 let friends = JSON.parse(localStorage.friends || '[]');
 let profile = JSON.parse(localStorage.profile || '{"name":""}');
 let groupId = localStorage.groupId || "";
-let db = null, uid = null;
+let calendarDate = new Date();
+
+let db = null;
+let uid = null;
 
 async function initFirebase() {
   if (!firebaseEnabled) return;
@@ -13,9 +19,28 @@ async function initFirebase() {
   try {
     const { initializeApp } = await import('https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js');
     const { getAuth, signInAnonymously, onAuthStateChanged } = await import('https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js');
-    const { getFirestore, collection, doc, setDoc, onSnapshot, addDoc, serverTimestamp, deleteDoc, getDoc } = await import('https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js');
+    const {
+      getFirestore,
+      collection,
+      doc,
+      setDoc,
+      onSnapshot,
+      addDoc,
+      serverTimestamp,
+      deleteDoc,
+      getDoc
+    } = await import('https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js');
 
-    window.fb = { collection, doc, setDoc, onSnapshot, addDoc, serverTimestamp, deleteDoc, getDoc };
+    window.fb = {
+      collection,
+      doc,
+      setDoc,
+      onSnapshot,
+      addDoc,
+      serverTimestamp,
+      deleteDoc,
+      getDoc
+    };
 
     const app = initializeApp(firebaseConfig);
     db = getFirestore(app);
@@ -36,24 +61,24 @@ async function initFirebase() {
   }
 }
 
-function updateFirebaseNotice() {
-  if (!db) {
-    $('#firebaseNotice').innerHTML = 'Live database staat klaar. Vul Firebase goed in.';
-    return;
-  }
-
-  if (!groupId) {
-    $('#firebaseNotice').innerHTML = '🟡 Maak of join eerst een groep. Daarna zien alleen mensen met jouw groepscode de planning.';
-  } else {
-    $('#firebaseNotice').innerHTML = `🟢 Live groep actief: <b>${groupId}</b>`;
-  }
-}
-
 function save() {
   localStorage.festivals = JSON.stringify(festivals);
   localStorage.friends = JSON.stringify(friends);
   localStorage.profile = JSON.stringify(profile);
   localStorage.groupId = groupId;
+}
+
+function updateFirebaseNotice() {
+  if (!db) {
+    $('#firebaseNotice').innerHTML = 'Live database staat klaar. Controleer Firebase.';
+    return;
+  }
+
+  if (!groupId) {
+    $('#firebaseNotice').innerHTML = '🟡 Maak of join eerst een groep. Alleen mensen met jouw code zien de planning.';
+  } else {
+    $('#firebaseNotice').innerHTML = `🟢 Live groep actief: <b>${groupId}</b>`;
+  }
 }
 
 function groupPath(type) {
@@ -73,9 +98,7 @@ async function createGroup() {
     createdAt: window.fb.serverTimestamp()
   });
 
-  if (profile.name) {
-    await saveProfileLive();
-  }
+  if (profile.name) await saveProfileLive();
 
   liveSync();
   renderGroupBox();
@@ -89,8 +112,7 @@ async function joinGroup() {
   if (!code) return alert('Vul een groepscode in.');
   if (!db || !uid) return alert('Firebase is nog niet actief.');
 
-  const ref = window.fb.doc(db, 'groups', code);
-  const snap = await window.fb.getDoc(ref);
+  const snap = await window.fb.getDoc(window.fb.doc(db, 'groups', code));
 
   if (!snap.exists()) {
     return alert('Deze groep bestaat niet.');
@@ -99,9 +121,7 @@ async function joinGroup() {
   groupId = code;
   save();
 
-  if (profile.name) {
-    await saveProfileLive();
-  }
+  if (profile.name) await saveProfileLive();
 
   liveSync();
   renderGroupBox();
@@ -126,15 +146,13 @@ function leaveGroup() {
 function liveSync() {
   if (!db || !groupId) return;
 
-  const { onSnapshot } = window.fb;
-
-  onSnapshot(groupPath('festivals'), snap => {
+  window.fb.onSnapshot(groupPath('festivals'), snap => {
     festivals = snap.docs.map(d => ({ id: d.id, ...d.data() }));
     save();
     render();
   });
 
-  onSnapshot(groupPath('friends'), snap => {
+  window.fb.onSnapshot(groupPath('friends'), snap => {
     friends = snap.docs.map(d => ({ id: d.id, ...d.data() }));
     save();
     renderFriends();
@@ -163,13 +181,14 @@ async function addFestivalLive(f) {
   if (db && groupId) {
     await window.fb.addDoc(groupPath('festivals'), {
       ...f,
+      going: [],
       createdAt: window.fb.serverTimestamp(),
       createdBy: uid
     });
   } else if (db && !groupId) {
     alert('Maak of join eerst een groep voordat je festivals toevoegt.');
   } else {
-    festivals.push({ ...f, id: crypto.randomUUID() });
+    festivals.push({ ...f, id: crypto.randomUUID(), going: [] });
     save();
     render();
   }
@@ -196,10 +215,19 @@ async function addFriendLive(name) {
   }
 }
 
-window.toggleGoing = async id => {
+window.removeFestival = async id => {
+  if (db && groupId) {
+    await window.fb.deleteDoc(window.fb.doc(db, 'groups', groupId, 'festivals', id));
+  } else {
+    festivals = festivals.filter(f => f.id !== id);
+    save();
+    render();
+  }
+};
 
+window.toggleGoing = async function(id) {
   const fest = festivals.find(f => f.id === id);
-  if (!fest) return;
+  if (!fest) return alert('Festival niet gevonden.');
 
   fest.going = fest.going || [];
 
@@ -213,13 +241,19 @@ window.toggleGoing = async id => {
 
   if (db && groupId) {
     await window.fb.setDoc(
-      window.fb.doc(db,'groups',groupId,'festivals',id),
-      fest
+      window.fb.doc(db, 'groups', groupId, 'festivals', id),
+      fest,
+      { merge: true }
     );
   }
 
   save();
   render();
+};
+
+window.changeMonth = function(amount) {
+  calendarDate.setMonth(calendarDate.getMonth() + amount);
+  renderCal();
 };
 
 function nextFest() {
@@ -233,9 +267,19 @@ function festivalCard(f) {
 
   return `
     <div class="card">
-      <div class="row">
-        <div class="thumb"></div>
+      <div 
+        style="
+          width:100%;
+          height:150px;
+          border-radius:18px;
+          margin-bottom:12px;
+          background-image:url('${STAGE_PHOTO}');
+          background-size:cover;
+          background-position:center;
+        ">
+      </div>
 
+      <div class="row">
         <div class="grow">
           <b>${esc(f.name)}</b>
 
@@ -247,9 +291,9 @@ function festivalCard(f) {
             ${esc(f.genre || 'Uptempo')}
           </span>
 
-          <div style="margin-top:10px">
+          <div style="margin-top:12px">
             <button class="btn2" onclick="toggleGoing('${f.id}')">
-              🙋 Ik ga
+              ${going.includes(profile.name || 'Anoniem') ? '✅ Ik ga' : '🙋 Ik ga'}
             </button>
 
             <small style="display:block;margin-top:8px">
@@ -293,14 +337,18 @@ function render() {
     .sort((a, b) => new Date(a.date) - new Date(b.date))
     .filter(f => new Date(f.date) >= new Date(new Date().toDateString()));
 
-  $('#upcoming').innerHTML = up.slice(0, 5).map(festivalCard).join('') || '<div class="card muted">Nog geen festivals.</div>';
+  $('#upcoming').innerHTML =
+    up.slice(0, 5).map(festivalCard).join('') ||
+    '<div class="card muted">Nog geen festivals.</div>';
 
   let q = ($('#search')?.value || '').toLowerCase();
 
-  $('#festivalList').innerHTML = festivals
-    .filter(f => (f.name + f.location + f.genre).toLowerCase().includes(q))
-    .map(festivalCard)
-    .join('') || '<div class="card muted">Geen festivals gevonden.</div>';
+  $('#festivalList').innerHTML =
+    festivals
+      .filter(f => (f.name + f.location + f.genre).toLowerCase().includes(q))
+      .map(festivalCard)
+      .join('') ||
+    '<div class="card muted">Geen festivals gevonden.</div>';
 
   renderCal();
   renderStats();
@@ -308,16 +356,29 @@ function render() {
 }
 
 function renderCal() {
-  const now = new Date();
-  $('#monthTitle').textContent = now.toLocaleDateString('nl-NL', { month: 'long', year: 'numeric' });
+  const now = calendarDate;
+
+  $('#monthTitle').innerHTML = `
+    <div class="row" style="justify-content:space-between">
+      <button class="btn2" onclick="changeMonth(-1)">‹</button>
+      <span>${now.toLocaleDateString('nl-NL', { month: 'long', year: 'numeric' })}</span>
+      <button class="btn2" onclick="changeMonth(1)">›</button>
+    </div>
+  `;
 
   let days = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
   let html = '';
 
   for (let d = 1; d <= days; d++) {
     let date = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
-    let has = festivals.some(f => f.date === date);
-    html += `<div class="day">${d}${has ? '<div class="dot"></div>' : ''}</div>`;
+    let dayFestivals = festivals.filter(f => f.date === date);
+
+    html += `
+      <div class="day">
+        ${d}
+        ${dayFestivals.map(f => `<div class="dot"></div>`).join('')}
+      </div>
+    `;
   }
 
   $('#calendarGrid').innerHTML = html;
@@ -343,25 +404,29 @@ function renderStats() {
     genres[f.genre || 'Uptempo'] = (genres[f.genre || 'Uptempo'] || 0) + 1;
   });
 
-  $('#genreStats').innerHTML = Object.entries(genres)
-    .map(([g, c]) => `<p>${g}: <b>${c}</b></p>`)
-    .join('') || '<p class="muted">Nog geen data.</p>';
+  $('#genreStats').innerHTML =
+    Object.entries(genres)
+      .map(([g, c]) => `<p>${g}: <b>${c}</b></p>`)
+      .join('') ||
+    '<p class="muted">Nog geen data.</p>';
 }
 
 function renderFriends() {
   $('#myName').value = profile.name || '';
 
-  $('#friendsList').innerHTML = friends
-    .map(fr => `
-      <div class="card friend">
-        <div class="avatar">${esc(fr.name || '?').slice(0, 1)}</div>
-        <div class="grow">
-          <b>${esc(fr.name || 'Vriend')}</b>
-          <div class="online">● Online</div>
+  $('#friendsList').innerHTML =
+    friends
+      .map(fr => `
+        <div class="card friend">
+          <div class="avatar">${esc(fr.name || '?').slice(0, 1)}</div>
+          <div class="grow">
+            <b>${esc(fr.name || 'Vriend')}</b>
+            <div class="online">● Online</div>
+          </div>
         </div>
-      </div>
-    `)
-    .join('') || '<div class="card muted">Nog geen vrienden.</div>';
+      `)
+      .join('') ||
+    '<div class="card muted">Nog geen vrienden.</div>';
 }
 
 function renderGroupBox() {
@@ -377,7 +442,7 @@ function renderGroupBox() {
       ${groupId ? `Jouw groepscode: <b>${groupId}</b>` : 'Maak een groep of join met een code.'}
     </div>
     <button class="btn" id="createGroupBtn">Groep aanmaken</button>
-    <input id="joinGroupCode" placeholder="Groepscode, bijvoorbeeld UPT-4829" value="">
+    <input id="joinGroupCode" placeholder="Groepscode, bijvoorbeeld UPT-4829">
     <button class="btn2" id="joinGroupBtn">Groep joinen</button>
     ${groupId ? '<button class="btn2" id="leaveGroupBtn">Groep verlaten</button>' : ''}
   `;
@@ -409,11 +474,13 @@ function countdown() {
 }
 
 function fmt(d) {
-  return d ? new Date(d).toLocaleDateString('nl-NL', {
-    day: 'numeric',
-    month: 'long',
-    year: 'numeric'
-  }) : '';
+  return d
+    ? new Date(d).toLocaleDateString('nl-NL', {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric'
+      })
+    : '';
 }
 
 function esc(s) {
@@ -453,7 +520,6 @@ $('#saveFestival').onclick = async () => {
   await addFestivalLive(f);
 
   $('#modal').classList.remove('active');
-
   ['#fName', '#fDate', '#fLocation', '#fNotes'].forEach(s => $(s).value = '');
 };
 
@@ -463,9 +529,7 @@ $('#saveProfile').onclick = async () => {
   profile.name = $('#myName').value.trim();
   save();
 
-  if (db && groupId) {
-    await saveProfileLive();
-  }
+  if (db && groupId) await saveProfileLive();
 
   renderFriends();
 };
@@ -498,34 +562,7 @@ if ('serviceWorker' in navigator) {
 }
 
 setInterval(countdown, 1000);
-window.toggleGoing = async function(id) {
-  const fest = festivals.find(f => f.id === id);
-  if (!fest) {
-    alert('Festival niet gevonden.');
-    return;
-  }
 
-  fest.going = fest.going || [];
-
-  const myName = profile.name || 'Anoniem';
-
-  if (fest.going.includes(myName)) {
-    fest.going = fest.going.filter(x => x !== myName);
-  } else {
-    fest.going.push(myName);
-  }
-
-  if (db && groupId) {
-    await window.fb.setDoc(
-      window.fb.doc(db, 'groups', groupId, 'festivals', id),
-      fest,
-      { merge: true }
-    );
-  }
-
-  save();
-  render();
-};
 render();
 renderFriends();
 renderGroupBox();
