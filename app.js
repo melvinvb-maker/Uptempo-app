@@ -489,7 +489,34 @@ if ('serviceWorker' in navigator) {
 }
 
 setInterval(countdown, 1000);
+window.toggleGoing = async function(id) {
+  const fest = festivals.find(f => f.id === id);
+  if (!fest) {
+    alert('Festival niet gevonden.');
+    return;
+  }
 
+  fest.going = fest.going || [];
+
+  const myName = profile.name || 'Anoniem';
+
+  if (fest.going.includes(myName)) {
+    fest.going = fest.going.filter(x => x !== myName);
+  } else {
+    fest.going.push(myName);
+  }
+
+  if (db && groupId) {
+    await window.fb.setDoc(
+      window.fb.doc(db, 'groups', groupId, 'festivals', id),
+      fest,
+      { merge: true }
+    );
+  }
+
+  save();
+  render();
+};
 render();
 renderFriends();
 renderGroupBox();
