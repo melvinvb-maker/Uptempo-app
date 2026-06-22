@@ -196,14 +196,30 @@ async function addFriendLive(name) {
   }
 }
 
-window.removeFestival = async id => {
-  if (db && groupId) {
-    await window.fb.deleteDoc(window.fb.doc(db, 'groups', groupId, 'festivals', id));
+window.toggleGoing = async id => {
+
+  const fest = festivals.find(f => f.id === id);
+  if (!fest) return;
+
+  fest.going = fest.going || [];
+
+  const myName = profile.name || 'Anoniem';
+
+  if (fest.going.includes(myName)) {
+    fest.going = fest.going.filter(x => x !== myName);
   } else {
-    festivals = festivals.filter(f => f.id !== id);
-    save();
-    render();
+    fest.going.push(myName);
   }
+
+  if (db && groupId) {
+    await window.fb.setDoc(
+      window.fb.doc(db,'groups',groupId,'festivals',id),
+      fest
+    );
+  }
+
+  save();
+  render();
 };
 
 function nextFest() {
