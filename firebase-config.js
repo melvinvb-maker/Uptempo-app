@@ -1,5 +1,5 @@
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
-const firebaseConfig = true
+const firebaseConfig = true;
   apiKey: "AIzaSyAmF6BhF6kzkRsY0GUgnQP2n1MergT9cN4",
   authDomain: "uptempo-43116.firebaseapp.com",
   projectId: "uptempo-43116",
