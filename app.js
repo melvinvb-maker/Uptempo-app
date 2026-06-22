@@ -8,6 +8,7 @@ let friends = JSON.parse(localStorage.friends || '[]');
 let profile = JSON.parse(localStorage.profile || '{"name":""}');
 let groupId = localStorage.groupId || "";
 let calendarDate = new Date();
+let theme = JSON.parse(localStorage.theme || '{}');
 
 let db = null;
 let uid = null;
