@@ -135,6 +135,36 @@ function renderTheme() {
   $('#themeAccent').value = theme.accent || '#ff2fb3';
   $('#themePurple').value = theme.purple || '#8b35ff';
 }
+function launchConfetti() {
+  const emojis = ['🎉','🎊','✨','💜','🎵'];
+
+  for (let i = 0; i < 40; i++) {
+    const piece = document.createElement('div');
+
+    piece.textContent =
+      emojis[Math.floor(Math.random() * emojis.length)];
+
+    piece.style.position = 'fixed';
+    piece.style.left = Math.random() * window.innerWidth + 'px';
+    piece.style.top = '-40px';
+    piece.style.fontSize = (20 + Math.random() * 20) + 'px';
+    piece.style.zIndex = '99999';
+    piece.style.pointerEvents = 'none';
+    piece.style.transition =
+      'transform 2s ease-out, opacity 2s ease-out';
+
+    document.body.appendChild(piece);
+
+    requestAnimationFrame(() => {
+      piece.style.transform =
+        `translateY(${window.innerHeight + 100}px)
+         rotate(${Math.random() * 1080}deg)`;
+      piece.style.opacity = '0';
+    });
+
+    setTimeout(() => piece.remove(), 2000);
+  }
+}  
   renderAll();
 }
 
