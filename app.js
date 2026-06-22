@@ -232,13 +232,16 @@ window.toggleGoing = async id => {
   fest.going = fest.going || [];
 
   if (fest.going.includes(myName)) {
-    fest.going = fest.going.filter(x => x !== myName);
-  } else {
-    fest.going.push(myName);
-  }
+  fest.going = fest.going.filter(x => x !== myName);
+} else {
+  fest.going.push(myName);
 
-  await updateFestival(fest);
-};
+  launchConfetti();
+
+  if (navigator.vibrate) {
+    navigator.vibrate([100, 50, 100]);
+  }
+}
 
 async function updateFestival(fest) {
   if (db && groupId) {
