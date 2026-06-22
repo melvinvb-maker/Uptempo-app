@@ -542,20 +542,7 @@ $('#addFriend').onclick = async () => {
   $('#friendName').value = '';
 };
 
-let installPrompt;
 
-window.addEventListener('beforeinstallprompt', e => {
-  e.preventDefault();
-  installPrompt = e;
-});
-
-$('#installBtn').onclick = async () => {
-  if (installPrompt) {
-    installPrompt.prompt();
-  } else {
-    alert('Op iPhone: tik op Delen en kies Zet op beginscherm.');
-  }
-};
 
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('service-worker.js');
