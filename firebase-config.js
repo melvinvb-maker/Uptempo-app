@@ -1,10 +1,10 @@
-// Vul hier jouw Firebase-config in. Laat enabled op false zolang je Firebase nog niet hebt aangemaakt.
-export const firebaseEnabled = false;
-export const firebaseConfig = {
-  apiKey: "",
-  authDomain: "",
-  projectId: "",
-  storageBucket: "",
-  messagingSenderId: "",
-  appId: ""
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+const firebaseConfig = {
+  apiKey: "AIzaSyAmF6BhF6kzkRsY0GUgnQP2n1MergT9cN4",
+  authDomain: "uptempo-43116.firebaseapp.com",
+  projectId: "uptempo-43116",
+  storageBucket: "uptempo-43116.firebasestorage.app",
+  messagingSenderId: "844872955195",
+  appId: "1:844872955195:web:3a5aa1b93ad7004914731e",
+  measurementId: "G-BNGHXQE2NM"
 };
