@@ -1,7 +1,7 @@
 export const firebaseEnabled = true;
 
 export const firebaseConfig = {
-  apiKey: "JOUW_API_KEY",
+  apiKey: apiKey: "AIzaSyAmF6BhF6kzkRsY0GUgnQP2n..."
   authDomain: "uptempo-43116.firebaseapp.com",
   projectId: "uptempo-43116",
   storageBucket: "uptempo-43116.firebasestorage.app",
