@@ -1058,6 +1058,9 @@ function stageSchedule(items, selected) {
   return boards + (pending ? '<h3>Speeltijd volgt</h3>'+pending : '');
 }
 
+let stageFestivalKey = '';
+let selectedStage = '';
+
 function renderLineup() {
   const picker = $('#lineupFestival');
   const container = $('#lineupList');
@@ -1098,8 +1101,16 @@ function renderLineup() {
   const days = [...new Set(lineup.map(item => item.day).filter(Boolean))];
   if (selectedLineupDay !== 'all' && !days.includes(selectedLineupDay)) selectedLineupDay = 'all';
   const dayLineup = selectedLineupDay === 'all' ? lineup : lineup.filter(item => item.day === selectedLineupDay);
+  if (stageFestivalKey !== selected.key) {
+    stageFestivalKey = selected.key;
+    selectedStage = '';
+  }
+  const stageName = item => String(item.stage || '').trim();
+  const stages = [...new Set(dayLineup.map(stageName).filter(Boolean))].sort((a,b) => a.localeCompare(b,'nl'));
+  if (!stages.includes(selectedStage)) selectedStage = '';
+  const stageLineup = selectedStage ? dayLineup.filter(item => stageName(item) === selectedStage) : dayLineup;
   const searchText = ($('#lineupSearch')?.value || '').trim().toLowerCase();
-  const visible = dayLineup.filter(item => !onlyFavoriteSets || favoriteSets.includes(setKey(selected,item))).filter(item => `${item.artist || ''} ${item.stage || ''}`.toLowerCase().includes(searchText));
+  const visible = stageLineup.filter(item => !onlyFavoriteSets || favoriteSets.includes(setKey(selected,item))).filter(item => `${item.artist || ''} ${item.stage || ''}`.toLowerCase().includes(searchText));
   const image = selected.imageUrl || '';
   const source = selected.lineupSource
     ? `<a class="source-link" href="${esc(selected.lineupSource)}" target="_blank" rel="noopener noreferrer">Bekijk bron ↗</a>`
@@ -1122,11 +1133,21 @@ function renderLineup() {
       <button class="day-chip ${selectedLineupDay === 'all' ? 'active' : ''}" data-lineup-day="all">Alle dagen</button>
       ${days.map(day => `<button class="day-chip ${selectedLineupDay === day ? 'active' : ''}" data-lineup-day="${esc(day)}">${esc(dayName(day))}</button>`).join('')}
     </div>` : ''}
+    ${stages.length ? `<fieldset style="border:0;margin:8px 0 16px;padding:0"><legend style="margin-bottom:8px;font-weight:750">Podium</legend><div style="display:flex;flex-wrap:wrap;gap:6px">
+      ${['',...stages].map(stage => `<button class="day-chip ${selectedStage === stage ? 'active' : ''}" data-stage-filter="${esc(stage)}" aria-pressed="${selectedStage === stage}">${esc(stage || 'Alle podia')}</button>`).join('')}
+    </div></fieldset>` : ''}
     ${lineup.length ? `<button class="day-chip ${onlyFavoriteSets ? "active" : ""}" data-favorites-only aria-pressed="${onlyFavoriteSets}">Mijn favoriete acts</button>` : ""}
     ${visible.length ? stageSchedule(visible,selected) : '<div class="card empty-state">'+(lineup.length ? 'Geen acts met deze filters.' : 'De timetable is nog niet bekend.')+'</div>'}
     <div style="padding:2px 4px">${source}</div>
   `;
 
+  container.querySelectorAll('[data-stage-filter]').forEach(button => {
+    button.onclick = () => {
+      selectedStage = button.dataset.stageFilter;
+      renderLineup();
+      [...container.querySelectorAll('[data-stage-filter]')].find(b => b.dataset.stageFilter === selectedStage)?.focus({preventScroll:true});
+    };
+  });
   container.querySelectorAll('[data-lineup-day]').forEach(button => {
     button.onclick = () => { selectedLineupDay = button.dataset.lineupDay; renderLineup(); };
   });
