@@ -440,6 +440,52 @@ function render() {
   countdown();
 }
 
+
+function renderOfficialFestivalCatalog() {
+  const container = $('#officialFestivalCatalog');
+  if (!container) return;
+
+  const catalog = festivalLineupUpdates
+    .filter(update => update.officialCatalog)
+    .slice()
+    .sort((a, b) => String(a.festival || '').localeCompare(String(b.festival || '')));
+
+  container.innerHTML = catalog.map(update => {
+    const lineupCount = (update.lineup || []).length;
+    const edition = update.date
+      ? fmt(update.date)
+      : update.lineupEditionYear
+        ? `Editie ${update.lineupEditionYear}`
+        : 'Editie nog niet bevestigd';
+    const poster = update.imageUrl
+      ? `<div style="height:150px;border-radius:16px;margin-bottom:12px;background:linear-gradient(180deg,rgba(0,0,0,.02),rgba(0,0,0,.38)),url('${esc(update.imageUrl)}') center/cover"></div>`
+      : `<div style="height:150px;border-radius:16px;margin-bottom:12px;background:linear-gradient(135deg,#28164a,#101a35);display:grid;place-items:center;font-size:42px">🎵</div>`;
+
+    return `
+      <div class="card">
+        ${poster}
+        <div class="row" style="justify-content:space-between">
+          <div class="grow">
+            <b>${esc(update.festival || 'Festival')}</b>
+            <div class="muted">${esc(edition)}${update.location ? ` · ${esc(update.location)}` : ''}</div>
+          </div>
+          <span class="tag">Uptempo</span>
+        </div>
+        <div class="muted" style="margin:10px 0 12px">
+          ${lineupCount ? `${lineupCount} artiesten in de officiële line-up` : 'Line-up en timetable volgen; de app controleert officiële updates automatisch.'}
+        </div>
+        <button class="btn2" onclick="openOfficialLineup('${normalizeFestivalName(update.festival)}')">Bekijk line-up</button>
+      </div>
+    `;
+  }).join('') || '<div class="card muted">De officiële festivalcatalogus wordt geladen.</div>';
+}
+
+window.openOfficialLineup = slug => {
+  switchTab('lineup');
+  const card = $('#catalog-' + slug);
+  if (card) card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+};
+
 function renderCal() {
   if (!$('#monthTitle') || !$('#calendarGrid')) return;
 
@@ -593,7 +639,6 @@ function renderLineup() {
     }))
     .map(update => ({
       name: update.festival || 'Festival',
-      date: '',
       date: update.date || '',
       location: update.location || (update.lineupEditionYear ? `Editie ${update.lineupEditionYear}` : 'Editiejaar nog niet bevestigd'),
       lineup: update.lineup || [],
@@ -613,7 +658,7 @@ function renderLineup() {
         .filter(Boolean))];
 
       return `
-        <div class="card">
+        <div class="card" ${f.isImportedCatalog ? `id="catalog-${normalizeFestivalName(f.name)}"` : ''}>
           ${f.imageUrl ? `<div style="height:130px;border-radius:16px;margin-bottom:12px;background:linear-gradient(180deg,rgba(0,0,0,.02),rgba(0,0,0,.38)),url('${esc(f.imageUrl)}') center/cover"></div>` : ''}
           <b>${esc(f.name)}</b>
           <div class="muted">${f.isImportedCatalog ? `${f.date ? fmt(f.date) + ' · ' : ''}${esc(f.location)}` : `${fmt(f.date)} · ${esc(f.location || '')}`}</div>
@@ -720,6 +765,7 @@ function renderAll() {
   renderProfile();
   renderLeaderboard();
   renderLineup();
+  renderOfficialFestivalCatalog();
   renderTheme();
   applyTheme();
   updateFirebaseNotice();
