@@ -16,6 +16,8 @@ let unsubscribeFestivals = null;
 let unsubscribeFriends = null;
 let unsubscribeFestivalLineups = null;
 let festivalLineupUpdates = [];
+let selectedLineupKey = '';
+let selectedLineupDay = 'all';
 
 function save() {
   localStorage.festivals = JSON.stringify(festivals);
@@ -366,41 +368,26 @@ function festivalCard(f) {
   const going = f.going || [];
   const myName = profile.name || 'Anoniem';
   const iAmGoing = going.includes(myName);
+  const image = f.imageUrl || STAGE_PHOTO;
 
   return `
-    <div class="card">
-      <div style="
-        width:100%;
-        height:150px;
-        border-radius:18px;
-        margin-bottom:12px;
-        background-image:linear-gradient(180deg,rgba(0,0,0,.02),rgba(0,0,0,.28)),url('${esc(f.imageUrl || STAGE_PHOTO)}');
-        background-size:cover;
-        background-position:center;">
-      </div>
-
-      <div class="row">
+    <article class="card">
+      <div class="festival-cover" style="background-image:linear-gradient(0deg,rgba(7,10,14,.72),transparent 68%),url('${esc(image)}')"></div>
+      <div class="row" style="align-items:flex-start">
         <div class="grow">
-          <b>${esc(f.name)}</b>
+          <b style="font-size:17px">${esc(f.name)}</b>
           <div class="muted">${fmt(f.date)} · ${esc(f.location || '')}</div>
           <span class="tag ${String(f.genre || '').toLowerCase()}">${esc(f.genre || 'Uptempo')}</span>
-
-          <div style="margin-top:12px">
-            <button class="btn2" onclick="toggleGoing('${f.id}')">
-              ${iAmGoing ? '✅ Ik ga' : '🙋 Ik ga'}
-            </button>
-
-            <small style="display:block;margin-top:8px">${going.length} personen gaan</small>
-
-            <div style="margin-top:8px;font-size:12px">
-              ${going.length ? going.map(name => `<div>🙋 ${esc(name)}</div>`).join('') : '<div class="muted">Nog niemand gaat</div>'}
-            </div>
-          </div>
         </div>
-
-        <button class="btn2" onclick="removeFestival('${f.id}')">Wis</button>
+        <button class="btn2" onclick="removeFestival('${f.id}')" aria-label="Festival verwijderen">Wis</button>
       </div>
-    </div>
+      <div class="row" style="justify-content:space-between;margin-top:14px;flex-wrap:wrap">
+        <button class="btn2" onclick="toggleGoing('${f.id}')">${iAmGoing ? '✅ Ik ga' : '🙋 Ik ga'}</button>
+        <button class="btn2" onclick="openFestivalLineup('${f.id}')">♫ Timetable</button>
+        <span class="muted">${going.length} gaan</span>
+      </div>
+      ${going.length ? `<div class="muted" style="margin-top:10px">${going.map(name => '🙋 ' + esc(name)).join(' · ')}</div>` : ''}
+    </article>
   `;
 }
 
@@ -480,13 +467,59 @@ function renderOfficialFestivalCatalog() {
   }).join('') || '<div class="card muted">De officiële festivalcatalogus wordt geladen.</div>';
 }
 
+function lineupOptions() {
+  const personal = festivals.map(f => ({
+    key: 'personal:' + f.id, id: f.id, name: f.name, date: f.date || '',
+    location: f.location || '', imageUrl: f.imageUrl || '', lineup: f.lineup || [],
+    lineupSource: f.lineupSource || '', isImportedCatalog: false
+  }));
+  const catalog = festivalLineupUpdates
+    .filter(update => update.officialCatalog || (Array.isArray(update.lineup) && update.lineup.length))
+    .filter(update => !festivals.some(festival => {
+      const sameName = [update.festival, ...(update.aliases || [])]
+        .some(name => normalizeFestivalName(name) === normalizeFestivalName(festival.name));
+      if (!sameName) return false;
+      const editionYear = Number(update.lineupEditionYear || 0);
+      const festivalYear = new Date(festival.date || '').getFullYear();
+      return !editionYear || festivalYear === editionYear;
+    }))
+    .map(update => ({
+      key: 'catalog:' + normalizeFestivalName(update.festival),
+      name: update.festival || 'Festival', date: update.date || '',
+      location: update.location || (update.lineupEditionYear ? 'Editie ' + update.lineupEditionYear : ''),
+      lineup: update.lineup || [], imageUrl: update.imageUrl || '',
+      lineupSource: update.lineupSource || '', isImportedCatalog: true
+    }));
+  return [...personal, ...catalog];
+}
+
+function getSelectedLineup() {
+  return lineupOptions().find(f => f.key === selectedLineupKey) || null;
+}
+
+function dayName(value) {
+  const names = { friday: 'Vrijdag', saturday: 'Zaterdag', sunday: 'Zondag', monday: 'Maandag', tuesday: 'Dinsdag', wednesday: 'Woensdag', thursday: 'Donderdag' };
+  return names[String(value || '').toLowerCase()] || value;
+}
+
 window.openOfficialLineup = slug => {
+  const update = festivalLineupUpdates.find(item => normalizeFestivalName(item.festival) === slug);
+  const personal = update && festivals.find(festival => {
+    const matches = [update.festival, ...(update.aliases || [])].some(name => normalizeFestivalName(name) === normalizeFestivalName(festival.name));
+    const updateYear = Number(update.lineupEditionYear || 0);
+    const festivalYear = new Date(festival.date || '').getFullYear();
+    return matches && (!updateYear || festivalYear === updateYear);
+  });
+  selectedLineupKey = personal ? 'personal:' + personal.id : 'catalog:' + slug;
+  selectedLineupDay = 'all';
   switchTab('lineup');
-  const card = $('#catalog-' + slug);
-  const target = card || $('#lineupList');
-  if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
 };
 
+window.openFestivalLineup = id => {
+  selectedLineupKey = 'personal:' + id;
+  selectedLineupDay = 'all';
+  switchTab('lineup');
+};
 
 function renderHomeFestivalCatalog() {
   const container = $('#homeFestivalCatalog');
@@ -623,6 +656,7 @@ function renderProfile() {
 
   if ($('#profileName')) $('#profileName').textContent = name;
   if ($('#profileAvatar')) $('#profileAvatar').textContent = name.slice(0, 1).toUpperCase();
+  if ($('#headerAvatar')) $('#headerAvatar').textContent = name.slice(0, 1).toUpperCase();
   if ($('#profileGroup')) $('#profileGroup').textContent = groupId ? `Groep: ${groupId}` : 'Geen groep actief';
   if ($('#profileFestivalCount')) $('#profileFestivalCount').textContent = festivals.length;
   if ($('#profileGoingCount')) $('#profileGoingCount').textContent = goingCount;
@@ -655,95 +689,82 @@ function renderLeaderboard() {
 }
 
 function renderLineup() {
-  if (!$('#lineupFestival') || !$('#lineupList')) return;
+  const picker = $('#lineupFestival');
+  const container = $('#lineupList');
+  if (!picker || !container) return;
 
-  $('#lineupFestival').innerHTML =
-    festivals.map(f => `<option value="${f.id}">${esc(f.name)}</option>`).join('') ||
-    '<option value="">Geen persoonlijke festivals</option>';
+  const options = lineupOptions();
+  if (!options.some(f => f.key === selectedLineupKey)) selectedLineupKey = options[0]?.key || '';
+  picker.innerHTML = options.map(f => `<option value="${esc(f.key)}">${esc(f.name)}${f.date ? ' · ' + esc(fmt(f.date)) : ''}</option>`).join('')
+    || '<option value="">Geen festivals beschikbaar</option>';
+  picker.value = selectedLineupKey;
+  picker.onchange = () => { selectedLineupKey = picker.value; selectedLineupDay = 'all'; renderLineup(); };
 
-  const importedCatalog = festivalLineupUpdates
-    .filter(update => update.officialCatalog || (Array.isArray(update.lineup) && update.lineup.length))
-    .filter(update => !festivals.some(festival => {
-      const sameName = [update.festival, ...(update.aliases || [])]
-        .some(name => normalizeFestivalName(name) === normalizeFestivalName(festival.name));
-      if (!sameName) return false;
-      const editionYear = Number(update.lineupEditionYear || 0);
-      const festivalYear = new Date(festival.date || '').getFullYear();
-      return !editionYear || festivalYear === editionYear;
-    }))
-    .map(update => ({
-      name: update.festival || 'Festival',
-      date: update.date || '',
-      location: update.location || (update.lineupEditionYear ? `Editie ${update.lineupEditionYear}` : 'Editiejaar nog niet bevestigd'),
-      lineup: update.lineup || [],
-      imageUrl: update.imageUrl || '',
-      lineupSource: update.lineupSource || '',
-      isImportedCatalog: true
-    }));
+  const selected = getSelectedLineup();
+  const manual = $('#lineupManual');
+  if (manual) manual.hidden = !selected || selected.isImportedCatalog;
+  if (!selected) {
+    container.innerHTML = '<div class="card empty-state">Voeg een festival toe of kies een festival uit Ontdek.</div>';
+    return;
+  }
 
-  const lineupFestivals = [...festivals, ...importedCatalog];
+  const lineup = (selected.lineup || []).slice().sort((a, b) =>
+    String(a.day || '').localeCompare(String(b.day || '')) || String(a.start || '').localeCompare(String(b.start || ''))
+  );
+  const days = [...new Set(lineup.map(item => item.day).filter(Boolean))];
+  if (selectedLineupDay !== 'all' && !days.includes(selectedLineupDay)) selectedLineupDay = 'all';
+  const visible = selectedLineupDay === 'all' ? lineup : lineup.filter(item => item.day === selectedLineupDay);
+  const image = selected.imageUrl || STAGE_PHOTO;
+  const source = selected.lineupSource
+    ? `<a class="source-link" href="${esc(selected.lineupSource)}" target="_blank" rel="noopener noreferrer">Bekijk bron ↗</a>`
+    : '';
 
-  $('#lineupList').innerHTML =
-    lineupFestivals.map(f => {
-      const lineup = f.lineup || [];
-
-      const sources = [...new Set(lineup
-        .map(item => item.source === 'official_website' ? 'officiële festivalwebsite' : item.source === 'instagram' ? 'Instagram' : '')
-        .filter(Boolean))];
-
-      return `
-        <div class="card" ${f.isImportedCatalog ? `id="catalog-${normalizeFestivalName(f.name)}"` : ''}>
-          ${f.imageUrl ? `<div style="height:130px;border-radius:16px;margin-bottom:12px;background:linear-gradient(180deg,rgba(0,0,0,.02),rgba(0,0,0,.38)),url('${esc(f.imageUrl)}') center/cover"></div>` : ''}
-          <b>${esc(f.name)}</b>
-          <div class="muted">${f.isImportedCatalog ? `${f.date ? fmt(f.date) + ' · ' : ''}${esc(f.location)}` : `${fmt(f.date)} · ${esc(f.location || '')}`}</div>
-          ${f.isImportedCatalog ? '<div class="muted" style="margin-top:6px">Automatisch bijgewerkt vanaf de officiële festivalbron</div>' : ''}
-          ${sources.length ? `<div class="muted" style="margin-top:6px">Automatisch bijgewerkt via ${sources.join(' en ')}</div>` : ''}
-
-          ${
-            lineup.length
-              ? lineup
-                  .slice()
-                  .sort((a, b) => String(a.day || '').localeCompare(String(b.day || '')) || String(a.start).localeCompare(String(b.start)))
-                  .map(item => `
-                    <div class="lineupItem">
-                      <div><b>${esc(item.start || item.day || 'Tijd volgt')}</b>${item.end ? `<br><span class="muted">${esc(item.end)}</span>` : ''}</div>
-                      <div>
-                        <b>${esc(item.artist)}</b>
-                        <div class="muted">${esc(item.stage || 'Podium niet vermeld')}</div>
-                      </div>
-                    </div>
-                  `).join('')
-              : '<p class="muted">Nog geen line-up toegevoegd.</p>'
-          }
+  container.innerHTML = `
+    <div class="card" style="padding:10px">
+      <div class="lineup-hero" style="background-image:linear-gradient(0deg,rgba(5,8,12,.95),rgba(5,8,12,.08)),url('${esc(image)}')">
+        <div><div class="eyebrow">${selected.isImportedCatalog ? 'Festivaleditie' : 'Jouw festival'}</div>
+          <h2>${esc(selected.name)}</h2>
+          <p>${esc([selected.date ? fmt(selected.date) : '', selected.location].filter(Boolean).join(' · '))}</p>
         </div>
-      `;
-    }).join('') || '<div class="card muted">Line-ups verschijnen hier automatisch zodra officiële gegevens beschikbaar zijn.</div>';
+      </div>
+      <div class="row" style="justify-content:space-between;padding:13px 5px 2px">
+        <b>${lineup.length ? lineup.length + ' sets / acts' : 'Timetable'}</b>
+        <span class="muted">${lineup.length ? selected.isImportedCatalog ? 'Festivalupdate' : 'Persoonlijke timetable' : 'Nog geen tijden bekend'}</span>
+      </div>
+    </div>
+    ${days.length ? `<div class="lineup-days">
+      <button class="day-chip ${selectedLineupDay === 'all' ? 'active' : ''}" data-lineup-day="all">Alle dagen</button>
+      ${days.map(day => `<button class="day-chip ${selectedLineupDay === day ? 'active' : ''}" data-lineup-day="${esc(day)}">${esc(dayName(day))}</button>`).join('')}
+    </div>` : ''}
+    <div class="card set-list">
+      ${visible.length ? visible.map(item => `
+        <div class="set-row">
+          <div class="set-time">${esc(item.start || dayName(item.day) || 'Tijd volgt')}${item.end ? '<br><span class="muted">tot ' + esc(item.end) + '</span>' : ''}</div>
+          <div><div class="set-artist">${esc(item.artist || 'Artiest')}</div><div class="set-stage">${esc(item.stage || 'Podium nog niet vermeld')}</div></div>
+        </div>`).join('') : '<div class="empty-state">De timetable is nog niet bekend. Zodra tijden beschikbaar zijn, verschijnen ze hier.</div>'}
+    </div>
+    <div style="padding:2px 4px">${source}</div>
+  `;
+
+  container.querySelectorAll('[data-lineup-day]').forEach(button => {
+    button.onclick = () => { selectedLineupDay = button.dataset.lineupDay; renderLineup(); };
+  });
 }
 
 async function addLineupItem() {
-  const festivalId = $('#lineupFestival')?.value;
-  const fest = festivals.find(f => f.id === festivalId);
-
-  if (!fest) return alert('Kies eerst een festival.');
+  const selected = getSelectedLineup();
+  const fest = selected && !selected.isImportedCatalog ? festivals.find(f => f.id === selected.id) : null;
+  if (!fest) return alert('Kies eerst een festival uit jouw eigen festivaloverzicht.');
 
   const artist = $('#lineupArtist').value.trim();
   const stage = $('#lineupStage').value.trim();
   const start = $('#lineupStart').value;
   const end = $('#lineupEnd').value;
-
-  if (!artist || !start) return alert('Vul minimaal artiest en starttijd in.');
+  if (!artist) return alert('Vul minimaal een artiest of act in.');
 
   fest.lineup = fest.lineup || [];
-  fest.lineup.push({
-    id: crypto.randomUUID(),
-    artist,
-    stage,
-    start,
-    end
-  });
-
+  fest.lineup.push({ id: crypto.randomUUID(), artist, stage, start, end });
   await updateFestival(fest);
-
   $('#lineupArtist').value = '';
   $('#lineupStage').value = '';
   $('#lineupStart').value = '';
@@ -805,6 +826,8 @@ function renderAll() {
   applyTheme();
   updateFirebaseNotice();
 }
+
+if ($('#headerProfile')) $('#headerProfile').onclick = () => switchTab('profile');
 
 if ($('.tabs')) {
   $('.tabs').onclick = e => {
