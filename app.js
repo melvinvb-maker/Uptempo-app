@@ -709,7 +709,7 @@ function renderLineup() {
                       <div><b>${esc(item.start || item.day || 'Tijd volgt')}</b>${item.end ? `<br><span class="muted">${esc(item.end)}</span>` : ''}</div>
                       <div>
                         <b>${esc(item.artist)}</b>
-                        <div class="muted">${esc(item.stage || 'Stage onbekend')}</div>
+                        <div class="muted">${esc(item.stage || 'Podium niet vermeld')}</div>
                       </div>
                     </div>
                   `).join('')
