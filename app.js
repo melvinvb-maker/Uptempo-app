@@ -1,3 +1,4 @@
+import { artistBios } from './artist-bios.js';
 import { artistPortraits, rebirthSets } from './timetable-photos.js';
 import { firebaseEnabled, firebaseConfig } from './firebase-config.js';
 
@@ -1657,26 +1658,79 @@ const officialActPhotos = {
   "The Dispatcher vs Lucky Noise vs Mengers": "images/acts/annihilation-17.webp",
   "Tayka vs Invicious vs Tob-E": "images/acts/annihilation-18.webp"
 };
-function makePhotoIndex() {
-  const key = name => normalizeFestivalName(String(name).split(':')[0].replace(/\s*\[[^\]]*\]/g,'').replace(/\s+live$/i,'').replace(/ø/gi,'o'));
-  const portraits = new Map();
-  for (const [name,url] of Object.entries(officialActPhotos)) portraits.set(key(name),url);
-  for (const edition of festivalLineupUpdates) for (const act of edition.lineup || []) {
-    if (act.portrait?.startsWith('https://')) portraits.set(key(act.artist), act.portrait);
-  }
-  for (const [name,url] of Object.entries(artistPortraits)) portraits.set(key(name), url);
-  return item => {
-    const name = item.artist || '';
-    const names = name.split(':')[0].replace(/\s+live$/i,'').split(/\s+(?:vs\.?|b2b|&)\s+/i);
-    const singles = names.map(n => portraits.get(key(n)));
-    const group = portraits.get(key(name)) || item.portrait;
-    const images = names.length > 1 && singles.every(Boolean) ? singles : group ? [group] : singles;
-    if (!images.some(Boolean)) return '';
-    return '<div class="actPictures" aria-hidden="true">'+images.map((url,i)=>url ? '<img decoding="async" alt="" src="'+esc(url)+'">' : '<span>'+esc(names[i])+'</span>').join('')+'</div>';
-  };
+const artistKey = value => normalizeFestivalName(String(value).replace(/ø/gi, 'o'));
+const artistRecords = new Map(artistBios.map(([name,bio,url]) => [artistKey(name), {name,bio,url}]));
+const profilePhotos = new Map(Object.entries({...officialActPhotos, ...artistPortraits}).map(([name,url]) => [artistKey(name),url]));
+
+function profileName(label) {
+  return label.split(':')[0].replace(/\s*\[[^\]]*\]/g,'').replace(/\s+live$/i,'').trim() || label;
 }
+
+function performers(label) {
+  const credit = profileName(label);
+  if (/^D-Block & S-te-Fan$/i.test(credit)) return [credit];
+  const inside = credit.match(/\(([^()]+\s+vs\s+[^()]+)\)/i);
+  return (inside ? inside[1] : credit).split(/\s+(?:vs\.?|b2b|&)\s+/i).filter(Boolean);
+}
+
+function artistLink(item) {
+  return '<button type="button" class="artistLink" data-artist-info="'+esc(item.artist)+'" aria-haspopup="dialog">'+esc(item.artist)+'</button>';
+}
+
+function showArtist(label, chosen) {
+  const festival = getSelectedLineup();
+  const act = festival?.lineup?.find(item => item.artist === label);
+  if (!act) return;
+  const names = performers(label);
+  const name = chosen && names.includes(chosen) ? chosen : names.length === 1 ? names[0] : profileName(label);
+  const id = artistKey(name);
+  const record = artistRecords.get(id) || (names.length === 1 && !chosen && [...artistRecords.values()]
+    .sort((a,b) => b.name.length - a.name.length)
+    .find(entry => name.toLowerCase().startsWith(entry.name.toLowerCase()+' ')));
+  const appearances = festivalLineupUpdates.filter(edition => edition.lineup?.some(item =>
+    artistKey(profileName(item.artist)) === id || performers(item.artist).some(artist => artistKey(artist) === id)
+  ));
+  const group = names.length > 1 && !chosen;
+  const venues = [...new Set([festival.name, ...appearances.map(edition => edition.festival)])];
+  let bio = record?.bio;
+  if (!bio) {
+    bio = group ? 'Voor deze set staan '+names.join(' en ')+' samen op het programma van '+festival.name+'.'
+      : name+' staat op de line-up van '+venues.slice(0,3).join(', ')+'.';
+    if (!group && act.stage) bio += ' Bij '+festival.name+' staat deze act op '+act.stage+'.';
+  }
+  const catalogPhoto = appearances.flatMap(edition => edition.lineup).find(item => artistKey(profileName(item.artist)) === id && item.portrait?.startsWith('https://'))?.portrait;
+  const photo = (record && profilePhotos.get(artistKey(record.name))) || profilePhotos.get(id) || catalogPhoto || (!chosen && act.portrait?.startsWith('https://') ? act.portrait : '');
+  const dialog = document.getElementById('artistDialog');
+  dialog.querySelector('h2').textContent = record?.name || name;
+  dialog.querySelector('.artistBio').textContent = bio;
+  dialog.querySelector('.artistSection').textContent = record ? 'Biografie' : 'In het programma';
+  const image = dialog.querySelector('img');
+  image.hidden = !photo;
+  if (photo) { image.onerror = () => {image.hidden = true;}; image.src = photo; image.alt = name; }
+  else image.removeAttribute('src');
+  const links = dialog.querySelector('.artistMembers');
+  links.replaceChildren();
+  if (names.length > 1) for (const artist of names) {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'day-chip';
+    button.textContent = artist;
+    button.setAttribute('aria-pressed', String(chosen === artist));
+    button.onclick = () => {showArtist(label,artist); dialog.querySelector('h2').focus();};
+    links.append(button);
+  }
+  const source = dialog.querySelector('a');
+  const url = record?.url || festival.lineupSource;
+  source.hidden = !/^https?:\/\//i.test(url || '');
+  if (!source.hidden) {source.href = url; source.textContent = record ? 'Officieel artiestenprofiel' : 'Bron van de line-up';}
+  if (!dialog.open) dialog.showModal();
+}
+
+document.addEventListener('click', event => {
+  const link = event.target.closest('[data-artist-info]');
+  if (link) showArtist(link.dataset.artistInfo);
+});
 function stageSchedule(items, selected) {
-  const pictures = makePhotoIndex();
   const timed = items.filter(item => clockMinute(item.start) !== null);
   const untimed = items.filter(item => clockMinute(item.start) === null);
   const star = item => {
@@ -1721,10 +1775,10 @@ function stageSchedule(items, selected) {
       const time = String(Math.floor(minute/60)%24).padStart(2,'0')+':'+String(minute%60).padStart(2,'0');
       return '<span class="ttTick" style="grid-row:'+row(minute)+'">'+time+'</span><i class="ttRule" style="grid-row:'+row(minute)+'"></i>';
     }).join('');
-    const cards = sets.map(({item,start,end,column}) => '<article class="ttAct" style="grid-column:'+column+';grid-row:'+row(start)+' / '+row(end)+'">'+pictures(item)+'<small>'+esc(item.start)+(item.end ? ' – '+esc(item.end) : ' · eindtijd volgt')+'</small><strong>'+esc(item.artist)+'</strong>'+star(item)+'</article>').join('');
+    const cards = sets.map(({item,start,end,column}) => '<article class="ttAct" style="grid-column:'+column+';grid-row:'+row(start)+' / '+row(end)+'"><small>'+esc(item.start)+(item.end ? ' – '+esc(item.end) : ' · eindtijd volgt')+'</small>'+artistLink(item)+star(item)+'</article>').join('');
     return (day ? '<h3>'+esc(dayName(day))+'</h3>' : '')+'<div class="ttScroll" tabindex="0" aria-label="Tijdrooster per podium"><div class="ttBoard" style="grid-template-columns:48px repeat('+(column-2)+',minmax(145px,1fr));grid-template-rows:auto '+tracks+' auto"><b class="ttHead ttClock">Tijd</b>'+headers+labels+cards+'</div></div>';
   }).join('');
-  const pending = untimed.map(item => '<div class="ttPending">'+pictures(item)+'<div><strong>'+esc(item.artist)+'</strong><small>'+esc([dayName(item.day),item.stage].filter(Boolean).join(' · '))+'</small></div>'+star(item)+'</div>').join('');
+  const pending = untimed.map(item => '<div class="ttPending"><div>'+artistLink(item)+'<small>'+esc([dayName(item.day),item.stage].filter(Boolean).join(' · '))+'</small></div>'+star(item)+'</div>').join('');
   return boards + (pending ? '<h3>Speeltijd volgt</h3>'+pending : '');
 }
 
@@ -1981,3 +2035,4 @@ setInterval(countdown, 1000);
 
 renderAll();
 initFirebase();
+

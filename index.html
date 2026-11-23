@@ -86,7 +86,7 @@ button,input,select,textarea{font:inherit}button{cursor:pointer;color:inherit}bu
 @media(max-width:480px){.app:has(#dashboard.active) #headerProfile{padding:6px}.app:has(#dashboard.active) #headerProfile span:last-child{display:none}}
 #profileAvatar,#headerAvatar{background-position:center;background-size:cover}.form input[type=file]{max-width:100%}.ttAct:has(.ttStar[aria-pressed="true"]),.ttPending:has(.ttStar[aria-pressed="true"]){background:#34471d;color:#fff;border-color:#cbff42;box-shadow:inset 0 0 0 1px #91b739}
 .ttAct:has(.ttStar[aria-pressed="true"]) small,.ttPending:has(.ttStar[aria-pressed="true"]) small,.ttStar[aria-pressed="true"]{color:#d6ff76}
-.actPictures{display:flex;align-items:center;flex-wrap:wrap;gap:3px}.actPictures img,.actPictures span{display:block;flex:none;width:clamp(45px,13vw,70px);height:auto;aspect-ratio:1;border-radius:7px;object-fit:cover;object-position:50% 30%;background:var(--card)}.actPictures span{display:grid;place-items:center;font-size:10px}.ttAct .actPictures{margin-bottom:5px}.ttPending .actPictures{max-width:42%;flex:none}.ttPending{gap:10px}.ttPending>div:not(.actPictures){flex:1}</style>
+.artistLink{display:block;border:0;background:transparent;color:inherit;line-height:1.35;font-family:inherit;font-size:14px;font-weight:700;text-align:left;padding:4px 0;cursor:pointer;text-decoration:underline;text-decoration-color:var(--line);text-underline-offset:3px}.artistLink:focus-visible{outline:2px solid var(--pink)}.ttPending>div{flex:1}.artistDialog{color:var(--text,#fff);background:var(--card,#191b20);border:1px solid var(--line);border-radius:18px;width:min(90vw,420px);max-height:85dvh;overflow:auto;padding:20px}.artistDialog::backdrop{background:#000b}.artistDialog form{display:flex;justify-content:flex-end}.artistDialog h2{margin:10px 0;font-size:24px}.artistDialog img{width:min(100%,240px);max-height:280px;object-fit:contain;border-radius:12px}.artistDialog [hidden]{display:none}.artistBio{line-height:1.6}.artistMembers{display:flex;flex-wrap:wrap;gap:6px;margin:12px 0}.artistDialog a{color:var(--pink)}</style>
 </head>
 
 <body>
@@ -258,4 +258,14 @@ button,input,select,textarea{font:inherit}button{cursor:pointer;color:inherit}bu
     </div>
   </div>
 
-  <script type="module" src="app.js?v=press-2027-1"></script>
+  <dialog id="artistDialog" class="artistDialog" aria-labelledby="artistName">
+    <form method="dialog"><button autofocus class="btn2">Sluiten</button></form>
+    <img hidden alt="">
+    <h2 id="artistName" tabindex="-1"></h2>
+    <div class="eyebrow artistSection"></div>
+    <p class="artistBio"></p>
+    <div class="artistMembers"></div>
+    <a hidden target="_blank" rel="noopener noreferrer"></a>
+  </dialog>
+  <script type="module" src="app.js?v=artist-info-1"></script>
+
