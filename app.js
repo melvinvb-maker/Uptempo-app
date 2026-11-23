@@ -459,9 +459,9 @@ function renderOfficialFestivalCatalog() {
           <span class="tag">Uptempo</span>
         </div>
         <div class="muted" style="margin:10px 0 12px">
-          ${lineupCount ? `${lineupCount} artiesten in de officiële line-up` : 'Line-up en timetable volgen; de app controleert officiële updates automatisch.'}
+          ${lineupCount ? `${lineupCount} acts in de festivalinformatie` : 'Er is nog geen timetable beschikbaar.'}
         </div>
-        <button class="btn2" onclick="openOfficialLineup('${normalizeFestivalName(update.festival)}')">Bekijk line-up</button>
+        <button class="btn2" onclick="openOfficialLineup('${normalizeFestivalName(update.festival)}')">Bekijk timetable</button>
       </div>
     `;
   }).join('') || '<div class="card muted">De officiële festivalcatalogus wordt geladen.</div>';
