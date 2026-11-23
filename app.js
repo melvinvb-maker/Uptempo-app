@@ -601,7 +601,7 @@ function renderLineup() {
                   .sort((a, b) => String(a.start).localeCompare(String(b.start)))
                   .map(item => `
                     <div class="lineupItem">
-                      <div><b>${esc(item.start || '')}</b><br><span class="muted">${esc(item.end || '')}</span></div>
+                      <div><b>${esc(item.start || item.day || 'Tijd volgt')}</b>${item.end ? `<br><span class="muted">${esc(item.end)}</span>` : ''}</div>
                       <div>
                         <b>${esc(item.artist)}</b>
                         <div class="muted">${esc(item.stage || 'Stage onbekend')}</div>
