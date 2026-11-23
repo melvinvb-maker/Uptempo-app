@@ -15,7 +15,221 @@ let uid = null;
 let unsubscribeFestivals = null;
 let unsubscribeFriends = null;
 let unsubscribeFestivalLineups = null;
-let festivalLineupUpdates = [];
+let festivalLineupUpdates = [
+  {
+    "festival": "Rebirth",
+    "date": "2027-04-09",
+    "dateEnd": "2027-04-11",
+    "location": "Haaren",
+    "officialCatalog": true,
+    "lineupEditionYear": 2027,
+    "lineupSource": "https://www.rebirth-festival.nl/en/line-up/"
+  },
+  {
+    "festival": "Intents",
+    "date": "2027-06-04",
+    "dateEnd": "2027-06-06",
+    "location": "Oisterwijk",
+    "officialCatalog": true,
+    "lineupEditionYear": 2027,
+    "lineupSource": "https://www.intentsfestival.nl/"
+  },
+  {
+    "festival": "Harmony of Hardcore",
+    "date": "2027-05-15",
+    "dateEnd": "2027-05-15",
+    "location": "Erp",
+    "officialCatalog": true,
+    "lineupEditionYear": 2027,
+    "lineupSource": "https://www.harmonyofhardcore.nl/"
+  },
+  {
+    "festival": "Snakepit",
+    "date": "2026-11-07",
+    "dateEnd": "2026-11-07",
+    "location": "Klokgebouw, Eindhoven",
+    "imageUrl": "https://www.snakepithardcore.com/wp-content/uploads/2026/07/website.png",
+    "officialCatalog": true,
+    "lineupEditionYear": 2026,
+    "lineupSource": "https://www.snakepithardcore.com/"
+  },
+  {
+    "festival": "Dominator",
+    "date": "2027-07-15",
+    "dateEnd": "2027-07-17",
+    "location": "Eersel",
+    "officialCatalog": true,
+    "lineupEditionYear": 2027,
+    "lineupSource": "https://www.dominatorfestival.com/"
+  },
+  {
+    "festival": "Annihilation Indoor",
+    "date": "2026-12-19",
+    "dateEnd": "2026-12-19",
+    "location": "Autotron, Rosmalen",
+    "imageUrl": "https://cdn.prod.website-files.com/65f0a972ba25b0fc12fe2019/6a8345b0e86747fdc545559d_anh_2026_og.webp",
+    "officialCatalog": true,
+    "lineupEditionYear": 2026,
+    "lineupSource": "https://www.instagram.com/annihilation.nl/",
+    "lineup": [
+      {
+        "artist": "The Dispatcher vs Lucky Noise vs Mengers",
+        "stage": "",
+        "start": "12:00",
+        "end": "12:45",
+        "day": "Saturday"
+      },
+      {
+        "artist": "Tayka vs Invicious vs Tob-E",
+        "stage": "",
+        "start": "12:45",
+        "end": "13:30",
+        "day": "Saturday"
+      },
+      {
+        "artist": "Samynator: Mutation [Final]",
+        "stage": "",
+        "start": "13:30",
+        "end": "14:00",
+        "day": "Saturday"
+      },
+      {
+        "artist": "Conspirator vs Luxo vs D-Stroy",
+        "stage": "",
+        "start": "14:00",
+        "end": "14:45",
+        "day": "Saturday"
+      },
+      {
+        "artist": "Revealer & Kili Live",
+        "stage": "",
+        "start": "14:45",
+        "end": "15:15",
+        "day": "Saturday"
+      },
+      {
+        "artist": "Missy vs Roosterz vs Screecher",
+        "stage": "",
+        "start": "15:15",
+        "end": "16:00",
+        "day": "Saturday"
+      },
+      {
+        "artist": "Annihilation Records Live (Eraized vs Udow vs Maintrex)",
+        "stage": "",
+        "start": "16:00",
+        "end": "16:45",
+        "day": "Saturday"
+      },
+      {
+        "artist": "Akimbo: Game Over Live",
+        "stage": "",
+        "start": "16:45",
+        "end": "17:15",
+        "day": "Saturday"
+      },
+      {
+        "artist": "Noise of Aggression & Victus Live",
+        "stage": "",
+        "start": "17:15",
+        "end": "17:45",
+        "day": "Saturday"
+      },
+      {
+        "artist": "Missy & Dimma: Slopen de Tent Live [Final]",
+        "stage": "",
+        "start": "17:45",
+        "end": "18:15",
+        "day": "Saturday"
+      },
+      {
+        "artist": "MT Live [Premiere]",
+        "stage": "",
+        "start": "18:15",
+        "end": "18:45",
+        "day": "Saturday"
+      },
+      {
+        "artist": "Partyraiser vs Bössels vs TMO",
+        "stage": "",
+        "start": "18:45",
+        "end": "19:30",
+        "day": "Saturday"
+      },
+      {
+        "artist": "Aalst vs Latinity Live",
+        "stage": "",
+        "start": "19:30",
+        "end": "20:00",
+        "day": "Saturday"
+      },
+      {
+        "artist": "Maistrø & Undivided: New Live Experience [Premiere]",
+        "stage": "",
+        "start": "20:00",
+        "end": "20:30",
+        "day": "Saturday"
+      },
+      {
+        "artist": "Dark Individual: New Live Experience [Premiere]",
+        "stage": "",
+        "start": "20:30",
+        "end": "21:00",
+        "day": "Saturday"
+      },
+      {
+        "artist": "Deviation: Sonic Surge Live [Final]",
+        "stage": "",
+        "start": "21:00",
+        "end": "21:30",
+        "day": "Saturday"
+      },
+      {
+        "artist": "Satirized vs Dimma",
+        "stage": "",
+        "start": "21:30",
+        "end": "22:15",
+        "day": "Saturday"
+      },
+      {
+        "artist": "Rosbeek vs Complex",
+        "stage": "",
+        "start": "22:15",
+        "end": "23:00",
+        "day": "Saturday"
+      }
+    ]
+  },
+  {
+    "festival": "Titanium",
+    "date": "2027-09-25",
+    "dateEnd": "2027-09-25",
+    "location": "Plas Middelwaard, Vianen",
+    "officialCatalog": true,
+    "lineupEditionYear": 2027,
+    "lineupSource": "https://www.titaniumfestival.com/"
+  },
+  {
+    "festival": "Decibel",
+    "date": "2027-08-27",
+    "dateEnd": "2027-08-29",
+    "location": "Beekse Bergen, Hilvarenbeek",
+    "imageUrl": "https://d2oiyt60aney7e.cloudfront.net/2ck28wkq03nm/1q0ZoXBCZyt5QssHLRRsDV/41913f8ca4ba5570663f03b6a6b86501/DB25_CAMPAGNE-26_16x9.jpg",
+    "officialCatalog": true,
+    "lineupEditionYear": 2027,
+    "lineupSource": "https://www.decibeloutdoor.com/"
+  },
+  {
+    "festival": "Gezellige Clubtempo",
+    "date": "2026-12-12",
+    "dateEnd": "2026-12-12",
+    "location": "013 Poppodium, Tilburg",
+    "imageUrl": "https://013.ams3.cdn.digitaloceanspaces.com/resized/main/events/_1250x680_crop_center-center_none/Gezellige-Clubtempo-Banner-01.jpg",
+    "officialCatalog": true,
+    "lineupEditionYear": 2026,
+    "lineupSource": "https://www.013.nl/programma/160082/gezellige-clubtempo-xxl-2026"
+  }
+];
 let savedKeys = JSON.parse(localStorage.uptempoSavedEditions || '[]');
 function editionKey(f) {
   return normalizeFestivalName(f.festival) + '-' + (f.date || f.lineupEditionYear || 'open');
@@ -48,6 +262,22 @@ document.addEventListener('click', event => {
 });
 let selectedLineupKey = '';
 let selectedLineupDay = 'all';
+let favoriteSets = JSON.parse(localStorage.uptempoFavoriteSets || '[]');
+let onlyFavoriteSets = false;
+function setKey(festival, item) {
+  return JSON.stringify([festival.key, festival.date, item.day || '', item.artist, item.stage || '']);
+}
+document.addEventListener('click', event => {
+  const button = event.target.closest('[data-set-key],[data-favorites-only]');
+  if (!button) return;
+  if (button.hasAttribute('data-favorites-only')) onlyFavoriteSets = !onlyFavoriteSets;
+  else {
+    const key = button.dataset.setKey;
+    favoriteSets = favoriteSets.includes(key) ? favoriteSets.filter(value => value !== key) : [...favoriteSets,key];
+    localStorage.uptempoFavoriteSets = JSON.stringify(favoriteSets);
+  }
+  renderLineup();
+});
 
 function save() {
   localStorage.festivals = JSON.stringify(festivals);
@@ -588,6 +818,7 @@ function dayName(value) {
 window.openOfficialLineup = slug => {
   if ($('#timetableYear')) $('#timetableYear').value = '';
   $('#lineupSearch').value = '';
+  onlyFavoriteSets = false;
   const update = festivalLineupUpdates.find(item => normalizeFestivalName(item.festival) === slug);
   const personal = update && festivals.find(festival => {
     const matches = [update.festival, ...(update.aliases || [])].some(name => normalizeFestivalName(name) === normalizeFestivalName(festival.name));
@@ -603,6 +834,7 @@ window.openOfficialLineup = slug => {
 window.openFestivalLineup = id => {
   if ($('#timetableYear')) $('#timetableYear').value = '';
   $('#lineupSearch').value = '';
+  onlyFavoriteSets = false;
   selectedLineupKey = 'personal:' + id;
   selectedLineupDay = 'all';
   switchTab('lineup');
@@ -618,19 +850,33 @@ function renderHomeFestivalCatalog() {
     .sort((a, b) => new Date(a.date || '9999-12-31') - new Date(b.date || '9999-12-31') ||
       String(a.festival || '').localeCompare(String(b.festival || '')));
 
+  const feature = catalog.find(f => (f.lineup || []).some(set => set.start && set.end)) || catalog[0];
+  const spotlight = $('#homeSpotlight');
+  if (spotlight && feature) {
+    const timed = (feature.lineup || []).filter(set => set.start && set.end).length;
+    spotlight.innerHTML = '<article class="spotlight"><span class="eyebrow">'+(timed ? 'Timetable beschikbaar' : 'Eerstvolgende editie')+'</span><h1>'+esc(feature.festival)+'</h1><p>'+esc(festivalDateLabel(feature))+' · '+esc(feature.location || '')+'</p><button class="btn" data-edition="'+normalizeFestivalName(feature.festival)+'">'+(timed ? 'Bekijk '+timed+' sets' : 'Bekijk festival')+'</button></article>';
+    if (feature.imageUrl) spotlight.firstElementChild.style.backgroundImage = 'url('+JSON.stringify(feature.imageUrl)+')';
+  }
+  const plans = $('#homePlans');
+  if (plans) plans.hidden = !nextFest() && !datedEditions().some(f => !festivalHasPassed(f) && savedKeys.includes(editionKey(f)));
+  let lastSection = '';
   container.innerHTML = catalog.map(update => {
+    const section = update.date ? 'Festivals '+update.date.slice(0,4) : 'Datum volgt';
+    const heading = section === lastSection ? '' : '<h2 class="section">'+esc(section)+'</h2>';
+    lastSection = section;
     const edition = festivalDateLabel(update);
     const poster = update.imageUrl
       ? `linear-gradient(180deg,rgba(0,0,0,.02),rgba(0,0,0,.35)),url('${esc(update.imageUrl)}')`
       : 'linear-gradient(135deg,#28164a,#101a35)';
 
     return `
-      <article class="card homeFestivalCard">
+      ${heading}<article class="card homeFestivalCard">
         <div class="homeFestivalPoster" style="background-image:${poster}"></div>
         <div class="homeFestivalCardBody">
           <b>${esc(update.festival || 'Festival')}</b>
           <span class="muted">${esc(edition)}${update.location ? ` · ${esc(update.location)}` : ''}</span>
-          <button class="btn2" onclick="openOfficialLineup('${normalizeFestivalName(update.festival)}')">Timetable bekijken</button>
+          <button class="btn2" onclick="openOfficialLineup('${normalizeFestivalName(update.festival)}')">${(update.lineup || []).some(set => set.start) ? "Bekijk timetable" : "Festivalinformatie"}</button>
+          ${update.date ? `<button class="btn2" data-save-edition="${editionKey(update)}" aria-pressed="${savedKeys.includes(editionKey(update))}">${savedKeys.includes(editionKey(update)) ? "Bewaard ✓" : "Bewaar"}</button>` : ""}
         </div>
       </article>
     `;
@@ -797,7 +1043,7 @@ function renderLineup() {
   picker.innerHTML = options.map(f => `<option value="${esc(f.key)}">${esc(f.name)}${f.date ? ' · ' + esc(fmt(f.date)) : ''}</option>`).join('')
     || '<option value="">Geen festivals beschikbaar</option>';
   picker.value = selectedLineupKey;
-  picker.onchange = () => { selectedLineupKey = picker.value; selectedLineupDay = 'all'; renderLineup(); };
+  picker.onchange = () => { onlyFavoriteSets = false; selectedLineupKey = picker.value; selectedLineupDay = 'all'; renderLineup(); };
 
   const selected = getSelectedLineup();
   const manual = $('#lineupManual');
@@ -814,7 +1060,7 @@ function renderLineup() {
   if (selectedLineupDay !== 'all' && !days.includes(selectedLineupDay)) selectedLineupDay = 'all';
   const dayLineup = selectedLineupDay === 'all' ? lineup : lineup.filter(item => item.day === selectedLineupDay);
   const searchText = ($('#lineupSearch')?.value || '').trim().toLowerCase();
-  const visible = dayLineup.filter(item => `${item.artist || ''} ${item.stage || ''}`.toLowerCase().includes(searchText));
+  const visible = dayLineup.filter(item => !onlyFavoriteSets || favoriteSets.includes(setKey(selected,item))).filter(item => `${item.artist || ''} ${item.stage || ''}`.toLowerCase().includes(searchText));
   const image = selected.imageUrl || '';
   const source = selected.lineupSource
     ? `<a class="source-link" href="${esc(selected.lineupSource)}" target="_blank" rel="noopener noreferrer">Bekijk bron ↗</a>`
@@ -837,12 +1083,13 @@ function renderLineup() {
       <button class="day-chip ${selectedLineupDay === 'all' ? 'active' : ''}" data-lineup-day="all">Alle dagen</button>
       ${days.map(day => `<button class="day-chip ${selectedLineupDay === day ? 'active' : ''}" data-lineup-day="${esc(day)}">${esc(dayName(day))}</button>`).join('')}
     </div>` : ''}
+    ${lineup.length ? `<button class="day-chip ${onlyFavoriteSets ? "active" : ""}" data-favorites-only aria-pressed="${onlyFavoriteSets}">Mijn favoriete acts</button>` : ""}
     <div class="card set-list">
       ${visible.length ? visible.map(item => `
         <div class="set-row">
           <div class="set-time">${esc(item.start || dayName(item.day) || 'Tijd volgt')}${item.end ? '<br><span class="muted">tot ' + esc(item.end) + '</span>' : ''}</div>
-          <div><div class="set-artist">${esc(item.artist || 'Artiest')}</div>${item.stage ? `<div class="set-stage">${esc(item.stage)}</div>` : ''}</div>
-        </div>`).join('') : lineup.length ? '<div class="empty-state">Geen acts gevonden bij deze zoekopdracht.</div>' : '<div class="empty-state">De timetable is nog niet bekend. Zodra tijden beschikbaar zijn, verschijnen ze hier.</div>'}
+          <div><div class="set-artist">${esc(item.artist || 'Artiest')}</div><button class="set-star" data-set-key="${esc(setKey(selected,item))}" aria-pressed="${favoriteSets.includes(setKey(selected,item))}" aria-label="Favoriet: ${esc(item.artist)}">${favoriteSets.includes(setKey(selected,item)) ? "★" : "☆"}</button>${item.stage ? `<div class="set-stage">${esc(item.stage)}</div>` : ''}</div>
+        </div>`).join('') : lineup.length ? '<div class="empty-state">Geen acts met deze filters.</div>' : '<div class="empty-state">De timetable is nog niet bekend. Zodra tijden beschikbaar zijn, verschijnen ze hier.</div>'}
     </div>
     <div style="padding:2px 4px">${source}</div>
   `;
@@ -873,6 +1120,7 @@ async function addLineupItem() {
 }
 
 function countdown() {
+  if (!$('#cdD')) return;
   const n = nextFest() || datedEditions().find(f => !festivalHasPassed(f));
 
   if (!n) {
@@ -904,12 +1152,13 @@ function switchTab(tab) {
   document.querySelectorAll('.tab,.screen').forEach(x => x.classList.remove('active'));
 
   const mainTab = document.querySelector(`.tab[data-tab="${tab}"]`);
-  if (mainTab) mainTab.classList.add('active');
+  (mainTab || $('.tab[data-tab="more"]'))?.classList.add('active');
 
   const screen = $('#' + tab);
   if (screen) screen.classList.add('active');
   const addButton = $('#openAdd');
-  if (addButton) addButton.hidden = ['lineup', 'friends', 'more', 'profile', 'leaderboard', 'stats', 'theme'].includes(tab);
+  if (addButton) addButton.hidden = tab !== 'festivals' && tab !== 'calendar';
+  window.scrollTo(0,0);
 
   renderAll();
 }
