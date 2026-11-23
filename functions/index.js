@@ -131,7 +131,7 @@ async function extractTimetable(post, account, apiKey) {
       "Source URL: " + (post.permalink || ""),
       "Return no artists if the post does not announce artists or set times.",
       "Use 24-hour HH:MM times. Leave time or stage empty if absent.",
-      "Set completeTimetable true only when the post clearly presents a complete timetable for that festival day or stage.",
+      "Set completeTimetable true only when the post clearly presents the complete timetable for the entire festival across all days and stages. Otherwise set it false.",
     ].join("\n"),
   }];
 
@@ -219,7 +219,7 @@ async function updateFestivalCatalogue(account, post, update) {
     : [];
   const incomingItems = update.items.map((item) => ({
     ...item,
-    id: stableId(post.id + "|" + item.artist + "|" + item.stage + "|" + item.start),
+    id: stableId(normalizeName(item.artist) + "|" + normalizeName(item.stage)),
     source: "instagram",
     sourcePost: post.permalink || "",
     sourceTimestamp: post.timestamp,
@@ -257,7 +257,7 @@ async function applyLineupToGroups(account, post, update) {
 
       const incomingItems = update.items.map((item) => ({
         ...item,
-        id: stableId(post.id + "|" + item.artist + "|" + item.stage + "|" + item.start),
+        id: stableId(normalizeName(item.artist) + "|" + normalizeName(item.stage)),
         source: "instagram",
         sourcePost: post.permalink || "",
         sourceTimestamp: post.timestamp,
