@@ -54,17 +54,15 @@ exports.importFestivalUpdates = onSchedule(
 
         await updateFestivalCatalogue(account, post, extracted);
         const affectedGroups = await applyLineupToGroups(account, post, extracted);
-        if (affectedGroups > 0) {
-          await processedRef.set({
-            status: "imported",
-            account: account.username,
-            festival: account.festival,
-            permalink: post.permalink || "",
-            importedGroups: affectedGroups,
-            checkedAt: FieldValue.serverTimestamp(),
-          });
-          importedCount += 1;
-        }
+        await processedRef.set({
+          status: "imported",
+          account: account.username,
+          festival: account.festival,
+          permalink: post.permalink || "",
+          importedGroups: affectedGroups,
+          checkedAt: FieldValue.serverTimestamp(),
+        });
+        importedCount += 1;
       }
     }
 
