@@ -518,7 +518,7 @@ async function saveProfileLive() {
     {
       name: profile.name || 'Naamloos',
       uid,
-      online: true,
+      activeAt: document.hidden ? 0 : Date.now(),
       lastSeen: window.fb.serverTimestamp()
     },
     { merge: true }
@@ -551,13 +551,12 @@ async function addFriendLive(name) {
       window.fb.doc(db, 'groups', groupId, 'friends', crypto.randomUUID()),
       {
         name,
-        online: true,
         addedBy: uid,
         lastSeen: window.fb.serverTimestamp()
       }
     );
   } else {
-    friends.push({ id: crypto.randomUUID(), name, online: true });
+    friends.push({ id: crypto.randomUUID(), name });
     save();
     renderAll();
   }
@@ -944,11 +943,40 @@ function renderFriends() {
         <div class="avatar">${esc(fr.name || '?').slice(0, 1)}</div>
         <div class="grow">
           <b>${esc(fr.name || 'Vriend')}</b>
-          <div class="online">● Online</div>
+          <div class="muted" data-friend-status></div>
         </div>
       </div>
     `).join('') || '<div class="card muted">Nog geen vrienden.</div>';
+  refreshFriendStatus();
 }
+
+function refreshFriendStatus() {
+  const now = Date.now();
+  document.querySelectorAll('#friendsList [data-friend-status]').forEach((label,index) => {
+    const friend = friends[index];
+    const isMember = !!friend?.uid && friend.uid === friend.id;
+    const confirmed = friend?.lastSeen?.toMillis?.() || 0;
+    const age = now - Math.min(confirmed, Number(friend?.activeAt || 0));
+    const active = isMember && navigator.onLine && age >= -5000 && age < 65000;
+    label.textContent = active ? '● Online' : isMember ? 'Offline' : 'Groepslijst';
+    label.className = active ? 'online' : 'muted';
+  });
+}
+
+function updatePresence() {
+  if (!profile.name || !groupId || !uid || !db || !navigator.onLine) return;
+  saveProfileLive().catch(() => { /* The last confirmed heartbeat expires automatically. */ });
+}
+setInterval(() => { if (!document.hidden) updatePresence(); }, 30000);
+setInterval(refreshFriendStatus, 5000);
+document.addEventListener('visibilitychange', updatePresence);
+window.addEventListener('pagehide', () => {
+  if (db && groupId && uid && profile.name && navigator.onLine) {
+    window.fb.setDoc(window.fb.doc(db,'groups',groupId,'friends',uid),{activeAt:0},{merge:true}).catch(()=>{});
+  }
+});
+window.addEventListener('online', updatePresence);
+window.addEventListener('offline', refreshFriendStatus);
 
 function renderGroupBox() {
   if (!$('#friends')) return;
