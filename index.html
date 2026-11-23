@@ -69,7 +69,7 @@ button,input,select,textarea{font:inherit}button{cursor:pointer;color:inherit}bu
 .lineup-hero h2{margin:0;font-size:22px}.lineup-hero p{margin:5px 0 0;color:#c6cbd0;font-size:12px}
 .lineup-days{display:flex;gap:8px;overflow-x:auto;padding:3px 1px 11px;scrollbar-width:none}.lineup-days::-webkit-scrollbar{display:none}.day-chip{flex:0 0 auto;padding:9px 13px;border:1px solid var(--line);border-radius:999px;background:rgba(255,255,255,.045);color:var(--muted);font-size:12px;font-weight:800}.day-chip.active{border-color:var(--pink);background:var(--pink);color:#11150a}
 .set-list{padding:4px 14px}.set-row{display:grid;grid-template-columns:74px minmax(0,1fr);gap:11px;padding:13px 0;border-bottom:1px solid rgba(255,255,255,.075)}.set-time{color:var(--pink);font-size:12px;font-weight:900;white-space:nowrap}.set-artist{font-size:14px;font-weight:800;line-height:1.35}.set-stage{margin-top:4px;color:var(--muted);font-size:11px}.set-row:last-child{border-bottom:0}
-.source-link{color:var(--pink);font-size:12px;font-weight:750;text-decoration:none}.empty-state{padding:26px 16px;text-align:center;color:var(--muted)}.lineup-manual{margin-top:14px}.lineup-manual summary{cursor:pointer;color:var(--muted);font-size:12px;font-weight:750;padding:8px}
+.source-link{color:var(--pink);font-size:12px;font-weight:750;text-decoration:none}.empty-state{padding:26px 16px;text-align:center;color:var(--muted)}.archive-hint{padding:12px 4px 4px;font-size:12px}.archive-list{margin-top:8px}.lineup-manual{margin-top:14px}.lineup-manual summary{cursor:pointer;color:var(--muted);font-size:12px;font-weight:750;padding:8px}
 [hidden]{display:none!important}
 .menuTile svg{display:block;width:27px;height:27px;margin:0 0 12px;color:var(--pink);stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
 @media(min-width:760px){.hero{min-height:410px;padding:34px}.hero-card{padding:23px}.homeFestivalGrid{grid-template-columns:repeat(3,minmax(0,1fr));gap:15px}.homeFestivalPoster{height:175px}.catalog-list{grid-template-columns:repeat(3,minmax(0,1fr))}.app{padding-bottom:125px}}
@@ -104,11 +104,11 @@ button,input,select,textarea{font:inherit}button{cursor:pointer;color:inherit}bu
 
       <div class="grid">
         <div class="stat"><b id="totalFest">0</b><br><span class="muted">Gepland</span></div>
-        <div class="stat"><b id="doneFest">0</b><br><span class="muted">Bezocht</span></div>
+        <div class="stat"><b id="doneFest">0</b><br><span class="muted">Afgelopen</span></div>
         <div class="stat"><b id="friendCount">0</b><br><span class="muted">Vrienden</span></div>
       </div>
 
-      <div class="section">Jouw festivalzomer</div>
+      <div class="section">Komende festivals</div>
       <div id="upcoming" class="catalog-list"></div>
 
       <div class="section">Ontdek festivals</div>
@@ -126,11 +126,12 @@ button,input,select,textarea{font:inherit}button{cursor:pointer;color:inherit}bu
 
     <main id="festivals" class="screen">
       <div class="section">Festivaloverzicht</div>
-      <div class="muted" style="margin:0 2px 12px">Ontdek de line-up, bewaar je plannen en deel festivals met vrienden.</div>
+      <div class="muted" style="margin:0 2px 12px">Bekijk aankomende edities en zoek eerdere festivals terug in het archief.</div>
       <div class="form">
-        <input id="search" placeholder="Zoek festival, locatie of genre...">
+        <input id="search" type="search" autocomplete="off" placeholder="Zoek festival, locatie of jaar...">
       </div>
       <div id="festivalList" class="catalog-list"></div>
+      <div id="festivalArchive" class="archive-list"></div>
       <div class="section">Ontdek festivals</div>
       <div class="muted" style="margin:0 2px 12px">Bekijk festivalinformatie en beschikbare line-ups.</div>
       <div id="officialFestivalCatalog" class="catalog-list"></div>
