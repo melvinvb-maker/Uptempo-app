@@ -450,7 +450,7 @@ function renderOfficialFestivalCatalog() {
         : 'Editie nog niet bevestigd';
     const poster = update.imageUrl
       ? `<div style="height:150px;border-radius:16px;margin-bottom:12px;background:linear-gradient(180deg,rgba(0,0,0,.02),rgba(0,0,0,.38)),url('${esc(update.imageUrl)}') center/cover"></div>`
-      : `<div style="height:150px;border-radius:16px;margin-bottom:12px;background:linear-gradient(135deg,#28164a,#101a35);display:grid;place-items:center;font-size:42px">U</div>`;
+      : `<div class="catalog-placeholder">U</div>`;
 
     return `
       <div class="card">
