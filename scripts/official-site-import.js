@@ -2,13 +2,13 @@ import { chromium } from "playwright";
 import { FieldValue } from "firebase-admin/firestore";
 
 export const OFFICIAL_SOURCES = [
-  { festival: "Rebirth", aliases: ["REBiRTH Festival"], url: "https://www.rebirth-festival.nl/en/line-up/", editionYear: 2027, dynamic: "rebirth" },
+  { festival: "Rebirth", aliases: ["REBiRTH Festival"], url: "https://www.rebirth-festival.nl/en/line-up/", editionYear: 2027, date: "2027-04-09", dateEnd: "2027-04-11", location: "Haaren", dynamic: "rebirth" },
   { festival: "Rebellion", aliases: ["REBELLiON Outdoor"], url: "https://rebellionoutdoor.nl/" },
-  { festival: "Intents", aliases: ["Intents Festival"], url: "https://www.intentsfestival.nl/" },
-  { festival: "Harmony of Hardcore", aliases: ["HOH"], url: "https://www.harmonyofhardcore.nl/" },
+  { festival: "Intents", aliases: ["Intents Festival"], url: "https://www.intentsfestival.nl/", editionYear: 2027, date: "2027-06-04", dateEnd: "2027-06-06", location: "Oisterwijk" },
+  { festival: "Harmony of Hardcore", aliases: ["HOH"], url: "https://www.harmonyofhardcore.nl/", editionYear: 2027, date: "2027-05-15", dateEnd: "2027-05-15", location: "Erp" },
   { festival: "Snakepit", aliases: [], url: "https://www.snakepithardcore.com/", editionYear: 2026, date: "2026-11-07", location: "Klokgebouw, Eindhoven", imageUrl: "https://www.snakepithardcore.com/wp-content/uploads/2026/07/website.png" },
-  { festival: "Dominator", aliases: [], url: "https://www.dominatorfestival.com/" },
-  { festival: "Annihilation", aliases: [], url: "https://www.annihilation.nl/line-up", sourceType: "instagram", sourcePost: "https://www.instagram.com/annihilation.nl/", editionYear: 2026, date: "2026-12-19", location: "Autotron, Rosmalen", staticLineup: [
+  { festival: "Dominator", aliases: [], url: "https://www.dominatorfestival.com/", editionYear: 2027, date: "2027-07-15", dateEnd: "2027-07-17", location: "Eersel" },
+  { festival: "Annihilation Indoor", aliases: ["Annihilation"], catalogId: "annihilation", url: "https://www.annihilation.nl/line-up", sourceType: "instagram", sourcePost: "https://www.instagram.com/annihilation.nl/", editionYear: 2026, date: "2026-12-19", dateEnd: "2026-12-19", location: "Autotron, Rosmalen", staticLineup: [
       {
         "artist": "The Dispatcher vs Lucky Noise vs Mengers",
         "stage": "",
@@ -140,7 +140,7 @@ export const OFFICIAL_SOURCES = [
   { festival: "Rocketfest", aliases: [], url: "https://www.rocketfest.nl/", imageUrl: "https://partyflock.nl/images/party/497693_1920x1080_752224/Rocketfest.jpg" },
   { festival: "Tmo Bday Bash", aliases: ["T.M.O. B-Day Bash", "TMO Bday Bash"], url: "https://www.willem-twee.nl/alle-activiteiten/tmo-b-day-bash" },
   { festival: "Titanium", aliases: ["TITANIUM Festival"], url: "https://www.titaniumfestival.com/" },
-  { festival: "Decibel", aliases: ["Decibel Outdoor"], url: "https://www.decibeloutdoor.com/", imageUrl: "https://d2oiyt60aney7e.cloudfront.net/2ck28wkq03nm/1q0ZoXBCZyt5QssHLRRsDV/41913f8ca4ba5570663f03b6a6b86501/DB25_CAMPAGNE-26_16x9.jpg" },
+  { festival: "Decibel", aliases: ["Decibel Outdoor"], url: "https://www.decibeloutdoor.com/", editionYear: 2027, date: "2027-08-27", dateEnd: "2027-08-29", location: "Beekse Bergen, Hilvarenbeek", imageUrl: "https://d2oiyt60aney7e.cloudfront.net/2ck28wkq03nm/1q0ZoXBCZyt5QssHLRRsDV/41913f8ca4ba5570663f03b6a6b86501/DB25_CAMPAGNE-26_16x9.jpg" },
   { festival: "Gezellige Clubtempo", aliases: ["Gezellige Clubtempo XXL"], url: "https://www.013.nl/programma/160082/gezellige-clubtempo-xxl-2026", editionYear: 2026, date: "2026-12-12", location: "013 Poppodium, Tilburg", imageUrl: "https://013.ams3.cdn.digitaloceanspaces.com/resized/main/events/_1250x680_crop_center-center_none/Gezellige-Clubtempo-Banner-01.jpg" },
 ];
 
@@ -360,17 +360,19 @@ async function readOfficialSource(source, parseTimetable, minRows) {
     return {
       lineup: source.staticLineup,
       imageUrl: source.imageUrl || "",
+      date: source.date || "",
+      dateEnd: source.dateEnd || "",
       editionYear: source.editionYear || null,
       sourceType: source.sourceType || "official_website",
     };
   }
   if (source.dynamic === "rebirth") {
     const { lineup, imageUrl } = await readRebirthLineup(source);
-    return { lineup, imageUrl, editionYear: source.editionYear };
+    return { lineup, imageUrl, date: source.date || "", dateEnd: source.dateEnd || "", editionYear: source.editionYear };
   }
   if (source.dynamic === "headings") {
     const { lineup, imageUrl } = await readBrowserHeadingSource(source, parseTimetable, minRows);
-    return { lineup, imageUrl, editionYear: source.editionYear };
+    return { lineup, imageUrl, date: source.date || "", dateEnd: source.dateEnd || "", editionYear: source.editionYear };
   }
 
   const response = await fetch(source.url, {
@@ -389,6 +391,8 @@ async function readOfficialSource(source, parseTimetable, minRows) {
     return {
       lineup: timetable,
       imageUrl,
+      date: source.date || (event?.date ? event.date.toISOString().slice(0, 10) : ""),
+      dateEnd: source.dateEnd || "",
       editionYear: source.editionYear || event?.date?.getFullYear() || null,
     };
   }
@@ -399,6 +403,8 @@ async function readOfficialSource(source, parseTimetable, minRows) {
       return {
         lineup: headingLineup,
         imageUrl,
+        date: source.date || (event?.date ? event.date.toISOString().slice(0, 10) : ""),
+        dateEnd: source.dateEnd || "",
         editionYear: source.editionYear || event?.date?.getFullYear() || null,
       };
     }
@@ -408,11 +414,13 @@ async function readOfficialSource(source, parseTimetable, minRows) {
     return {
       lineup: event.names.map((artist) => ({ artist, stage: "", start: "", end: "" })),
       imageUrl,
+      date: source.date || (event.date ? event.date.toISOString().slice(0, 10) : ""),
+      dateEnd: source.dateEnd || "",
       editionYear: source.editionYear || event.date?.getFullYear() || null,
     };
   }
 
-  return { lineup: [], imageUrl, editionYear: source.editionYear || event?.date?.getFullYear() || null };
+  return { lineup: [], imageUrl, date: source.date || (event?.date ? event.date.toISOString().slice(0, 10) : ""), dateEnd: source.dateEnd || "", editionYear: source.editionYear || event?.date?.getFullYear() || null };
 }
 
 export async function importOfficialSites({ db, normalizeName, itemId, parseTimetable, minRows }) {
@@ -421,13 +429,13 @@ export async function importOfficialSites({ db, normalizeName, itemId, parseTime
 
   for (const source of OFFICIAL_SOURCES) {
     try {
-      const { lineup, imageUrl, editionYear, sourceType } = await readOfficialSource(source, parseTimetable, minRows);
+      const { lineup, imageUrl, date, dateEnd, editionYear, sourceType } = await readOfficialSource(source, parseTimetable, minRows);
       const importedSourceType = sourceType || "official_website";
       if (!lineup.length) {
         console.log("No clear published lineup found at " + source.url);
       }
 
-      const ref = db.collection("festivalLineups").doc(normalizeName(source.festival));
+      const ref = db.collection("festivalLineups").doc(normalizeName(source.catalogId || source.festival));
       const snapshot = await ref.get();
       const oldItems = snapshot.exists ? snapshot.data().lineup || [] : [];
       const byId = new Map(oldItems
@@ -455,7 +463,8 @@ export async function importOfficialSites({ db, normalizeName, itemId, parseTime
         lineupEditionYear: editionYear || source.editionYear || null,
         officialCatalog: true,
         imageUrl: imageUrl || source.imageUrl || snapshot.data()?.imageUrl || "",
-        ...(source.date ? { date: source.date } : {}),
+        ...(date || source.date ? { date: date || source.date } : {}),
+        ...(dateEnd || source.dateEnd ? { dateEnd: dateEnd || source.dateEnd } : {}),
         ...(source.location ? { location: source.location } : {}),
         lineupUpdatedAt: FieldValue.serverTimestamp(),
       }, { merge: true });
@@ -497,6 +506,8 @@ export async function importOfficialSites({ db, normalizeName, itemId, parseTime
             lineupSource: source.sourcePost || source.url,
             lineupEditionYear: editionYear || source.editionYear || null,
             imageUrl: imageUrl || source.imageUrl || festival.imageUrl || "",
+            ...(date || source.date ? { date: date || source.date } : {}),
+            ...(dateEnd || source.dateEnd ? { dateEnd: dateEnd || source.dateEnd } : {}),
             lineupUpdatedAt: FieldValue.serverTimestamp(),
           }, { merge: true });
         }
@@ -507,7 +518,7 @@ export async function importOfficialSites({ db, normalizeName, itemId, parseTime
     } catch (error) {
       console.warn("Could not read official source " + source.url + ": " + error.message);
       try {
-        const ref = db.collection("festivalLineups").doc(normalizeName(source.festival));
+        const ref = db.collection("festivalLineups").doc(normalizeName(source.catalogId || source.festival));
         const snapshot = await ref.get();
         const previous = snapshot.exists ? snapshot.data() : {};
         await ref.set({
@@ -519,6 +530,7 @@ export async function importOfficialSites({ db, normalizeName, itemId, parseTime
           officialCatalog: true,
           imageUrl: source.imageUrl || previous.imageUrl || "",
           ...(source.date ? { date: source.date } : {}),
+          ...(source.dateEnd ? { dateEnd: source.dateEnd } : {}),
           ...(source.location ? { location: source.location } : {}),
           lineupUpdatedAt: FieldValue.serverTimestamp(),
         }, { merge: true });
