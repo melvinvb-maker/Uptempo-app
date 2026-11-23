@@ -192,7 +192,7 @@ function normalizeName(value) {
 }
 
 function itemId(item) {
-  return stableId(normalizeName(item.artist) + "|" + normalizeName(item.stage));
+  return stableId(normalizeName(item.artist) + "|" + normalizeName(item.stage) + "|" + normalizeTime(item.start) + "|" + normalizeTime(item.end));
 }
 
 function stableId(value) {
