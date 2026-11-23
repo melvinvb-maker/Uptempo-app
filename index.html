@@ -2,7 +2,7 @@
 <html lang="nl">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>UPTEMPO</title>
 
   <link rel="manifest" href="manifest.json">
@@ -75,7 +75,7 @@ button,input,select,textarea{font:inherit}button{cursor:pointer;color:inherit}bu
 @media(min-width:760px){.hero{min-height:410px;padding:34px}.hero-card{padding:23px}.homeFestivalGrid{grid-template-columns:repeat(3,minmax(0,1fr));gap:15px}.homeFestivalPoster{height:175px}.catalog-list{grid-template-columns:repeat(3,minmax(0,1fr))}.app{padding-bottom:125px}}
 @media(max-width:600px){.app{padding-left:15px;padding-right:15px;padding-top:calc(11px + env(safe-area-inset-top))}.hero{min-height:340px;padding:14px;border-radius:24px}.hero-card{padding:16px}.hero-card .h1{font-size:26px}.section{font-size:20px;margin-top:23px}.menuGrid{grid-template-columns:repeat(2,minmax(0,1fr))}.catalog-list{grid-template-columns:1fr}.festival-cover{height:150px}.lineup-heading h1{font-size:25px}.tabs{max-width:none;border-radius:18px 18px 0 0}.tab{font-size:9px}.set-list{padding:2px 11px}.set-row{grid-template-columns:68px minmax(0,1fr)}}
 @media(max-width:370px){.count{gap:5px}.count div{padding:8px 3px}.count b{font-size:20px}.homeFestivalGrid{grid-template-columns:1fr}.homeFestivalPoster{height:165px}.grid{gap:6px}.stat{padding:11px 4px}.tab b{font-size:18px}}
-</style>
+.seasonRow{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 2px;border-bottom:1px solid var(--line)}.seasonRow small{display:block;color:var(--muted);margin-top:4px}.weekday{text-align:center;color:var(--muted);font-size:11px}.day .eventMark{color:var(--pink);font-size:10px;overflow:hidden;text-overflow:ellipsis}.seasonYear{font-size:18px;color:var(--pink);margin:20px 0 4px}.homeFestivalCardBody .btn2{min-height:40px}.screen h2{letter-spacing:-.03em}</style>
 </head>
 
 <body>
@@ -108,11 +108,11 @@ button,input,select,textarea{font:inherit}button{cursor:pointer;color:inherit}bu
         <div class="stat"><b id="friendCount">0</b><br><span class="muted">Vrienden</span></div>
       </div>
 
-      <div class="section">Komende festivals</div>
+      <div class="section">Mijn planning</div>
       <div id="upcoming" class="catalog-list"></div>
 
       <div class="section">Ontdek festivals</div>
-      <div class="muted" style="margin:0 2px 12px">Alle uptempo-events op één plek. Ontdek uptempo-festivals en bekijk hun timetable.</div>
+      <div class="muted" style="margin:0 2px 12px">Bekijk de festivaldata en bewaar je favorieten.</div>
       <div id="homeFestivalCatalog" class="homeFestivalGrid"></div>
     </main>
 
@@ -122,11 +122,12 @@ button,input,select,textarea{font:inherit}button{cursor:pointer;color:inherit}bu
         <div id="monthTitle" class="h1"></div>
         <div class="cal" id="calendarGrid"></div>
       </div>
-    </main>
+    <h2 class="section">Seizoensagenda</h2><div id="seasonAgenda"></div>
+</main>
 
     <main id="festivals" class="screen">
       <div class="section">Festivaloverzicht</div>
-      <div class="muted" style="margin:0 2px 12px">Bekijk aankomende edities en zoek eerdere festivals terug in het archief.</div>
+      <div class="muted" style="margin:0 2px 12px">Zoek ook afgelopen edities op naam, locatie of jaar.</div>
       <div class="form">
         <input id="search" type="search" autocomplete="off" placeholder="Zoek festival, locatie of jaar...">
       </div>
@@ -186,13 +187,15 @@ button,input,select,textarea{font:inherit}button{cursor:pointer;color:inherit}bu
         <div class="stat"><b id="profileGoingCount">0</b><br><span class="muted">Ik ga</span></div>
         <div class="stat"><b id="profileFriendCount">0</b><br><span class="muted">Vrienden</span></div>
       </div>
-    </main>
+    <button class="btn2" data-go="friends">Profiel bewerken</button><h2 class="section">Mijn bewaarde festivals</h2><div id="savedEditions"></div>
+</main>
 
     <main id="leaderboard" class="screen">
       <div class="section">Leaderboard</div>
       <div class="notice">Ranking op basis van aantal festivals waar iemand op “Ik ga” staat.</div>
       <div id="leaderboardList"></div>
-    </main>
+    <button class="btn2" data-go="friends">Naar mijn groep</button>
+</main>
 
     <main id="lineup" class="screen">
       <div class="lineup-heading"><div><div class="eyebrow">Jouw festivalgids</div><h1>Timetable</h1><div class="muted">Kies een festival en bekijk de set-tijden.</div></div></div>
@@ -248,7 +251,8 @@ button,input,select,textarea{font:inherit}button{cursor:pointer;color:inherit}bu
         <b>Genres</b>
         <div id="genreStats"></div>
       </div>
-    </main>
+    <h2 class="section">Festivalseizoen 2027</h2><div id="seasonStats" class="card"></div>
+</main>
   </div>
 
   <button class="fab" id="openAdd" aria-label="Festival toevoegen" title="Festival toevoegen">+</button>
