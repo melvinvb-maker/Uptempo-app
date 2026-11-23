@@ -34,6 +34,22 @@ function htmlToText(html) {
     .trim();
 }
 
+function getOpenGraphImage(html, baseUrl) {
+  const tags = String(html || "").match(/<meta\\b[^>]*>/gi) || [];
+  for (const tag of tags) {
+    const property = (tag.match(/(?:property|name)=["']([^"']+)["']/i) || [])[1] || "";
+    if (property.toLowerCase() !== "og:image") continue;
+    const content = (tag.match(/content=["']([^"']+)["']/i) || [])[1];
+    if (!content) continue;
+    try {
+      return new URL(content.replace(/&amp;/gi, "&"), baseUrl).href;
+    } catch {
+      return "";
+    }
+  }
+  return "";
+}
+
 function addNames(value, target) {
   if (typeof value === "string") {
     const name = value.trim();
@@ -145,11 +161,13 @@ async function readRebirthLineup(source) {
   try {
     const page = await browser.newPage();
     const lineup = [];
+    let imageUrl = "";
 
     for (const day of ["Friday", "Saturday", "Sunday"]) {
       const url = new URL(source.url);
       url.searchParams.set("day", day.toLowerCase());
       await page.goto(url.toString(), { waitUntil: "domcontentloaded", timeout: 60000 });
+      imageUrl ||= await page.locator('meta[property="og:image"]').getAttribute("content").catch(() => "");
       await page.waitForFunction(() => document.querySelectorAll("h2").length > 3 && document.querySelectorAll("h3").length > 20, undefined, { timeout: 30000 });
 
       const headings = await page.locator("h2, h3").evaluateAll((nodes) =>
@@ -170,7 +188,7 @@ async function readRebirthLineup(source) {
       }
     }
 
-    return lineup;
+    return { lineup, imageUrl };
   } finally {
     await browser.close();
   }
@@ -182,6 +200,7 @@ async function readBrowserHeadingSource(source) {
     const page = await browser.newPage();
     await page.goto(source.url, { waitUntil: "domcontentloaded", timeout: 60000 });
     const selector = source.headingTags.join(",");
+    const imageUrl = await page.locator('meta[property="og:image"]').getAttribute("content").catch(() => "");
     await page.locator(selector).first().waitFor({ state: "visible", timeout: 30000 });
     const names = await page.locator(selector).allTextContents();
     const lineup = [];
@@ -197,7 +216,7 @@ async function readBrowserHeadingSource(source) {
       lineup.push({ artist, stage: "", start: "", end: "" });
     }
 
-    return lineup;
+    return { lineup, imageUrl };
   } finally {
     await browser.close();
   }
@@ -205,12 +224,12 @@ async function readBrowserHeadingSource(source) {
 
 async function readOfficialSource(source, parseTimetable, minRows) {
   if (source.dynamic === "rebirth") {
-    const lineup = await readRebirthLineup(source);
-    return { lineup, editionYear: source.editionYear };
+    const { lineup, imageUrl } = await readRebirthLineup(source);
+    return { lineup, imageUrl, editionYear: source.editionYear };
   }
   if (source.dynamic === "headings") {
-    const lineup = await readBrowserHeadingSource(source);
-    return { lineup, editionYear: source.editionYear };
+    const { lineup, imageUrl } = await readBrowserHeadingSource(source);
+    return { lineup, imageUrl, editionYear: source.editionYear };
   }
 
   const response = await fetch(source.url, {
@@ -220,6 +239,7 @@ async function readOfficialSource(source, parseTimetable, minRows) {
   if (!response.ok) throw new Error("HTTP " + response.status);
 
   const html = await response.text();
+  const imageUrl = getOpenGraphImage(html, source.url);
   const timetable = parseTimetable(htmlToText(html));
   const uniqueTimes = new Set(timetable.map((item) => item.start));
   const event = chooseCurrentEvent(collectEventData(html));
@@ -227,6 +247,7 @@ async function readOfficialSource(source, parseTimetable, minRows) {
   if (timetable.length >= minRows && uniqueTimes.size >= 3) {
     return {
       lineup: timetable,
+      imageUrl,
       editionYear: source.editionYear || event?.date?.getFullYear() || null,
     };
   }
@@ -236,6 +257,7 @@ async function readOfficialSource(source, parseTimetable, minRows) {
     if (headingLineup.length >= minRows) {
       return {
         lineup: headingLineup,
+        imageUrl,
         editionYear: source.editionYear || event?.date?.getFullYear() || null,
       };
     }
@@ -244,11 +266,12 @@ async function readOfficialSource(source, parseTimetable, minRows) {
   if (event && event.names.length >= minRows) {
     return {
       lineup: event.names.map((artist) => ({ artist, stage: "", start: "", end: "" })),
+      imageUrl,
       editionYear: source.editionYear || event.date?.getFullYear() || null,
     };
   }
 
-  return { lineup: [], editionYear: source.editionYear || event?.date?.getFullYear() || null };
+  return { lineup: [], imageUrl, editionYear: source.editionYear || event?.date?.getFullYear() || null };
 }
 
 export async function importOfficialSites({ db, normalizeName, itemId, parseTimetable, minRows }) {
@@ -257,7 +280,7 @@ export async function importOfficialSites({ db, normalizeName, itemId, parseTime
 
   for (const source of OFFICIAL_SOURCES) {
     try {
-      const { lineup, editionYear } = await readOfficialSource(source, parseTimetable, minRows);
+      const { lineup, imageUrl, editionYear } = await readOfficialSource(source, parseTimetable, minRows);
       if (!lineup.length) {
         console.log("No clear published lineup found at " + source.url);
       }
@@ -289,6 +312,7 @@ export async function importOfficialSites({ db, normalizeName, itemId, parseTime
         lineupSource: source.url,
         lineupEditionYear: editionYear || source.editionYear || null,
         officialCatalog: true,
+        imageUrl: imageUrl || source.imageUrl || snapshot.data()?.imageUrl || "",
         ...(source.date ? { date: source.date } : {}),
         ...(source.location ? { location: source.location } : {}),
         lineupUpdatedAt: FieldValue.serverTimestamp(),
@@ -329,7 +353,8 @@ export async function importOfficialSites({ db, normalizeName, itemId, parseTime
           await festivalDoc.ref.set({
             lineup: [...importedById.values()],
             lineupSource: source.url,
-            lineupEditionYear: editionYear,
+            lineupEditionYear: editionYear || source.editionYear || null,
+            imageUrl: imageUrl || source.imageUrl || festival.imageUrl || "",
             lineupUpdatedAt: FieldValue.serverTimestamp(),
           }, { merge: true });
         }
