@@ -1,6 +1,6 @@
-const CHAT_ENABLED = false;
+
 import * as authApi from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js';
-import {collection,doc,getDoc,setDoc,updateDoc,deleteDoc,addDoc,query,where,onSnapshot,orderBy,limitToLast,serverTimestamp} from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js';
+import {collection,doc,setDoc,updateDoc,deleteDoc,addDoc,query,where,onSnapshot,orderBy,limitToLast,serverTimestamp} from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js';
 
 export function setupAccount(auth, db) {
   const el = id => document.getElementById(id);
@@ -49,6 +49,7 @@ export function setupAccount(auth, db) {
         if (user?.isAnonymous) await authApi.linkWithCredential(user,authApi.EmailAuthProvider.credential(email,password));
         else await authApi.createUserWithEmailAndPassword(auth,email,password);
       } else await authApi.signInWithEmailAndPassword(auth,email,password);
+      await auth.currentUser.getIdToken(true);
       el('accountPassword').value = '';
       show(auth.currentUser);
     });
@@ -78,6 +79,11 @@ export function setupAccount(auth, db) {
       if (room === activeRoom && el('messageText').value.trim() === text) el('messageText').value = '';
     });
   };
+  const copyCode = button('Kopieer vriendencode',async () => {
+    await navigator.clipboard.writeText(el('myFriendCode').value);
+    status('Vriendencode gekopieerd.');
+  });
+  el('myFriendCode').after(copyCode);
   el('closeChat').onclick = closeChat;
   function show(user) {
     stopRooms?.(); closeChat(); el('connections').replaceChildren();
@@ -85,7 +91,7 @@ export function setupAccount(auth, db) {
     el('accountForm').hidden = !!signed; el('memberTools').hidden = !signed;
     status(signed ? 'Ingelogd als '+user.email : 'Log in om vrienden toe te voegen en berichten te sturen.');
     if (!signed) return;
-    if (!CHAT_ENABLED) return;
+
     el("chatGate").hidden = true; el("chatTools").hidden = false;
     el('myFriendCode').value = user.uid;
     el('connections').textContent = 'Je vrienden worden geladen…';
