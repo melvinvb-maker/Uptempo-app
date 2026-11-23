@@ -10,487 +10,73 @@
   <link rel="apple-touch-icon" href="icon-192.png">
 
   <style>
-    :root{
-      --bg:#090913;--card:#151522;--muted:#9b9bb3;--txt:#fff;
-      --pink:#ff2fb3;--purple:#8b35ff;--line:#29293a;
-      --green:#30db6d;--orange:#ff6b2c;--blue:#2aa8ff;
-    }
-
-    *{box-sizing:border-box}
-
-    body{
-      margin:0;
-      background:radial-gradient(circle at 20% 0%,#30105c 0,#090913 35%,#05050b 100%);
-      color:var(--txt);
-      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
-      min-height:100vh;
-      overflow-x:hidden;
-      touch-action:manipulation;
-    }
-
-    button,input,select,textarea{font:inherit}
-    button{cursor:pointer}
-
-    .app{
-      max-width:520px;
-      margin:0 auto;
-      min-height:100vh;
-      padding:calc(25px + env(safe-area-inset-top)) 14px 145px;
-    }
-
-    .top{
-      display:flex;
-      justify-content:center;
-      align-items:center;
-      margin-bottom:16px;
-    }
-
-    .brand{
-      font-weight:900;
-      letter-spacing:.5px;
-      font-size:32px;
-      background:linear-gradient(90deg,var(--pink),#fff);
-      -webkit-background-clip:text;
-      color:transparent;
-    }
-
-    .hero{
-      border:1px solid rgba(255,47,179,.4);
-      background:
-        linear-gradient(160deg,rgba(255,47,179,.22),rgba(139,53,255,.14)),
-        url('https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?auto=format&fit=crop&w=1200&q=80') center/cover;
-      border-radius:28px;
-      padding:18px;
-      min-height:220px;
-      box-shadow:0 20px 60px rgba(0,0,0,.35);
-    }
-
-    .hero-card{
-      background:rgba(10,10,16,.78);
-      backdrop-filter:blur(12px);
-      border:1px solid rgba(255,255,255,.1);
-      border-radius:22px;
-      padding:16px;
-      margin-top:90px;
-    }
-
-    .label{
-      font-size:11px;
-      color:var(--muted);
-      text-transform:uppercase;
-      letter-spacing:.08em;
-    }
-
-    .h1{
-      font-size:22px;
-      font-weight:800;
-      margin:4px 0;
-    }
-
-    .count{
-      display:grid;
-      grid-template-columns:repeat(4,1fr);
-      gap:8px;
-      margin-top:12px;
-    }
-
-    .count div{
-      border:1px solid rgba(255,47,179,.45);
-      border-radius:14px;
-      padding:9px 4px;
-      text-align:center;
-    }
-
-    .count b{
-      color:var(--pink);
-      font-size:23px;
-      display:block;
-    }
-
-    .count span{
-      font-size:10px;
-      color:#ddd;
-    }
-
-    .grid{
-      display:grid;
-      grid-template-columns:repeat(3,1fr);
-      gap:10px;
-      margin:14px 0;
-    }
-
-    .stat{
-      background:rgba(255,255,255,.06);
-      border:1px solid var(--line);
-      border-radius:18px;
-      padding:14px;
-      text-align:center;
-    }
-
-    .stat b{font-size:22px}
-
-    .section{
-      margin:20px 0 10px;
-      font-size:18px;
-      font-weight:800;
-    }
-
-    .card{
-     background:var(--card);
-      border:1px solid var(--line);
-      border-radius:20px;
-      padding:14px;
-      margin:10px 0;
-      box-shadow:0 10px 28px rgba(0,0,0,.22);
-    }
-
-    .row{
-      display:flex;
-      gap:12px;
-      align-items:center;
-    }
-
-    .grow{flex:1;min-width:0}
-    .muted{color:var(--muted);font-size:13px}
-
-    .tag{
-      display:inline-block;
-      border-radius:999px;
-      background:var(--pink);
-      color:#fff;
-      font-size:10px;
-      font-weight:800;
-      padding:5px 8px;
-      margin-top:6px;
-      text-transform:uppercase;
-    }
-
-    .tag.hardstyle{background:var(--orange)}
-    .tag.house{background:var(--blue)}
-    .tag.techno{background:#22d3ee}
-    .tag.overig{background:#5bd66f}
-
-    .btn{
-      background:linear-gradient(90deg,var(--purple),var(--pink));
-      border:0;
-      color:#fff;
-      border-radius:16px;
-      padding:13px 16px;
-      font-weight:800;
-      width:100%;
-    }
-
-    .btn2{
-      background:rgba(255,255,255,.08);
-      border:1px solid var(--line);
-      color:#fff;
-      border-radius:14px;
-      padding:10px 12px;
-    }
-
-    .fab{
-      position:fixed;
-      right:22px;
-      bottom:86px;
-      width:58px;
-      height:58px;
-      border-radius:22px;
-      border:0;
-      background:linear-gradient(135deg,var(--pink),var(--purple));
-      color:#fff;
-      font-size:34px;
-      box-shadow:0 12px 35px rgba(255,47,179,.3);
-      z-index:4;
-    }
-
-    .tabs{
-      position:fixed;
-      left:50%;
-      transform:translateX(-50%);
-      bottom:0;
-      width:100%;
-      max-width:520px;
-      background:rgba(9,9,19,.92);
-      backdrop-filter:blur(18px);
-      border-top:1px solid var(--line);
-      display:grid;
-      grid-template-columns:repeat(5,1fr);
-      padding:7px 4px calc(7px + env(safe-area-inset-bottom));
-      z-index:4;
-    }
-
-    .tab{
-      background:none;
-      border:0;
-      color:var(--muted);
-      font-size:11px;
-      padding:7px 2px;
-    }
-
-    .tab b{display:block;font-size:20px}
-    .tab.active{color:var(--pink)}
-    .screen{display:none}
-    .screen.active{display:block}
-
-    .form{display:grid;gap:10px}
-
-    .form input,.form select,.form textarea{
-      width:100%;
-      border:1px solid var(--line);
-      background:rgba(255,255,255,.07);
-      color:#fff;
-      border-radius:14px;
-      padding:13px;
-    }
-
-    .form textarea{min-height:90px}
-
-    .modal{
-      position:fixed;
-      inset:0;
-      background:rgba(0,0,0,.72);
-      display:none;
-      align-items:flex-end;
-      z-index:5;
-    }
-
-    .modal.active{display:flex}
-
-    .sheet{
-      width:100%;
-      max-width:520px;
-      margin:0 auto;
-      background:#10101b;
-      border:1px solid var(--line);
-      border-radius:28px 28px 0 0;
-      padding:18px;
-      padding-bottom:calc(18px + env(safe-area-inset-bottom));
-    }
-
-    .cal{
-      display:grid;
-      grid-template-columns:repeat(7,1fr);
-      gap:7px;
-    }
-
-    .day{
-      min-height:58px;
-      border:1px solid var(--line);
-      border-radius:12px;
-      padding:6px;
-      background:rgba(255,255,255,.04);
-      font-size:12px;
-      overflow:hidden;
-    }
-
-    .bar{
-      height:96px;
-      display:flex;
-      align-items:end;
-      gap:8px;
-    }
-
-    .bar div{
-      flex:1;
-      background:linear-gradient(var(--pink),var(--purple));
-      border-radius:8px 8px 0 0;
-      min-height:4px;
-    }
-
-    .friend{
-      display:flex;
-      align-items:center;
-      gap:12px;
-    }
-
-    .avatar{
-      width:46px;
-      height:46px;
-      border-radius:999px;
-      background:linear-gradient(135deg,var(--pink),var(--blue));
-      display:grid;
-      place-items:center;
-      font-weight:900;
-    }
-
-    .online{color:var(--green);font-size:12px}
-
-    .notice{
-      border:1px solid rgba(255,47,179,.35);
-      background:rgba(255,47,179,.08);
-      border-radius:18px;
-      padding:12px;
-      color:#f4d7eb;
-      font-size:13px;
-    }
-
-    .menuGrid{
-      display:grid;
-      grid-template-columns:1fr 1fr;
-      gap:10px;
-    }
-
-    .menuTile{
-      background:rgba(255,255,255,.06);
-      border:1px solid var(--line);
-      border-radius:18px;
-      padding:18px;
-      text-align:center;
-      color:#fff;
-    }
-
-    .menuTile b{
-      display:block;
-      font-size:28px;
-      margin-bottom:6px;
-    }
-
-    .lineupItem{
-      display:grid;
-      grid-template-columns:70px 1fr;
-      gap:10px;
-      align-items:center;
-      border-top:1px solid var(--line);
-      padding:10px 0;
-    }
-
-    .rank{
-      font-size:22px;
-      width:34px;
-      text-align:center;
-    }
-
-    /* UPTEMPO's own festival discovery look */
-    :root{
-      --bg:#090b17;--card:#12172a;--muted:#a6aec3;--txt:#f7f8ff;
-      --pink:#ff4fa3;--purple:#7c5cff;--line:rgba(183,196,255,.14);
-      --green:#57e3a0;--orange:#ff9b58;--blue:#53c8ff;
-    }
-    body{
-      background:
-        radial-gradient(ellipse at 90% 0%,rgba(124,92,255,.25),transparent 34%),
-        radial-gradient(ellipse at 0% 22%,rgba(255,79,163,.13),transparent 28%),
-        #090b17;
-    }
-    .app{padding-left:16px;padding-right:16px}
-    .top{justify-content:flex-start;margin:5px 2px 18px}
-    .brand{font-size:28px;letter-spacing:1.4px}
-    .hero{
-      min-height:250px;
-      border:1px solid rgba(255,255,255,.15);
-      background:
-        linear-gradient(135deg,rgba(23,18,48,.28),rgba(5,8,20,.82)),
-        url('https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?auto=format&fit=crop&w=1200&q=80') center/cover;
-      border-radius:30px;
-      box-shadow:0 24px 70px rgba(0,0,0,.38);
-    }
-    .hero-card{
-      margin-top:100px;
-      border:1px solid rgba(255,255,255,.16);
-      background:rgba(10,12,27,.77);
-      border-radius:22px;
-    }
-    .section{font-size:20px;letter-spacing:-.3px;margin:24px 2px 12px}
-    .card,.stat,.menuTile{
-      background:linear-gradient(145deg,rgba(24,30,52,.98),rgba(16,20,37,.98));
-      border-color:var(--line);
-      box-shadow:0 12px 34px rgba(0,0,0,.23);
-    }
-    .card{border-radius:22px;padding:15px}
-    .stat{border-radius:20px}
-    .btn{
-      background:linear-gradient(100deg,#ff4fa3,#8b5cff);
-      box-shadow:0 9px 24px rgba(255,79,163,.18);
-    }
-    .btn2{
-      background:rgba(255,255,255,.075);
-      border-color:rgba(255,255,255,.13);
-    }
-    .fab{
-      background:linear-gradient(145deg,#ff4fa3,#845bff);
-      box-shadow:0 12px 34px rgba(160,82,255,.32);
-    }
-    .tabs{
-      border-top-color:rgba(190,199,255,.15);
-      background:rgba(9,11,23,.91);
-    }
-    .tab{font-weight:650}
-    .tab.active{color:#ff6bac}
-    .menuTile{
-      border-radius:22px;
-      text-align:left;
-      min-height:108px;
-      padding:16px;
-      font-weight:750;
-    }
-    .menuTile b{font-size:25px;margin-bottom:10px}
-    .lineupItem{grid-template-columns:78px 1fr;border-top-color:rgba(190,199,255,.12)}
-    .form input,.form select,.form textarea{
-      border-color:rgba(190,199,255,.16);
-      background:rgba(255,255,255,.06);
-    }
-    input:focus,select:focus,textarea:focus{
-      outline:2px solid rgba(255,79,163,.42);
-      border-color:rgba(255,79,163,.5);
-    }
-    .notice{border-color:rgba(255,79,163,.24);background:rgba(255,79,163,.07)}
-    .tag{background:linear-gradient(90deg,#ff4fa3,#955cff)}
-    @media (max-width:390px){
-      .app{padding-left:12px;padding-right:12px}
-      .grid{gap:7px}
-      .stat{padding:11px 6px}
-    }
-
-
-    .homeFestivalGrid{
-      display:grid;
-      grid-template-columns:repeat(2,minmax(0,1fr));
-      gap:10px;
-      margin:10px 0 18px;
-    }
-    .homeFestivalCard{
-      padding:0;
-      margin:0;
-      overflow:hidden;
-      border-radius:20px;
-      background:linear-gradient(145deg,rgba(24,30,52,.98),rgba(16,20,37,.98));
-    }
-    .homeFestivalPoster{
-      height:112px;
-      background-position:center;
-      background-size:cover;
-    }
-    .homeFestivalCardBody{padding:11px}
-    .homeFestivalCardBody b{
-      display:block;
-      font-size:14px;
-      line-height:1.25;
-      min-height:35px;
-    }
-    .homeFestivalCardBody .muted{
-      display:block;
-      font-size:11px;
-      margin-top:5px;
-      min-height:26px;
-    }
-    .homeFestivalCardBody .btn2{
-      width:100%;
-      padding:8px 6px;
-      font-size:11px;
-      margin-top:9px;
-    }
-    @media (max-width:350px){
-      .homeFestivalGrid{grid-template-columns:1fr}
-      .homeFestivalPoster{height:150px}
-    }
-
-  </style>
+:root{color-scheme:dark;--bg:#090c12;--card:#121821;--card2:#171f2a;--muted:#9ba8b7;--txt:#f6f8fa;--pink:#d6ff42;--purple:#a68cff;--line:rgba(215,226,240,.12);--green:#7df1bd;--orange:#ff9b66;--blue:#7acbff;--radius:22px}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;min-height:100vh;overflow-x:hidden;background:radial-gradient(ellipse at 50% -12%,rgba(166,140,255,.18),transparent 34%),var(--bg);color:var(--txt);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;touch-action:manipulation}
+button,input,select,textarea{font:inherit}button{cursor:pointer;color:inherit}button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--pink);outline-offset:2px}
+.app{max-width:1100px;margin:0 auto;min-height:100vh;padding:calc(14px + env(safe-area-inset-top)) 24px calc(108px + env(safe-area-inset-bottom))}
+.top{display:flex;align-items:center;justify-content:space-between;margin:2px 0 24px}
+.brand-lockup{display:flex;align-items:center;gap:11px}
+.brand-mark{width:42px;height:42px;display:grid;place-items:center;border-radius:14px;background:linear-gradient(145deg,var(--pink),#8fe6a5);color:#10140b;font-size:19px;font-weight:1000;box-shadow:0 8px 28px rgba(214,255,66,.18)}
+.brand{font-size:19px;font-weight:950;letter-spacing:1.7px;color:var(--txt)}
+.brand-sub{margin-top:2px;color:var(--muted);font-size:10px;letter-spacing:.17em;font-weight:750}
+.profile-chip{border:1px solid var(--line);border-radius:999px;background:rgba(255,255,255,.04);padding:7px 13px 7px 7px;display:flex;align-items:center;gap:8px;font-size:12px;font-weight:750}
+.profile-chip .avatar{width:29px;height:29px;font-size:12px}
+.screen{display:none;animation:screenIn .22s ease}.screen.active{display:block}@keyframes screenIn{from{opacity:.65;transform:translateY(5px)}to{opacity:1;transform:none}}
+.section{font-size:22px;font-weight:850;letter-spacing:-.5px;margin:26px 0 12px}
+.section:first-child{margin-top:8px}
+.eyebrow,.label{font-size:10px;font-weight:850;color:var(--pink);letter-spacing:.15em;text-transform:uppercase}
+.h1{font-size:25px;font-weight:900;letter-spacing:-.6px;margin:5px 0}
+.muted{color:var(--muted);font-size:13px;line-height:1.45}
+.hero{position:relative;overflow:hidden;min-height:360px;padding:26px;display:flex;align-items:flex-end;border:1px solid rgba(255,255,255,.12);border-radius:30px;background:linear-gradient(90deg,rgba(7,10,14,.92),rgba(7,10,14,.35) 68%,rgba(7,10,14,.15)),linear-gradient(0deg,rgba(7,10,14,.86),transparent 75%),url('https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?auto=format&fit=crop&w=1600&q=85') center 45%/cover;box-shadow:0 24px 60px rgba(0,0,0,.27)}
+.hero:after{content:"";position:absolute;inset:0;background:radial-gradient(ellipse at 100% 0,rgba(214,255,66,.17),transparent 38%);pointer-events:none}
+.hero-card{position:relative;z-index:1;width:min(100%,570px);padding:20px;border-radius:23px;border:1px solid rgba(255,255,255,.15);background:rgba(9,13,18,.78);backdrop-filter:blur(14px)}
+.hero-card .h1{font-size:30px}.hero-card .muted{font-size:14px}
+.count{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:17px}
+.count div{padding:10px 5px;text-align:center;border:1px solid rgba(255,255,255,.12);border-radius:14px;background:rgba(255,255,255,.04)}
+.count b{display:block;color:var(--pink);font-size:23px;line-height:1.1}.count span{color:#d4d9df;font-size:10px}
+.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:14px 0}
+.stat{padding:15px;text-align:center;border:1px solid var(--line);border-radius:18px;background:var(--card)}
+.stat b{font-size:22px}.stat .muted{font-size:11px}
+.card,.menuTile{border:1px solid var(--line);border-radius:var(--radius);background:linear-gradient(145deg,rgba(22,29,39,.98),rgba(15,21,29,.98));box-shadow:0 12px 30px rgba(0,0,0,.17)}
+.card{padding:16px;margin:10px 0}
+.row{display:flex;gap:12px;align-items:center}.grow{flex:1;min-width:0}
+.tag{display:inline-flex;align-items:center;border-radius:999px;background:rgba(214,255,66,.13);color:var(--pink);font-size:10px;font-weight:850;padding:5px 9px;margin-top:7px;text-transform:uppercase;letter-spacing:.06em}
+.tag.hardstyle{color:#ffad7e;background:rgba(255,155,102,.13)}.tag.house{color:var(--blue)}.tag.techno{color:#78d8e9}.tag.overig{color:var(--green)}
+.btn{border:0;border-radius:14px;padding:12px 15px;width:100%;color:#0d1208;font-weight:900;background:linear-gradient(105deg,var(--pink),#a9ee8e);box-shadow:0 8px 22px rgba(214,255,66,.12)}
+.btn2{border:1px solid rgba(255,255,255,.13);border-radius:13px;padding:10px 13px;color:var(--txt);font-weight:750;background:rgba(255,255,255,.055)}
+.btn2:hover,.menuTile:hover{border-color:rgba(214,255,66,.45);background:rgba(214,255,66,.08)}
+.fab{position:fixed;right:max(24px,calc((100vw - 1100px)/2 + 22px));bottom:calc(88px + env(safe-area-inset-bottom));width:56px;height:56px;border:0;border-radius:19px;color:#10140b;font-size:31px;font-weight:500;background:var(--pink);box-shadow:0 10px 30px rgba(214,255,66,.24);z-index:4}
+.tabs{position:fixed;left:50%;transform:translateX(-50%);bottom:0;width:100%;max-width:760px;display:grid;grid-template-columns:repeat(5,1fr);padding:7px 9px calc(7px + env(safe-area-inset-bottom));border:1px solid rgba(255,255,255,.09);border-bottom:0;border-radius:22px 22px 0 0;background:rgba(11,15,21,.94);backdrop-filter:blur(20px);z-index:4}
+.tab{border:0;border-radius:14px;background:none;color:var(--muted);font-size:10px;font-weight:750;padding:6px 2px}.tab b{display:block;font-size:20px;margin-bottom:2px}.tab.active{color:var(--pink);background:rgba(214,255,66,.09)}
+.form{display:grid;gap:10px}.form input,.form select,.form textarea{width:100%;border:1px solid var(--line);border-radius:13px;padding:13px;background:rgba(255,255,255,.055);color:var(--txt)}.form select option{background:#121821;color:white}.form textarea{min-height:90px}.form label{font-size:12px;color:var(--muted)}
+.modal{position:fixed;inset:0;display:none;align-items:flex-end;justify-content:center;background:rgba(0,0,0,.72);z-index:8}.modal.active{display:flex}.sheet{width:100%;max-width:560px;max-height:92vh;overflow:auto;padding:20px 18px calc(22px + env(safe-area-inset-bottom));border:1px solid var(--line);border-radius:26px 26px 0 0;background:#111720}
+.cal{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px}.day{min-height:60px;overflow:hidden;padding:6px;border:1px solid var(--line);border-radius:12px;background:rgba(255,255,255,.025);font-size:12px}.bar{height:100px;display:flex;align-items:end;gap:8px}.bar div{flex:1;min-height:4px;border-radius:8px 8px 0 0;background:linear-gradient(var(--pink),var(--purple))}
+.friend{display:flex;align-items:center;gap:12px}.avatar{width:46px;height:46px;display:grid;place-items:center;border-radius:50%;color:#111;background:linear-gradient(135deg,var(--pink),#9ce6c2);font-weight:900}.online{color:var(--green);font-size:12px}.notice{padding:13px;border:1px solid rgba(214,255,66,.21);border-radius:16px;background:rgba(214,255,66,.05);color:#dce6d7;font-size:13px}
+.menuGrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.menuTile{min-height:132px;padding:17px;text-align:left;font-weight:800}.menuTile b{display:block;margin-bottom:12px;font-size:28px}
+.lineupItem{display:grid;grid-template-columns:82px minmax(0,1fr);gap:12px;align-items:center;padding:13px 0;border-top:1px solid var(--line)}.rank{width:34px;text-align:center;font-size:22px}
+.homeFestivalGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:10px 0 18px}
+.homeFestivalCard{margin:0;padding:0;overflow:hidden}.homeFestivalPoster{height:135px;background-position:center;background-size:cover}.homeFestivalCardBody{padding:13px}.homeFestivalCardBody b{display:block;min-height:38px;font-size:14px;line-height:1.3}.homeFestivalCardBody .muted{display:block;margin-top:5px;font-size:11px;min-height:26px}.homeFestivalCardBody .btn2{width:100%;padding:9px 6px;margin-top:10px;font-size:11px}
+.festival-cover{height:170px;width:100%;margin-bottom:14px;border-radius:17px;background-position:center;background-size:cover}
+.catalog-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.catalog-list>.card{margin:0}
+.lineup-heading{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;margin:8px 0 14px}.lineup-heading h1{font-size:29px;letter-spacing:-.8px;margin:5px 0}.lineup-picker{margin:0 0 14px}.lineup-picker select{width:100%;padding:14px 40px 14px 14px;border:1px solid var(--line);border-radius:15px;background:var(--card);color:var(--txt);font-weight:750}
+.lineup-hero{position:relative;min-height:175px;display:flex;align-items:flex-end;padding:16px;overflow:hidden;border-radius:22px;background:linear-gradient(0deg,rgba(5,8,12,.93),rgba(5,8,12,.08)),linear-gradient(135deg,#252d38,#111620);background-position:center;background-size:cover}
+.lineup-hero h2{margin:0;font-size:22px}.lineup-hero p{margin:5px 0 0;color:#c6cbd0;font-size:12px}
+.lineup-days{display:flex;gap:8px;overflow-x:auto;padding:3px 1px 11px;scrollbar-width:none}.lineup-days::-webkit-scrollbar{display:none}.day-chip{flex:0 0 auto;padding:9px 13px;border:1px solid var(--line);border-radius:999px;background:rgba(255,255,255,.045);color:var(--muted);font-size:12px;font-weight:800}.day-chip.active{border-color:var(--pink);background:var(--pink);color:#11150a}
+.set-list{padding:4px 14px}.set-row{display:grid;grid-template-columns:74px minmax(0,1fr);gap:11px;padding:13px 0;border-bottom:1px solid rgba(255,255,255,.075)}.set-time{color:var(--pink);font-size:12px;font-weight:900;white-space:nowrap}.set-artist{font-size:14px;font-weight:800;line-height:1.35}.set-stage{margin-top:4px;color:var(--muted);font-size:11px}.set-row:last-child{border-bottom:0}
+.source-link{color:var(--pink);font-size:12px;font-weight:750;text-decoration:none}.empty-state{padding:26px 16px;text-align:center;color:var(--muted)}.lineup-manual{margin-top:14px}.lineup-manual summary{cursor:pointer;color:var(--muted);font-size:12px;font-weight:750;padding:8px}
+@media(min-width:760px){.hero{min-height:410px;padding:34px}.hero-card{padding:23px}.homeFestivalGrid{grid-template-columns:repeat(3,minmax(0,1fr));gap:15px}.homeFestivalPoster{height:175px}.catalog-list{grid-template-columns:repeat(3,minmax(0,1fr))}.app{padding-bottom:125px}.screen#dashboard{display:none}.screen#dashboard.active{display:grid;grid-template-columns:1.15fr .85fr;column-gap:18px}.screen#dashboard>.hero{grid-column:1/-1}.screen#dashboard>.grid{grid-column:1/-1}.screen#dashboard>.section:nth-of-type(1),#upcoming{grid-column:1}.screen#dashboard>.section:nth-of-type(2),#homeFestivalCatalog{grid-column:2}.screen#dashboard>.section:nth-of-type(2){grid-row:4}.screen#homeFestivalCatalog{grid-row:5}}
+@media(max-width:600px){.app{padding-left:15px;padding-right:15px;padding-top:calc(11px + env(safe-area-inset-top))}.hero{min-height:340px;padding:14px;border-radius:24px}.hero-card{padding:16px}.hero-card .h1{font-size:26px}.section{font-size:20px;margin-top:23px}.menuGrid{grid-template-columns:repeat(2,minmax(0,1fr))}.catalog-list{grid-template-columns:1fr}.festival-cover{height:150px}.lineup-heading h1{font-size:25px}.tabs{max-width:none;border-radius:18px 18px 0 0}.tab{font-size:9px}.set-list{padding:2px 11px}.set-row{grid-template-columns:68px minmax(0,1fr)}}
+@media(max-width:370px){.count{gap:5px}.count div{padding:8px 3px}.count b{font-size:20px}.homeFestivalGrid{grid-template-columns:1fr}.homeFestivalPoster{height:165px}.grid{gap:6px}.stat{padding:11px 4px}.tab b{font-size:18px}}
+</style>
 </head>
 
 <body>
   <div class="app">
     <div class="top">
-      <div class="brand">UPTEMPO</div>
+      <div class="brand-lockup"><div class="brand-mark">U</div><div><div class="brand">UPTEMPO</div><div class="brand-sub">FESTIVAL PLANNER</div></div></div>
+      <button class="profile-chip" id="headerProfile" aria-label="Open profiel"><span class="avatar" id="headerAvatar">?</span><span>Mijn profiel</span></button>
     </div>
 
     <main id="dashboard" class="screen active">
@@ -567,6 +153,7 @@
       <div class="section">Meer</div>
       <div class="menuGrid">
         <button class="menuTile" data-tab="profile"><b>👤</b>Profiel</button>
+        <button class="menuTile" data-tab="friends"><b>👥</b>Vrienden & groepen</button>
         <button class="menuTile" data-tab="leaderboard"><b>🏆</b>Leaderboard</button>
         <button class="menuTile" data-tab="lineup"><b>🎵</b>Line-up</button>
         <button class="menuTile" data-tab="stats"><b>📊</b>Stats</button>
@@ -600,18 +187,19 @@
     </main>
 
     <main id="lineup" class="screen">
-      <div class="section">Line-up / Timetable</div>
-
-      <div class="card form">
-        <select id="lineupFestival"></select>
-        <input id="lineupArtist" placeholder="Artiest, bijvoorbeeld Barber">
-        <input id="lineupStage" placeholder="Stage, bijvoorbeeld Mainstage">
-        <input id="lineupStart" type="time">
-        <input id="lineupEnd" type="time">
-        <button class="btn" id="addLineup">Artiest toevoegen</button>
-      </div>
-
+      <div class="lineup-heading"><div><div class="eyebrow">Jouw festivalgids</div><h1>Timetable</h1><div class="muted">Kies een festival en bekijk de set-tijden.</div></div></div>
+      <div class="lineup-picker"><select id="lineupFestival" aria-label="Kies festival"></select></div>
       <div id="lineupList"></div>
+      <details class="card lineup-manual" id="lineupManual">
+        <summary>Zelf een set toevoegen aan mijn festival</summary>
+        <div class="form" style="padding-top:10px">
+          <input id="lineupArtist" placeholder="Artiest of act">
+          <input id="lineupStage" placeholder="Podium (optioneel)">
+          <input id="lineupStart" type="time" aria-label="Starttijd">
+          <input id="lineupEnd" type="time" aria-label="Eindtijd">
+          <button class="btn" id="addLineup">Set opslaan</button>
+        </div>
+      </details>
     </main>
 <main id="theme" class="screen">
   <div class="section">Thema aanpassen</div>
@@ -657,11 +245,11 @@
   <button class="fab" id="openAdd">+</button>
 
   <nav class="tabs">
-    <button class="tab active" data-tab="dashboard"><b>🏠</b>Home</button>
-    <button class="tab" data-tab="calendar"><b>📅</b>Agenda</button>
-    <button class="tab" data-tab="festivals"><b>🎟️</b>Festivals</button>
-    <button class="tab" data-tab="friends"><b>👥</b>Vrienden</button>
-    <button class="tab" data-tab="more"><b>☰</b>Meer</button>
+    <button class="tab active" data-tab="dashboard"><b>⌂</b>Home</button>
+    <button class="tab" data-tab="festivals"><b>▦</b>Festivals</button>
+    <button class="tab" data-tab="lineup"><b>♫</b>Timetable</button>
+    <button class="tab" data-tab="calendar"><b>▣</b>Agenda</button>
+    <button class="tab" data-tab="more"><b>•••</b>Meer</button>
   </nav>
 
   <div class="modal" id="modal">
