@@ -359,6 +359,88 @@
       width:34px;
       text-align:center;
     }
+
+    /* UPTEMPO's own festival discovery look */
+    :root{
+      --bg:#090b17;--card:#12172a;--muted:#a6aec3;--txt:#f7f8ff;
+      --pink:#ff4fa3;--purple:#7c5cff;--line:rgba(183,196,255,.14);
+      --green:#57e3a0;--orange:#ff9b58;--blue:#53c8ff;
+    }
+    body{
+      background:
+        radial-gradient(ellipse at 90% 0%,rgba(124,92,255,.25),transparent 34%),
+        radial-gradient(ellipse at 0% 22%,rgba(255,79,163,.13),transparent 28%),
+        #090b17;
+    }
+    .app{padding-left:16px;padding-right:16px}
+    .top{justify-content:flex-start;margin:5px 2px 18px}
+    .brand{font-size:28px;letter-spacing:1.4px}
+    .hero{
+      min-height:250px;
+      border:1px solid rgba(255,255,255,.15);
+      background:
+        linear-gradient(135deg,rgba(23,18,48,.28),rgba(5,8,20,.82)),
+        url('https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?auto=format&fit=crop&w=1200&q=80') center/cover;
+      border-radius:30px;
+      box-shadow:0 24px 70px rgba(0,0,0,.38);
+    }
+    .hero-card{
+      margin-top:100px;
+      border:1px solid rgba(255,255,255,.16);
+      background:rgba(10,12,27,.77);
+      border-radius:22px;
+    }
+    .section{font-size:20px;letter-spacing:-.3px;margin:24px 2px 12px}
+    .card,.stat,.menuTile{
+      background:linear-gradient(145deg,rgba(24,30,52,.98),rgba(16,20,37,.98));
+      border-color:var(--line);
+      box-shadow:0 12px 34px rgba(0,0,0,.23);
+    }
+    .card{border-radius:22px;padding:15px}
+    .stat{border-radius:20px}
+    .btn{
+      background:linear-gradient(100deg,#ff4fa3,#8b5cff);
+      box-shadow:0 9px 24px rgba(255,79,163,.18);
+    }
+    .btn2{
+      background:rgba(255,255,255,.075);
+      border-color:rgba(255,255,255,.13);
+    }
+    .fab{
+      background:linear-gradient(145deg,#ff4fa3,#845bff);
+      box-shadow:0 12px 34px rgba(160,82,255,.32);
+    }
+    .tabs{
+      border-top-color:rgba(190,199,255,.15);
+      background:rgba(9,11,23,.91);
+    }
+    .tab{font-weight:650}
+    .tab.active{color:#ff6bac}
+    .menuTile{
+      border-radius:22px;
+      text-align:left;
+      min-height:108px;
+      padding:16px;
+      font-weight:750;
+    }
+    .menuTile b{font-size:25px;margin-bottom:10px}
+    .lineupItem{grid-template-columns:78px 1fr;border-top-color:rgba(190,199,255,.12)}
+    .form input,.form select,.form textarea{
+      border-color:rgba(190,199,255,.16);
+      background:rgba(255,255,255,.06);
+    }
+    input:focus,select:focus,textarea:focus{
+      outline:2px solid rgba(255,79,163,.42);
+      border-color:rgba(255,79,163,.5);
+    }
+    .notice{border-color:rgba(255,79,163,.24);background:rgba(255,79,163,.07)}
+    .tag{background:linear-gradient(90deg,#ff4fa3,#955cff)}
+    @media (max-width:390px){
+      .app{padding-left:12px;padding-right:12px}
+      .grid{gap:7px}
+      .stat{padding:11px 6px}
+    }
+
   </style>
 </head>
 
@@ -390,7 +472,7 @@
         <div class="stat"><b id="friendCount">0</b><br><span class="muted">Vrienden</span></div>
       </div>
 
-      <div class="section">Aankomende festivals</div>
+      <div class="section">Jouw festivalzomer</div>
       <div id="upcoming"></div>
     </main>
 
@@ -403,7 +485,8 @@
     </main>
 
     <main id="festivals" class="screen">
-      <div class="section">Mijn Festivals</div>
+      <div class="section">Festivaloverzicht</div>
+      <div class="muted" style="margin:0 2px 12px">Ontdek de line-up, bewaar je plannen en deel festivals met vrienden.</div>
       <div class="form">
         <input id="search" placeholder="Zoek festival, locatie of genre...">
       </div>
