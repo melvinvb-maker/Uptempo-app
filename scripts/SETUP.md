@@ -56,4 +56,4 @@ De workflow schrijft server-side met de serviceaccount. De browser krijgt geen s
 
 ## Planning en kosten
 
-De workflow start wekelijks op dinsdag rond 09:15 Nederlandse tijd (08:15 UTC), en kan ook handmatig worden gestart via **Actions → Import festival timetable → Run workflow**. Het repository is openbaar; GitHub documenteert standaard runners voor openbare repositories als gratis. Firebase Spark heeft gratis Firestore-quota. Houd het project op Spark en schakel geen betaalde Google Cloud-diensten in. Bij overschrijding van de Firestore-quota moet je gebruik beperken; zet billing niet aan om dit op te lossen.
+De workflow start wekelijks op dinsdag om 08:15 UTC (09:15 Nederlandse wintertijd of 10:15 zomertijd), en kan ook handmatig worden gestart via **Actions → Import festival timetable → Run workflow**. Het repository is openbaar; GitHub documenteert standaard runners voor openbare repositories als gratis. Firebase Spark heeft gratis Firestore-quota. Houd het project op Spark en schakel geen betaalde Google Cloud-diensten in. Bij overschrijding van de Firestore-quota moet je gebruik beperken; zet billing niet aan om dit op te lossen.
