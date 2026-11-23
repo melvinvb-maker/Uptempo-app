@@ -1,45 +1,28 @@
-# Gratis Instagram-import voor UPTEMPO
+# Gratis festivalimport voor UPTEMPO
 
-Deze workflow controleert wekelijks openbare Instagram-posts en probeert duidelijke timetable-afbeeldingen lokaal met Tesseract te lezen. De OCR draait op een standaard GitHub Actions-runner. Er wordt geen betaalde AI, Firebase Cloud Functions of Cloud Scheduler gebruikt.
+De wekelijkse GitHub Actions-workflow controleert de openbare officiële websites van de festivals en kan daarnaast Instagram Business Discovery gebruiken. Website-invoer vereist geen Instagram-token. Er worden geen betaalde AI-diensten, Firebase Functions of Cloud Scheduler gebruikt; de website-invoer en OCR draaien op een standaard GitHub Actions-runner.
 
-## Wat automatisch wordt opgeslagen
+## Bronnen
 
-- Alleen posts van de geconfigureerde festivalaccounts uit de laatste acht dagen.
-- Alleen afbeeldingen en carousels; Stories en video worden niet uitgelezen.
-- Alleen timetable-achtige tekst met minstens vier herkende artiesten en drie verschillende starttijden.
-- Herkende tijden, artiesten, bronpost en importdatum komen in de gedeelde Firestore-catalogus. Bij bestaande groepsfestivals worden de geïmporteerde regels toegevoegd; handmatig ingevoerde regels blijven staan.
+De importer controleert de officiële festivalpagina's voor REBiRTH, REBELLiON Outdoor, Intents, Harmony of Hardcore, Snakepit, Dominator, Annihilation, Classified, Rocketfest, T.M.O. B-Day Bash, TITANIUM en Decibel outdoor. Voor T.M.O. B-Day Bash wordt de officiële evenementpagina van Willem Twee gebruikt.
 
-OCR kan tijden, artiestennamen of stages verkeerd lezen. Controleer de bronpost in de app voordat je op de geïmporteerde timetable vertrouwt.
+De importer leest openbare pagina's en probeert duidelijke timetable-regels of performers uit gestructureerde Event-gegevens te halen. Sommige websites laden line-ups dynamisch of tonen artiesten alleen op afbeeldingen; die inhoud kan deze importer mogelijk niet herkennen. De Instagram-route leest afbeeldingen en carousels met lokale Tesseract-OCR. Stories en video's worden niet verwerkt.
+
+Alleen herkende, gepubliceerde namen en tijden worden opgeslagen. Controleer de bron en editie in de app; automatische tekstherkenning kan fouten maken. Niet-herkende pagina's worden overgeslagen, niet met verzonnen gegevens aangevuld.
 
 ## Eenmalig activeren
 
-De importer kan pas draaien nadat de eigenaar van de accounts de benodigde toegang heeft ingesteld. Plaats deze waarden uitsluitend in **GitHub → Uptempo-app → Settings → Secrets and variables → Actions**. Zet ze nooit in code, issues of chat.
+Voeg in **GitHub → Uptempo-app → Settings → Secrets and variables → Actions** de volgende GitHub secret toe:
 
-- `FIREBASE_SERVICE_ACCOUNT_JSON`: JSON van een serviceaccount voor het Firebase-project `uptempo-43116`. Bewaar de sleutel als GitHub secret.
-- `INSTAGRAM_ACCESS_TOKEN`: Meta access token dat toegang heeft tot Instagram Business Discovery.
-- `INSTAGRAM_USER_ID`: Instagram-account-ID van het professionele account dat de Meta-app gebruikt.
-- `INSTAGRAM_ACCOUNTS_JSON`: JSON-array met festivalnamen, exacte openbare Instagram-gebruikersnamen en eventuele namen waarmee ze in de app voorkomen.
+- `FIREBASE_SERVICE_ACCOUNT_JSON`: JSON van een serviceaccount voor het Firebase-project `uptempo-43116`. Zet de JSON alleen in GitHub Secrets, nooit in code of chat.
 
-Voorbeeldstructuur (vul zelf de gecontroleerde gebruikersnamen in):
+Dit is voldoende voor de officiële websites. Wil je ook Instagram gebruiken, dan zijn daarnaast alle drie deze secrets/configwaarden nodig:
 
-```json
-[
-  { "festival": "Rebirth", "username": "OFFICIELE_HANDLE", "aliases": ["Rebirth Festival"] },
-  { "festival": "Rebellion", "username": "OFFICIELE_HANDLE", "aliases": [] },
-  { "festival": "Intents", "username": "OFFICIELE_HANDLE", "aliases": ["Intents Festival"] },
-  { "festival": "Harmony of Hardcore", "username": "OFFICIELE_HANDLE", "aliases": ["HOH"] },
-  { "festival": "Snakepit", "username": "OFFICIELE_HANDLE", "aliases": [] },
-  { "festival": "Dominator", "username": "OFFICIELE_HANDLE", "aliases": [] },
-  { "festival": "Annihilation", "username": "OFFICIELE_HANDLE", "aliases": [] },
-  { "festival": "Classified", "username": "OFFICIELE_HANDLE", "aliases": [] },
-  { "festival": "Rocketfest", "username": "OFFICIELE_HANDLE", "aliases": [] },
-  { "festival": "Tmo Bday Bash", "username": "OFFICIELE_HANDLE", "aliases": ["TMO Bday Bash"] },
-  { "festival": "Titanium", "username": "OFFICIELE_HANDLE", "aliases": [] },
-  { "festival": "Decibel", "username": "OFFICIELE_HANDLE", "aliases": ["Decibel Outdoor"] }
-]
-```
+- `INSTAGRAM_ACCESS_TOKEN`: Meta-token met toegang tot Business Discovery.
+- `INSTAGRAM_USER_ID`: ID van het professionele account dat de Meta-app gebruikt.
+- `INSTAGRAM_ACCOUNTS_JSON`: JSON-array met de festivals, gecontroleerde Instagram-gebruikersnamen en eventuele appnamen.
 
-Vervang elke `OFFICIELE_HANDLE` door de geverifieerde naam zonder `@`. Business Discovery vereist dat de bronaccounts professionele Instagram-accounts zijn en dat de Meta-app de juiste toegang heeft. Als een festivalaccount persoonlijk is of de API geen toegang verleent, kan dat account niet via deze route worden uitgelezen.
+Instagram Business Discovery vereist de juiste Meta-toegang en professionele bronaccounts. Zonder deze optionele Instagram-instellingen blijft website-import gewoon werken.
 
 ## Firestore-regels
 
@@ -56,4 +39,4 @@ De workflow schrijft server-side met de serviceaccount. De browser krijgt geen s
 
 ## Planning en kosten
 
-De workflow start wekelijks op dinsdag om 08:15 UTC (09:15 Nederlandse wintertijd of 10:15 zomertijd), en kan ook handmatig worden gestart via **Actions → Import festival timetable → Run workflow**. Het repository is openbaar; GitHub documenteert standaard runners voor openbare repositories als gratis. Firebase Spark heeft gratis Firestore-quota. Houd het project op Spark en schakel geen betaalde Google Cloud-diensten in. Bij overschrijding van de Firestore-quota moet je gebruik beperken; zet billing niet aan om dit op te lossen.
+De workflow start wekelijks op dinsdag om 08:15 UTC (09:15 Nederlandse wintertijd of 10:15 zomertijd). Handmatig starten kan via **Actions → Import festival timetable → Run workflow**. De repository is openbaar, waardoor standaard GitHub Actions-runners gratis zijn. Firebase Spark biedt gratis Firestore-quota; laat billing uitgeschakeld. Als een gratis quota wordt bereikt, beperken we het gebruik in plaats van over te stappen op een betaald plan.
