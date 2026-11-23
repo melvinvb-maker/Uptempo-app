@@ -11,9 +11,9 @@ const instagramToken = defineSecret("INSTAGRAM_ACCESS_TOKEN");
 const instagramAccountsJson = defineSecret("INSTAGRAM_ACCOUNTS_JSON");
 const openAiApiKey = defineSecret("OPENAI_API_KEY");
 
-const GRAPH_VERSION = process.env.META_GRAPH_VERSION || "v24.0";
+const GRAPH_VERSION = process.env.META_GRAPH_VERSION || "v27.0";
 const OPENAI_MODEL = process.env.OPENAI_MODEL || "gpt-4.1-mini";
-const LOOKBACK_DAYS = 45;
+const LOOKBACK_DAYS = 8;
 const CONFIDENCE_THRESHOLD = 0.9;
 
 exports.importFestivalUpdates = onSchedule(
@@ -31,7 +31,7 @@ exports.importFestivalUpdates = onSchedule(
     let importedCount = 0;
 
     for (const account of accounts) {
-      const posts = await getRecentPosts(account.username, instagramToken.value());
+      const posts = (await getRecentPosts(account.username, instagramToken.value()))\n        .sort((a, b) => Date.parse(a.timestamp) - Date.parse(b.timestamp));
 
       for (const post of posts) {
         const createdAt = Date.parse(post.timestamp || "");
@@ -206,8 +206,8 @@ function isUsableUpdate(update, account) {
 
   return update.items.every((item) =>
     item.artist?.trim() &&
-    (!item.start || /^([01]\\d|2[0-3]):[0-5]\\d$/.test(item.start)) &&
-    (!item.end || /^([01]\\d|2[0-3]):[0-5]\\d$/.test(item.end))
+    (!item.start || /^([01]\d|2[0-3]):[0-5]\d$/.test(item.start)) &&
+    (!item.end || /^([01]\d|2[0-3]):[0-5]\d$/.test(item.end))
   );
 }
 
@@ -266,7 +266,7 @@ function mergeLineupItems(existing, incoming) {
 function normalizeName(value) {
   return String(value || "")
     .normalize("NFD")
-    .replace(/[\\u0300-\\u036f]/g, "")
+    .replace(/[\u0300-\u036f]/g, "")
     .toLowerCase()
     .replace(/[^a-z0-9]/g, "");
 }
