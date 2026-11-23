@@ -1,3 +1,4 @@
+import { artistPortraits, rebirthSets } from './timetable-photos.js';
 import { firebaseEnabled, firebaseConfig } from './firebase-config.js';
 
 const STAGE_PHOTO = "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?auto=format&fit=crop&w=1200&q=80";
@@ -15,8 +16,106 @@ let unsubscribeFestivals = null;
 let unsubscribeFriends = null;
 let unsubscribeFestivalLineups = null;
 let festivalLineupUpdates = [
+{
+  "festival": "White Noise",
+  "date": "2027-03-13",
+  "dateEnd": "2027-03-13",
+  "location": "013 Poppodium, Tilburg",
+  "imageUrl": "https://013.ams3.cdn.digitaloceanspaces.com/resized/main/events/_1200x630_crop_center-center_82_none/POSTER-16_9.jpg?mtime=1793692870",
+  "officialCatalog": true,
+  "lineupSource": "https://www.013.nl/programma/162433/white-noise",
+  "lineupEditionYear": 2027,
+  "lineup": [
+    {
+      "artist": "B-Front & Phuture Noize: White Noise LIVE",
+      "stage": "Main",
+      "day": "Saturday",
+      "start": "",
+      "end": ""
+    },
+    {
+      "artist": "B-Front: Greatest Hits",
+      "stage": "Main",
+      "day": "Saturday",
+      "start": "",
+      "end": ""
+    },
+    {
+      "artist": "B-Front & Phuture Noize: Greatest Hits",
+      "stage": "Main",
+      "day": "Saturday",
+      "start": "",
+      "end": ""
+    },
+    {
+      "artist": "Phuture Noize: Greatest Hits",
+      "stage": "Main",
+      "day": "Saturday",
+      "start": "",
+      "end": ""
+    },
+    {
+      "artist": "Adaro",
+      "stage": "Main",
+      "day": "Saturday",
+      "start": "",
+      "end": ""
+    },
+    {
+      "artist": "Adrenalize",
+      "stage": "Main",
+      "day": "Saturday",
+      "start": "",
+      "end": ""
+    },
+    {
+      "artist": "Galactixx",
+      "stage": "Main",
+      "day": "Saturday",
+      "start": "",
+      "end": ""
+    },
+    {
+      "artist": "Jones",
+      "stage": "Main",
+      "day": "Saturday",
+      "start": "",
+      "end": ""
+    },
+    {
+      "artist": "DV8 (host)",
+      "stage": "Main",
+      "day": "Saturday",
+      "start": "",
+      "end": ""
+    }
+  ]
+},
+{
+  "festival": "Masters of Hardcore – The Masterplan",
+  "date": "2027-03-27",
+  "dateEnd": "2027-03-27",
+  "location": "Brabanthallen, ’s-Hertogenbosch",
+  "imageUrl": "https://www.brabanthallen.nl/wp-content/uploads/2024/12/Uitgelicht_MOH_1200x630_bbh-2.jpg",
+  "officialCatalog": true,
+  "lineupSource": "https://www.mastersofhardcore.com/en/masters-of-hardcore-2027-the-masterplan",
+  "lineupEditionYear": 2027,
+  "lineup": []
+},
+{
+  "festival": "Defqon.1",
+  "date": "2027-06-24",
+  "dateEnd": "2027-06-27",
+  "location": "Biddinghuizen",
+  "imageUrl": "https://cdn.q-dance.com/l6hfsc63q612/4oxwDBXDVUkF52FpDAu4js/8f96c52729df68a657b330e137745006/Defqon.jpg",
+  "officialCatalog": true,
+  "lineupSource": "https://www.q-dance.com/l/defqon1-2025-faq",
+  "lineupEditionYear": 2027,
+  "lineup": []
+},
   {
     "festival": "Rebirth",
+    lineup: rebirthSets,
     "date": "2027-04-09",
     "dateEnd": "2027-04-11",
     "location": "Haaren",
@@ -916,7 +1015,8 @@ function liveSync() {
   if (profile.name) saveProfileLive();
 }
 
-let rawEditions = festivalLineupUpdates;
+const bundledEditions = festivalLineupUpdates;
+let rawEditions = bundledEditions;
 let editorial = new Map();
 let stopEditorial;
 function publishCatalog() {
@@ -938,7 +1038,11 @@ function watchFestivalLineups() {
   unsubscribeFestivalLineups = window.fb.onSnapshot(
     window.fb.collection(db, 'festivalLineups'),
     snap => {
-      rawEditions = snap.docs.map(d => ({...d.data(),catalogKey:d.id})); publishCatalog();
+      const synced = snap.docs.map(d => ({...d.data(), catalogKey:d.id}));
+      rawEditions = [...synced, ...bundledEditions.filter(seed => !synced.some(entry =>
+        normalizeFestivalName(entry.festival) === normalizeFestivalName(seed.festival) && entry.date === seed.date
+      ))];
+      publishCatalog();
     },
     error => console.warn('Festival line-up updates could not be loaded.', error)
   );
@@ -1534,40 +1638,41 @@ function clockMinute(value) {
 }
 
 const officialActPhotos = {
-  "Conspirator vs Luxo vs D-Stroy": "https://cdn.prod.website-files.com/66221b2de9908b30889179e1/6a8abea29f5726c823bb56ae_annihilation-conspirator.webp",
-  "Aalst vs Latinity": "https://cdn.prod.website-files.com/66221b2de9908b30889179e1/6a8abaf30df595767a67b14a_annihilation-aalst.webp",
-  "Rosbeek vs Complex": "https://cdn.prod.website-files.com/66221b2de9908b30889179e1/6a8abdefd2c1d2f8d7774e1e_annihilation-complex-rosbeek.webp",
-  "Akimbo": "https://cdn.prod.website-files.com/66221b2de9908b30889179e1/6a8abcada6b96c71cc7cf2f9_annihilation-akimbo.webp",
-  "Annihilation Records Live (Eraized vs Udow vs Maintrex)": "https://cdn.prod.website-files.com/66221b2de9908b30889179e1/6a8ac13862645fab0c65ede8_annihilation-artist-eraised.webp",
-  "Deviation": "https://cdn.prod.website-files.com/66221b2de9908b30889179e1/6a8ac05ccc7cc962db4f21d6_annihilation-artist-dev.webp",
-  "Maistrø & Undivided": "https://cdn.prod.website-files.com/66221b2de9908b30889179e1/6a8ac219ce974591e0dc5dbc_annihilation-artist-maestro.webp",
-  "Dark Individual": "https://cdn.prod.website-files.com/66221b2de9908b30889179e1/6a8abf679658c055197e2eff_annihilation-dark-ndividual.webp",
-  "MT": "https://cdn.prod.website-files.com/66221b2de9908b30889179e1/6a8ac432aeab542ec270c44d_annihilation-artist-MT.webp",
-  "Noise of Aggression & Victus": "https://cdn.prod.website-files.com/66221b2de9908b30889179e1/6a8ac5012c7fa23562ccc880_annihilation-artist-Noise%20of%20Aggression%20%26%20Victus.webp",
-  "Missy vs Roosterz vs Screecher": "https://cdn.prod.website-files.com/66221b2de9908b30889179e1/6a8ac3c7ce974591e0dc9a13_annihilation-artist-MISSY.webp",
-  "Missy & Dimma": "https://cdn.prod.website-files.com/66221b2de9908b30889179e1/6a8ac3214d5c11cb3aff9c85_annihilation-artist-sdt.webp",
-  "Satirized vs Dimma": "https://cdn.prod.website-files.com/66221b2de9908b30889179e1/6a8ac7515217eb84be9992c5_annihilation-artist-DIMMA.webp",
-  "Revealer & Kili": "https://cdn.prod.website-files.com/66221b2de9908b30889179e1/6a8ac6495bd9598dd0b4cebe_annihilation-artist-KILI.webp",
-  "Samynator": "https://cdn.prod.website-files.com/66221b2de9908b30889179e1/6a8ac6cdb18c863ef2754110_annihilation-artist-Samynator.webp",
-  "Partyraiser vs Bössels vs TMO": "https://cdn.prod.website-files.com/66221b2de9908b30889179e1/6a8ac5a010c1d2eadf1cc10d_annihilation-artist-PR.webp",
-  "The Dispatcher vs Lucky Noise vs Mengers": "https://cdn.prod.website-files.com/66221b2de9908b30889179e1/6a8ac8542c7fa23562cd4894_annihilation-artist-FINAL.webp",
-  "Tayka vs Invicious vs Tob-E": "https://cdn.prod.website-files.com/66221b2de9908b30889179e1/6a8ac7b58cf8841cf6dd147f_annihilation-artist-TAYKE.webp"
+  "Conspirator vs Luxo vs D-Stroy": "images/acts/annihilation-1.webp",
+  "Aalst vs Latinity": "images/acts/annihilation-2.webp",
+  "Rosbeek vs Complex": "images/acts/annihilation-3.webp",
+  "Akimbo": "images/acts/annihilation-4.webp",
+  "Annihilation Records Live (Eraized vs Udow vs Maintrex)": "images/acts/annihilation-5.webp",
+  "Deviation": "images/acts/annihilation-6.webp",
+  "Maistrø & Undivided": "images/acts/annihilation-7.webp",
+  "Dark Individual": "images/acts/annihilation-8.webp",
+  "MT": "images/acts/annihilation-9.webp",
+  "Noise of Aggression & Victus": "images/acts/annihilation-10.webp",
+  "Missy vs Roosterz vs Screecher": "images/acts/annihilation-11.webp",
+  "Missy & Dimma": "images/acts/annihilation-12.webp",
+  "Satirized vs Dimma": "images/acts/annihilation-13.webp",
+  "Revealer & Kili": "images/acts/annihilation-14.webp",
+  "Samynator": "images/acts/annihilation-15.webp",
+  "Partyraiser vs Bössels vs TMO": "images/acts/annihilation-16.webp",
+  "The Dispatcher vs Lucky Noise vs Mengers": "images/acts/annihilation-17.webp",
+  "Tayka vs Invicious vs Tob-E": "images/acts/annihilation-18.webp"
 };
 function makePhotoIndex() {
-  const index = new Map();
-  const key = name => normalizeFestivalName(name.split(':')[0].replace(/\s+live$/i,''));
+  const key = name => normalizeFestivalName(String(name).split(':')[0].replace(/\s*\[[^\]]*\]/g,'').replace(/\s+live$/i,'').replace(/ø/gi,'o'));
+  const portraits = new Map();
+  for (const [name,url] of Object.entries(officialActPhotos)) portraits.set(key(name),url);
   for (const edition of festivalLineupUpdates) for (const act of edition.lineup || []) {
-    if (act.portrait?.startsWith('https://')) index.set(key(act.artist),act.portrait);
+    if (act.portrait?.startsWith('https://')) portraits.set(key(act.artist), act.portrait);
   }
-  for (const [name,url] of Object.entries(officialActPhotos)) index.set(key(name),url);
+  for (const [name,url] of Object.entries(artistPortraits)) portraits.set(key(name), url);
   return item => {
     const name = item.artist || '';
-    const artists = name.split(':')[0].replace(/\s+live$/i,'').split(/\s+(?:vs\.?|b2b|&)\s+/i);
-    const singles = artists.map(n=>index.get(key(n)));
-    const group = item.portrait || index.get(key(name));
-    const images = artists.length > 1 && singles.every(Boolean) ? singles : group ? [group] : singles;
+    const names = name.split(':')[0].replace(/\s+live$/i,'').split(/\s+(?:vs\.?|b2b|&)\s+/i);
+    const singles = names.map(n => portraits.get(key(n)));
+    const group = portraits.get(key(name)) || item.portrait;
+    const images = names.length > 1 && singles.every(Boolean) ? singles : group ? [group] : singles;
     if (!images.some(Boolean)) return '';
-    return '<div class="actPictures" aria-hidden="true">'+images.map((url,i)=>url ? '<img loading="lazy" alt="" src="'+esc(url)+'">' : '<span>'+esc(artists[i])+'</span>').join('')+'</div>';
+    return '<div class="actPictures" aria-hidden="true">'+images.map((url,i)=>url ? '<img decoding="async" alt="" src="'+esc(url)+'">' : '<span>'+esc(names[i])+'</span>').join('')+'</div>';
   };
 }
 function stageSchedule(items, selected) {

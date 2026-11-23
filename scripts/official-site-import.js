@@ -3,6 +3,101 @@ import { FieldValue } from "firebase-admin/firestore";
 
 export const OFFICIAL_SOURCES = [
 {
+  "festival": "White Noise",
+  "date": "2027-03-13",
+  "dateEnd": "2027-03-13",
+  "location": "013 Poppodium, Tilburg",
+  "url": "https://www.013.nl/programma/162433/white-noise",
+  "imageUrl": "https://013.ams3.cdn.digitaloceanspaces.com/resized/main/events/_1200x630_crop_center-center_82_none/POSTER-16_9.jpg?mtime=1793692870",
+  "aliases": [],
+  "editionYear": 2027,
+  "staticLineup": [
+    {
+      "artist": "B-Front & Phuture Noize: White Noise LIVE",
+      "stage": "Main",
+      "day": "Saturday",
+      "start": "",
+      "end": ""
+    },
+    {
+      "artist": "B-Front: Greatest Hits",
+      "stage": "Main",
+      "day": "Saturday",
+      "start": "",
+      "end": ""
+    },
+    {
+      "artist": "B-Front & Phuture Noize: Greatest Hits",
+      "stage": "Main",
+      "day": "Saturday",
+      "start": "",
+      "end": ""
+    },
+    {
+      "artist": "Phuture Noize: Greatest Hits",
+      "stage": "Main",
+      "day": "Saturday",
+      "start": "",
+      "end": ""
+    },
+    {
+      "artist": "Adaro",
+      "stage": "Main",
+      "day": "Saturday",
+      "start": "",
+      "end": ""
+    },
+    {
+      "artist": "Adrenalize",
+      "stage": "Main",
+      "day": "Saturday",
+      "start": "",
+      "end": ""
+    },
+    {
+      "artist": "Galactixx",
+      "stage": "Main",
+      "day": "Saturday",
+      "start": "",
+      "end": ""
+    },
+    {
+      "artist": "Jones",
+      "stage": "Main",
+      "day": "Saturday",
+      "start": "",
+      "end": ""
+    },
+    {
+      "artist": "DV8 (host)",
+      "stage": "Main",
+      "day": "Saturday",
+      "start": "",
+      "end": ""
+    }
+  ]
+},
+{
+  "festival": "Masters of Hardcore – The Masterplan",
+  "date": "2027-03-27",
+  "dateEnd": "2027-03-27",
+  "location": "Brabanthallen, ’s-Hertogenbosch",
+  "url": "https://www.mastersofhardcore.com/en/masters-of-hardcore-2027-the-masterplan",
+  "imageUrl": "https://www.brabanthallen.nl/wp-content/uploads/2024/12/Uitgelicht_MOH_1200x630_bbh-2.jpg",
+  "aliases": [],
+  "editionYear": 2027
+},
+{
+  "festival": "Defqon.1",
+  "date": "2027-06-24",
+  "dateEnd": "2027-06-27",
+  "location": "Biddinghuizen",
+  "url": "https://www.q-dance.com/l/defqon1-2025-faq",
+  "imageUrl": "https://cdn.q-dance.com/l6hfsc63q612/4oxwDBXDVUkF52FpDAu4js/8f96c52729df68a657b330e137745006/Defqon.jpg",
+  "aliases": [],
+  "editionYear": 2027
+},
+{
   "festival": "Classified vs Overdrive – The Final Verdict",
   "url": "https://www.classifiedevents.nl/events/the-final-verdict-case-reopened",
   "date": "2026-12-27",

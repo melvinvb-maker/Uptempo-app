@@ -86,7 +86,7 @@ button,input,select,textarea{font:inherit}button{cursor:pointer;color:inherit}bu
 @media(max-width:480px){.app:has(#dashboard.active) #headerProfile{padding:6px}.app:has(#dashboard.active) #headerProfile span:last-child{display:none}}
 #profileAvatar,#headerAvatar{background-position:center;background-size:cover}.form input[type=file]{max-width:100%}.ttAct:has(.ttStar[aria-pressed="true"]),.ttPending:has(.ttStar[aria-pressed="true"]){background:#34471d;color:#fff;border-color:#cbff42;box-shadow:inset 0 0 0 1px #91b739}
 .ttAct:has(.ttStar[aria-pressed="true"]) small,.ttPending:has(.ttStar[aria-pressed="true"]) small,.ttStar[aria-pressed="true"]{color:#d6ff76}
-.actPictures{display:flex;gap:1px;overflow:hidden;border-radius:5px;background:#202330}.actPictures>*{flex:1 1 0;width:0;min-width:0;height:100%;object-fit:cover;object-position:50% 32%}.actPictures span{display:grid;place-items:center;font-size:9px}.ttAct:has(.actPictures){padding-right:32px}.ttAct .actPictures{width:100%;height:40px;margin-bottom:3px}.ttPending .actPictures{width:90px;height:56px;flex:none}.ttPending{gap:10px}.ttPending>div:not(.actPictures){flex:1}</style>
+.actPictures{display:flex;align-items:center;flex-wrap:wrap;gap:3px}.actPictures img,.actPictures span{display:block;flex:none;width:clamp(45px,13vw,70px);height:auto;aspect-ratio:1;border-radius:7px;object-fit:cover;object-position:50% 30%;background:var(--card)}.actPictures span{display:grid;place-items:center;font-size:10px}.ttAct .actPictures{margin-bottom:5px}.ttPending .actPictures{max-width:42%;flex:none}.ttPending{gap:10px}.ttPending>div:not(.actPictures){flex:1}</style>
 </head>
 
 <body>
@@ -258,4 +258,4 @@ button,input,select,textarea{font:inherit}button{cursor:pointer;color:inherit}bu
     </div>
   </div>
 
-  <script type="module" src="app.js?v=presence-2"></script>
+  <script type="module" src="app.js?v=press-2027-1"></script>
