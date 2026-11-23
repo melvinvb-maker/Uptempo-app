@@ -546,7 +546,7 @@ function renderHomeFestivalCatalog() {
         <div class="homeFestivalCardBody">
           <b>${esc(update.festival || 'Festival')}</b>
           <span class="muted">${esc(edition)}${update.location ? ` · ${esc(update.location)}` : ''}</span>
-          <button class="btn2" onclick="openOfficialLineup('${normalizeFestivalName(update.festival)}')">Bekijk line-up</button>
+          <button class="btn2" onclick="openOfficialLineup('${normalizeFestivalName(update.festival)}')">Timetable bekijken</button>
         </div>
       </article>
     `;
