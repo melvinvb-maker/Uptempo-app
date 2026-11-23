@@ -32,7 +32,7 @@ button,input,select,textarea{font:inherit}button{cursor:pointer;color:inherit}bu
 .hero{position:relative;overflow:hidden;min-height:360px;padding:26px;display:flex;align-items:flex-end;border:1px solid rgba(255,255,255,.12);border-radius:30px;background:linear-gradient(90deg,rgba(7,10,14,.92),rgba(7,10,14,.35) 68%,rgba(7,10,14,.15)),linear-gradient(0deg,rgba(7,10,14,.86),transparent 75%),url('https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?auto=format&fit=crop&w=1600&q=85') center 45%/cover;box-shadow:0 24px 60px rgba(0,0,0,.27)}
 .hero:after{content:"";position:absolute;inset:0;background:radial-gradient(ellipse at 100% 0,rgba(214,255,66,.17),transparent 38%);pointer-events:none}
 .hero-card{position:relative;z-index:1;width:min(100%,570px);padding:20px;border-radius:23px;border:1px solid rgba(255,255,255,.15);background:rgba(9,13,18,.78);backdrop-filter:blur(14px)}
-.hero-card .h1{font-size:30px}.hero-card .muted{font-size:14px}
+.hero-card .h1{font-size:30px}.hero-card .muted{font-size:14px}.hero-action{margin-top:13px;width:auto;border-color:rgba(214,255,66,.35);color:var(--pink);background:rgba(214,255,66,.08)}
 .count{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:17px}
 .count div{padding:10px 5px;text-align:center;border:1px solid rgba(255,255,255,.12);border-radius:14px;background:rgba(255,255,255,.04)}
 .count b{display:block;color:var(--pink);font-size:23px;line-height:1.1}.count span{color:#d4d9df;font-size:10px}
@@ -85,6 +85,7 @@ button,input,select,textarea{font:inherit}button{cursor:pointer;color:inherit}bu
           <div class="label">Volgend festival</div>
           <div id="nextName" class="h1">Nog niets gepland</div>
           <div id="nextMeta" class="muted">Voeg je eerste festival toe</div>
+          <button class="btn2 hero-action" id="heroAction">Festival toevoegen</button>
 
           <div class="count">
             <div><b id="cdD">00</b><span>Dagen</span></div>
