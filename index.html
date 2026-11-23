@@ -66,7 +66,7 @@ button,input,select,textarea{font:inherit}button{cursor:pointer;color:inherit}bu
 .lineup-days{display:flex;gap:8px;overflow-x:auto;padding:3px 1px 11px;scrollbar-width:none}.lineup-days::-webkit-scrollbar{display:none}.day-chip{flex:0 0 auto;padding:9px 13px;border:1px solid var(--line);border-radius:999px;background:rgba(255,255,255,.045);color:var(--muted);font-size:12px;font-weight:800}.day-chip.active{border-color:var(--pink);background:var(--pink);color:#11150a}
 .set-list{padding:4px 14px}.set-row{display:grid;grid-template-columns:74px minmax(0,1fr);gap:11px;padding:13px 0;border-bottom:1px solid rgba(255,255,255,.075)}.set-time{color:var(--pink);font-size:12px;font-weight:900;white-space:nowrap}.set-artist{font-size:14px;font-weight:800;line-height:1.35}.set-stage{margin-top:4px;color:var(--muted);font-size:11px}.set-row:last-child{border-bottom:0}
 .source-link{color:var(--pink);font-size:12px;font-weight:750;text-decoration:none}.empty-state{padding:26px 16px;text-align:center;color:var(--muted)}.lineup-manual{margin-top:14px}.lineup-manual summary{cursor:pointer;color:var(--muted);font-size:12px;font-weight:750;padding:8px}
-@media(min-width:760px){.hero{min-height:410px;padding:34px}.hero-card{padding:23px}.homeFestivalGrid{grid-template-columns:repeat(3,minmax(0,1fr));gap:15px}.homeFestivalPoster{height:175px}.catalog-list{grid-template-columns:repeat(3,minmax(0,1fr))}.app{padding-bottom:125px}.screen#dashboard{display:none}.screen#dashboard.active{display:grid;grid-template-columns:1.15fr .85fr;column-gap:18px}.screen#dashboard>.hero{grid-column:1/-1}.screen#dashboard>.grid{grid-column:1/-1}.screen#dashboard>.section:nth-of-type(1),#upcoming{grid-column:1}.screen#dashboard>.section:nth-of-type(2),#homeFestivalCatalog{grid-column:2}.screen#dashboard>.section:nth-of-type(2){grid-row:4}.screen#homeFestivalCatalog{grid-row:5}}
+@media(min-width:760px){.hero{min-height:410px;padding:34px}.hero-card{padding:23px}.homeFestivalGrid{grid-template-columns:repeat(3,minmax(0,1fr));gap:15px}.homeFestivalPoster{height:175px}.catalog-list{grid-template-columns:repeat(3,minmax(0,1fr))}.app{padding-bottom:125px}}
 @media(max-width:600px){.app{padding-left:15px;padding-right:15px;padding-top:calc(11px + env(safe-area-inset-top))}.hero{min-height:340px;padding:14px;border-radius:24px}.hero-card{padding:16px}.hero-card .h1{font-size:26px}.section{font-size:20px;margin-top:23px}.menuGrid{grid-template-columns:repeat(2,minmax(0,1fr))}.catalog-list{grid-template-columns:1fr}.festival-cover{height:150px}.lineup-heading h1{font-size:25px}.tabs{max-width:none;border-radius:18px 18px 0 0}.tab{font-size:9px}.set-list{padding:2px 11px}.set-row{grid-template-columns:68px minmax(0,1fr)}}
 @media(max-width:370px){.count{gap:5px}.count div{padding:8px 3px}.count b{font-size:20px}.homeFestivalGrid{grid-template-columns:1fr}.homeFestivalPoster{height:165px}.grid{gap:6px}.stat{padding:11px 4px}.tab b{font-size:18px}}
 </style>
@@ -102,10 +102,10 @@ button,input,select,textarea{font:inherit}button{cursor:pointer;color:inherit}bu
       </div>
 
       <div class="section">Jouw festivalzomer</div>
-      <div id="upcoming"></div>
+      <div id="upcoming" class="catalog-list"></div>
 
       <div class="section">Ontdek festivals</div>
-      <div class="muted" style="margin:0 2px 12px">Alle uptempo-events op één plek. Line-ups en posters worden automatisch bijgewerkt.</div>
+      <div class="muted" style="margin:0 2px 12px">Alle uptempo-events op één plek. Ontdek uptempo-festivals en bekijk hun timetable.</div>
       <div id="homeFestivalCatalog" class="homeFestivalGrid"></div>
     </main>
 
@@ -123,10 +123,10 @@ button,input,select,textarea{font:inherit}button{cursor:pointer;color:inherit}bu
       <div class="form">
         <input id="search" placeholder="Zoek festival, locatie of genre...">
       </div>
-      <div id="festivalList"></div>
+      <div id="festivalList" class="catalog-list"></div>
       <div class="section">Ontdek festivals</div>
-      <div class="muted" style="margin:0 2px 12px">Officiële line-ups en posters verschijnen hier automatisch.</div>
-      <div id="officialFestivalCatalog"></div>
+      <div class="muted" style="margin:0 2px 12px">Bekijk festivalinformatie en beschikbare line-ups.</div>
+      <div id="officialFestivalCatalog" class="catalog-list"></div>
     </main>
 
     <main id="friends" class="screen">
