@@ -139,7 +139,7 @@ export const OFFICIAL_SOURCES = [
   { festival: "Classified", aliases: ["Classified Events"], url: "https://www.classifiedevents.nl/" },
   { festival: "Rocketfest", aliases: [], url: "https://www.rocketfest.nl/", imageUrl: "https://partyflock.nl/images/party/497693_1920x1080_752224/Rocketfest.jpg" },
   { festival: "Tmo Bday Bash", aliases: ["T.M.O. B-Day Bash", "TMO Bday Bash"], url: "https://www.willem-twee.nl/alle-activiteiten/tmo-b-day-bash" },
-  { festival: "Titanium", aliases: ["TITANIUM Festival"], url: "https://www.titaniumfestival.com/" },
+  { festival: "Titanium", aliases: ["TITANIUM Festival"], url: "https://www.titaniumfestival.com/", editionYear: 2027, date: "2027-09-25", dateEnd: "2027-09-25", location: "Plas Middelwaard, Vianen" },
   { festival: "Decibel", aliases: ["Decibel Outdoor"], url: "https://www.decibeloutdoor.com/", editionYear: 2027, date: "2027-08-27", dateEnd: "2027-08-29", location: "Beekse Bergen, Hilvarenbeek", imageUrl: "https://d2oiyt60aney7e.cloudfront.net/2ck28wkq03nm/1q0ZoXBCZyt5QssHLRRsDV/41913f8ca4ba5570663f03b6a6b86501/DB25_CAMPAGNE-26_16x9.jpg" },
   { festival: "Gezellige Clubtempo", aliases: ["Gezellige Clubtempo XXL"], url: "https://www.013.nl/programma/160082/gezellige-clubtempo-xxl-2026", editionYear: 2026, date: "2026-12-12", location: "013 Poppodium, Tilburg", imageUrl: "https://013.ams3.cdn.digitaloceanspaces.com/resized/main/events/_1250x680_crop_center-center_none/Gezellige-Clubtempo-Banner-01.jpg" },
 ];
