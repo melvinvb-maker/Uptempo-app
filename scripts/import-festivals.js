@@ -1,23 +1,21 @@
 import { spawn } from "node:child_process";
 import { initializeApp, cert } from "firebase-admin/app";
 import { FieldValue, getFirestore } from "firebase-admin/firestore";
+import { importOfficialSites } from "./official-site-import.js";
 
 const GRAPH_VERSION = process.env.META_GRAPH_VERSION || "v27.0";
 const LOOKBACK_DAYS = 8;
 const MAX_POSTS_PER_ACCOUNT = 20;
 const MIN_TIMETABLE_ROWS = 4;
 
-const requiredEnvironment = [
-  "FIREBASE_SERVICE_ACCOUNT_JSON",
-  "INSTAGRAM_ACCESS_TOKEN",
-  "INSTAGRAM_USER_ID",
-  "INSTAGRAM_ACCOUNTS_JSON",
-];
+if (!process.env.FIREBASE_SERVICE_ACCOUNT_JSON) {
+  throw new Error("Missing GitHub Actions secret: FIREBASE_SERVICE_ACCOUNT_JSON");
+}
 
-for (const name of requiredEnvironment) {
-  if (!process.env[name]) {
-    throw new Error(`Missing GitHub Actions secret or environment variable: ${name}`);
-  }
+const instagramKeys = ["INSTAGRAM_ACCESS_TOKEN", "INSTAGRAM_USER_ID", "INSTAGRAM_ACCOUNTS_JSON"];
+const instagramKeysSet = instagramKeys.filter((name) => Boolean(process.env[name])).length;
+if (instagramKeysSet > 0 && instagramKeysSet < instagramKeys.length) {
+  throw new Error("Set all Instagram secrets/config values or leave them all empty.");
 }
 
 const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT_JSON);
@@ -270,7 +268,9 @@ async function updateGroups(account, post, lineup) {
 }
 
 async function run() {
-  const accounts = parseAccounts(process.env.INSTAGRAM_ACCOUNTS_JSON);
+  const accounts = process.env.INSTAGRAM_ACCOUNTS_JSON
+    ? parseAccounts(process.env.INSTAGRAM_ACCOUNTS_JSON)
+    : [];
   const cutoff = Date.now() - LOOKBACK_DAYS * 24 * 60 * 60 * 1000;
   let importedPosts = 0;
 
@@ -310,7 +310,15 @@ async function run() {
     }
   }
 
-  console.log(`Imported ${importedPosts} Instagram timetable posts.`);
+  const importedOfficialPages = await importOfficialSites({
+    db,
+    normalizeName,
+    itemId,
+    parseTimetable,
+    minRows: MIN_TIMETABLE_ROWS,
+  });
+
+  console.log("Imported " + importedPosts + " Instagram timetable posts and " + importedOfficialPages + " official site pages.");
 }
 
 run().catch((error) => {
