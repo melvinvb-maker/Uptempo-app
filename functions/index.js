@@ -31,7 +31,8 @@ exports.importFestivalUpdates = onSchedule(
     let importedCount = 0;
 
     for (const account of accounts) {
-      const posts = (await getRecentPosts(account.username, instagramToken.value()))\n        .sort((a, b) => Date.parse(a.timestamp) - Date.parse(b.timestamp));
+      const posts = (await getRecentPosts(account.username, instagramToken.value()))
+        .sort((a, b) => Date.parse(a.timestamp) - Date.parse(b.timestamp));
 
       for (const post of posts) {
         const createdAt = Date.parse(post.timestamp || "");
