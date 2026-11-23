@@ -18,8 +18,8 @@ export const OFFICIAL_SOURCES = [
 
 function htmlToText(html) {
   return String(html || "")
-    .replace(/<(script|style|noscript|svg)[^>]*>[\\s\\S]*?<\\/\\1>/gi, " ")
-    .replace(/<\\/(p|li|div|section|article|tr|h[1-6]|br|header|footer|main|td|th)>/gi, "\\n")
+    .replace(/<(script|style|noscript|svg)[^>]*>[\s\S]*?<\/\1>/gi, " ")
+    .replace(/<\/(p|li|div|section|article|tr|h[1-6]|br|header|footer|main|td|th)>/gi, "\n")
     .replace(/<[^>]+>/g, " ")
     .replace(/&nbsp;|&#160;/gi, " ")
     .replace(/&amp;/gi, "&")
@@ -27,9 +27,9 @@ function htmlToText(html) {
     .replace(/&#39;|&apos;/gi, "'")
     .replace(/&lt;/gi, "<")
     .replace(/&gt;/gi, ">")
-    .replace(/[ \\t]+/g, " ")
-    .replace(/\\n[ \\t]+/g, "\\n")
-    .replace(/\\n{2,}/g, "\\n")
+    .replace(/[ \t]+/g, " ")
+    .replace(/\n[ \t]+/g, "\n")
+    .replace(/\n{2,}/g, "\n")
     .trim();
 }
 
@@ -81,7 +81,7 @@ function collectEventData(html) {
     }
   }
 
-  for (const match of String(html || "").matchAll(/<script[^>]*type=["']application\\/ld\\+json["'][^>]*>([\\s\\S]*?)<\\/script>/gi)) {
+  for (const match of String(html || "").matchAll(/<script[^>]*type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi)) {
     try {
       visit(JSON.parse(match[1]));
     } catch {
@@ -115,7 +115,7 @@ function cleanHeading(value) {
     .replace(/&#39;|&apos;/gi, "'")
     .replace(/&lt;/gi, "<")
     .replace(/&gt;/gi, ">")
-    .replace(/\\s+/g, " ")
+    .replace(/\s+/g, " ")
     .trim();
 }
 
@@ -124,7 +124,7 @@ function extractHeadingLineup(html, tags = []) {
   const seen = new Set();
 
   for (const tag of tags) {
-    const pattern = new RegExp("<" + tag + "[^>]*>([\\s\\S]*?)<\\/" + tag + ">", "gi");
+    const pattern = new RegExp("<" + tag + "[^>]*>([\s\S]*?)<\/" + tag + ">", "gi");
     for (const match of String(html || "").matchAll(pattern)) {
       const artist = cleanHeading(match[1]);
       const key = artist.toLowerCase();
@@ -157,7 +157,7 @@ async function readRebirthLineup(source) {
 
       let stage = "";
       for (const heading of headings) {
-        const text = heading.text.replace(/\\s+/g, " ").trim();
+        const text = heading.text.replace(/\s+/g, " ").trim();
         if (heading.tag === "h2") {
           stage = text;
           continue;
