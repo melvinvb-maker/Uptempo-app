@@ -266,7 +266,7 @@ export async function importOfficialSites({ db, normalizeName, itemId, parseTime
       const snapshot = await ref.get();
       const oldItems = snapshot.exists ? snapshot.data().lineup || [] : [];
       const byId = new Map(oldItems
-        .filter((item) => !(item.source === "official_website" && item.sourceUrl === source.url))
+        .filter((item) => !lineup.length || !(item.source === "official_website" && item.sourceUrl === source.url))
         .map((item) => [item.id, item]));
 
       for (const item of lineup) {
@@ -309,7 +309,7 @@ export async function importOfficialSites({ db, normalizeName, itemId, parseTime
 
           const existing = Array.isArray(festival.lineup) ? festival.lineup : [];
           const retained = existing.filter((item) =>
-            item.source !== "official_website" || item.sourceUrl !== source.url
+            !lineup.length || item.source !== "official_website" || item.sourceUrl !== source.url
           );
           const importedById = new Map(retained.map((item) => [item.id, item]));
 
