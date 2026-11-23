@@ -396,6 +396,10 @@ function render() {
 
   if ($('#nextName')) $('#nextName').textContent = n ? n.name : 'Nog niets gepland';
   if ($('#nextMeta')) $('#nextMeta').textContent = n ? `${fmt(n.date)} · ${n.location || ''}` : 'Voeg je eerste festival toe';
+  if ($('#heroAction')) {
+    $('#heroAction').textContent = n ? 'Bekijk mijn festivals' : 'Festival toevoegen';
+    $('#heroAction').onclick = () => n ? switchTab('festivals') : $('#modal').classList.add('active');
+  }
 
   if ($('#totalFest')) $('#totalFest').textContent = festivals.length;
   if ($('#doneFest')) $('#doneFest').textContent = festivals.filter(f => new Date(f.date) < new Date()).length;
@@ -740,7 +744,7 @@ function renderLineup() {
       ${visible.length ? visible.map(item => `
         <div class="set-row">
           <div class="set-time">${esc(item.start || dayName(item.day) || 'Tijd volgt')}${item.end ? '<br><span class="muted">tot ' + esc(item.end) + '</span>' : ''}</div>
-          <div><div class="set-artist">${esc(item.artist || 'Artiest')}</div><div class="set-stage">${esc(item.stage || 'Podium nog niet vermeld')}</div></div>
+          <div><div class="set-artist">${esc(item.artist || 'Artiest')}</div>${item.stage ? `<div class="set-stage">${esc(item.stage)}</div>` : ''}</div>
         </div>`).join('') : '<div class="empty-state">De timetable is nog niet bekend. Zodra tijden beschikbaar zijn, verschijnen ze hier.</div>'}
     </div>
     <div style="padding:2px 4px">${source}</div>
@@ -807,6 +811,8 @@ function switchTab(tab) {
 
   const screen = $('#' + tab);
   if (screen) screen.classList.add('active');
+  const addButton = $('#openAdd');
+  if (addButton) addButton.hidden = ['lineup', 'friends', 'more', 'profile', 'leaderboard', 'stats', 'theme'].includes(tab);
 
   renderAll();
 }
