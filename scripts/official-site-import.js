@@ -8,7 +8,134 @@ export const OFFICIAL_SOURCES = [
   { festival: "Harmony of Hardcore", aliases: ["HOH"], url: "https://www.harmonyofhardcore.nl/" },
   { festival: "Snakepit", aliases: [], url: "https://www.snakepithardcore.com/" },
   { festival: "Dominator", aliases: [], url: "https://www.dominatorfestival.com/" },
-  { festival: "Annihilation", aliases: [], url: "https://www.annihilation.nl/line-up", editionYear: 2026, headingTags: ["h2"], dynamic: "headings" },
+  { festival: "Annihilation", aliases: [], url: "https://www.annihilation.nl/line-up", sourceType: "instagram", sourcePost: "https://www.instagram.com/annihilation.event/", editionYear: 2026, date: "2026-12-19", location: "Autotron, Rosmalen", staticLineup: [
+      {
+        "artist": "The Dispatcher vs Lucky Noise vs Mengers",
+        "stage": "",
+        "start": "12:00",
+        "end": "12:45",
+        "day": "Saturday"
+      },
+      {
+        "artist": "Tayka vs Invicious vs Tob-E",
+        "stage": "",
+        "start": "12:45",
+        "end": "13:30",
+        "day": "Saturday"
+      },
+      {
+        "artist": "Samynator: Mutation [Final]",
+        "stage": "",
+        "start": "13:30",
+        "end": "14:00",
+        "day": "Saturday"
+      },
+      {
+        "artist": "Conspirator vs Luxo vs D-Stroy",
+        "stage": "",
+        "start": "14:00",
+        "end": "14:45",
+        "day": "Saturday"
+      },
+      {
+        "artist": "Revealer & Kili Live",
+        "stage": "",
+        "start": "14:45",
+        "end": "15:15",
+        "day": "Saturday"
+      },
+      {
+        "artist": "Missy vs Roosterz vs Screecher",
+        "stage": "",
+        "start": "15:15",
+        "end": "16:00",
+        "day": "Saturday"
+      },
+      {
+        "artist": "Annihilation Records Live (Eraized vs Udow vs Maintrex)",
+        "stage": "",
+        "start": "16:00",
+        "end": "16:45",
+        "day": "Saturday"
+      },
+      {
+        "artist": "Akimbo: Game Over Live",
+        "stage": "",
+        "start": "16:45",
+        "end": "17:15",
+        "day": "Saturday"
+      },
+      {
+        "artist": "Noise of Aggression & Victus Live",
+        "stage": "",
+        "start": "17:15",
+        "end": "17:45",
+        "day": "Saturday"
+      },
+      {
+        "artist": "Missy & Dimma: Slopen de Tent Live [Final]",
+        "stage": "",
+        "start": "17:45",
+        "end": "18:15",
+        "day": "Saturday"
+      },
+      {
+        "artist": "MT Live [Premiere]",
+        "stage": "",
+        "start": "18:15",
+        "end": "18:45",
+        "day": "Saturday"
+      },
+      {
+        "artist": "Partyraiser vs Bössels vs TMO",
+        "stage": "",
+        "start": "18:45",
+        "end": "19:30",
+        "day": "Saturday"
+      },
+      {
+        "artist": "Aalst vs Latinity Live",
+        "stage": "",
+        "start": "19:30",
+        "end": "20:00",
+        "day": "Saturday"
+      },
+      {
+        "artist": "Maistrø & Undivided: New Live Experience [Premiere]",
+        "stage": "",
+        "start": "20:00",
+        "end": "20:30",
+        "day": "Saturday"
+      },
+      {
+        "artist": "Dark Individual: New Live Experience [Premiere]",
+        "stage": "",
+        "start": "20:30",
+        "end": "21:00",
+        "day": "Saturday"
+      },
+      {
+        "artist": "Deviation: Sonic Surge Live [Final]",
+        "stage": "",
+        "start": "21:00",
+        "end": "21:30",
+        "day": "Saturday"
+      },
+      {
+        "artist": "Satirized vs Dimma",
+        "stage": "",
+        "start": "21:30",
+        "end": "22:15",
+        "day": "Saturday"
+      },
+      {
+        "artist": "Rosbeek vs Complex",
+        "stage": "",
+        "start": "22:15",
+        "end": "23:00",
+        "day": "Saturday"
+      }
+    ] },
   { festival: "Classified", aliases: ["Classified Events"], url: "https://www.classifiedevents.nl/" },
   { festival: "Rocketfest", aliases: [], url: "https://www.rocketfest.nl/" },
   { festival: "Tmo Bday Bash", aliases: ["T.M.O. B-Day Bash", "TMO Bday Bash"], url: "https://www.willem-twee.nl/alle-activiteiten/tmo-b-day-bash" },
@@ -229,6 +356,14 @@ async function readBrowserHeadingSource(source, parseTimetable, minRows) {
 }
 
 async function readOfficialSource(source, parseTimetable, minRows) {
+  if (Array.isArray(source.staticLineup)) {
+    return {
+      lineup: source.staticLineup,
+      imageUrl: source.imageUrl || "",
+      editionYear: source.editionYear || null,
+      sourceType: source.sourceType || "official_website",
+    };
+  }
   if (source.dynamic === "rebirth") {
     const { lineup, imageUrl } = await readRebirthLineup(source);
     return { lineup, imageUrl, editionYear: source.editionYear };
@@ -286,7 +421,8 @@ export async function importOfficialSites({ db, normalizeName, itemId, parseTime
 
   for (const source of OFFICIAL_SOURCES) {
     try {
-      const { lineup, imageUrl, editionYear } = await readOfficialSource(source, parseTimetable, minRows);
+      const { lineup, imageUrl, editionYear, sourceType } = await readOfficialSource(source, parseTimetable, minRows);
+      const importedSourceType = sourceType || "official_website";
       if (!lineup.length) {
         console.log("No clear published lineup found at " + source.url);
       }
@@ -295,16 +431,16 @@ export async function importOfficialSites({ db, normalizeName, itemId, parseTime
       const snapshot = await ref.get();
       const oldItems = snapshot.exists ? snapshot.data().lineup || [] : [];
       const byId = new Map(oldItems
-        .filter((item) => !lineup.length || !(item.source === "official_website" && item.sourceUrl === source.url))
+        .filter((item) => !lineup.length || !(item.source && item.sourceUrl === source.url))
         .map((item) => [item.id, item]));
 
       for (const item of lineup) {
         const saved = {
           ...item,
           id: itemId(item),
-          source: "official_website",
+          source: importedSourceType,
           sourceUrl: source.url,
-          sourcePost: source.url,
+          sourcePost: source.sourcePost || source.url,
           sourceTimestamp: new Date().toISOString(),
           ...(editionYear ? { editionYear } : {}),
         };
@@ -315,7 +451,7 @@ export async function importOfficialSites({ db, normalizeName, itemId, parseTime
         festival: source.festival,
         aliases: source.aliases,
         lineup: [...byId.values()],
-        lineupSource: source.url,
+        lineupSource: source.sourcePost || source.url,
         lineupEditionYear: editionYear || source.editionYear || null,
         officialCatalog: true,
         imageUrl: imageUrl || source.imageUrl || snapshot.data()?.imageUrl || "",
@@ -347,9 +483,9 @@ export async function importOfficialSites({ db, normalizeName, itemId, parseTime
             const saved = {
               ...item,
               id: itemId(item),
-              source: "official_website",
+              source: importedSourceType,
               sourceUrl: source.url,
-              sourcePost: source.url,
+              sourcePost: source.sourcePost || source.url,
               sourceTimestamp: new Date().toISOString(),
               ...(editionYear ? { editionYear } : {}),
             };
@@ -358,7 +494,7 @@ export async function importOfficialSites({ db, normalizeName, itemId, parseTime
 
           await festivalDoc.ref.set({
             lineup: [...importedById.values()],
-            lineupSource: source.url,
+            lineupSource: source.sourcePost || source.url,
             lineupEditionYear: editionYear || source.editionYear || null,
             imageUrl: imageUrl || source.imageUrl || festival.imageUrl || "",
             lineupUpdatedAt: FieldValue.serverTimestamp(),
