@@ -16,6 +16,36 @@ let unsubscribeFestivals = null;
 let unsubscribeFriends = null;
 let unsubscribeFestivalLineups = null;
 let festivalLineupUpdates = [];
+let savedKeys = JSON.parse(localStorage.uptempoSavedEditions || '[]');
+function editionKey(f) {
+  return normalizeFestivalName(f.festival) + '-' + (f.date || f.lineupEditionYear || 'open');
+}
+function datedEditions() {
+  return festivalLineupUpdates.filter(f => f.officialCatalog && f.date).sort((a,b) => a.date.localeCompare(b.date));
+}
+function seasonRow(f) {
+  return '<div class="seasonRow"><div><b>'+esc(f.festival)+'</b><small>'+esc(festivalDateLabel(f))+' · '+esc(f.location)+'</small></div><button class="btn2" data-edition="'+normalizeFestivalName(f.festival)+'">Bekijk</button></div>';
+}
+function renderSeason() {
+  if (!$('#seasonAgenda') || !$('#seasonStats') || !$('#savedEditions')) return;
+  const editions = datedEditions();
+  const years = [...new Set(editions.filter(f => !festivalHasPassed(f)).map(f => f.date.slice(0,4)))];
+  $('#seasonAgenda').innerHTML = years.map(year => '<h3 class="seasonYear">'+year+'</h3>'+editions.filter(f => !festivalHasPassed(f) && f.date.startsWith(year)).map(seasonRow).join('')).join('') || 'Festivaldata worden opgehaald.';
+  const saved = editions.filter(f => savedKeys.includes(editionKey(f)));
+  $('#savedEditions').innerHTML = saved.map(seasonRow).join('') || '<button class="btn2" data-go="festivals">Kies een festival om te bewaren</button>';
+  const season = editions.filter(f => f.date.startsWith('2027'));
+  $('#seasonStats').innerHTML = '<b>'+season.length+' bevestigde edities</b>'+season.map(seasonRow).join('');
+}
+document.addEventListener('click', event => {
+  const button = event.target.closest('[data-go],[data-edition],[data-save-edition]');
+  if (!button) return;
+  if (button.dataset.go) return switchTab(button.dataset.go);
+  if (button.dataset.edition) return window.openOfficialLineup(button.dataset.edition);
+  const key = button.dataset.saveEdition;
+  savedKeys = savedKeys.includes(key) ? savedKeys.filter(k => k !== key) : [...savedKeys,key];
+  localStorage.uptempoSavedEditions = JSON.stringify(savedKeys);
+  renderAll();
+});
 let selectedLineupKey = '';
 let selectedLineupDay = 'all';
 
@@ -354,7 +384,7 @@ window.toggleGoing = async id => {
 };
 
 window.changeMonth = amount => {
-  calendarDate.setMonth(calendarDate.getMonth() + amount);
+  calendarDate = new Date(calendarDate.getFullYear(), calendarDate.getMonth() + amount, 1);
   renderCal();
 };
 
@@ -433,15 +463,15 @@ function matchesFestivalSearch(item, query) {
 }
 
 function render() {
-  const n = nextFest();
+  const n = nextFest() || datedEditions().find(f => !festivalHasPassed(f));
   const activeFestivals = festivals.filter(f => !festivalHasPassed(f));
   const archivedFestivals = festivals.filter(festivalHasPassed);
 
-  if ($('#nextName')) $('#nextName').textContent = n ? n.name : 'Nog niets gepland';
+  if ($('#nextName')) $('#nextName').textContent = n ? (n.name || n.festival) : 'Nog niets gepland';
   if ($('#nextMeta')) $('#nextMeta').textContent = n ? `${festivalDateLabel(n)} · ${n.location || ''}` : 'Voeg je eerste festival toe';
   if ($('#heroAction')) {
-    $('#heroAction').textContent = n ? 'Bekijk mijn festivals' : 'Festival toevoegen';
-    $('#heroAction').onclick = () => n ? switchTab('festivals') : $('#modal').classList.add('active');
+    $('#heroAction').textContent = n?.festival ? 'Bekijk festival' : n ? 'Bekijk mijn festivals' : 'Festival toevoegen';
+    $('#heroAction').onclick = () => n?.festival ? window.openOfficialLineup(normalizeFestivalName(n.festival)) : n ? switchTab('festivals') : $('#modal').classList.add('active');
   }
 
   if ($('#totalFest')) $('#totalFest').textContent = activeFestivals.length;
@@ -457,7 +487,7 @@ function render() {
     .sort((a, b) => new Date(a.date || '9999-12-31') - new Date(b.date || '9999-12-31'));
 
   if ($('#upcoming')) {
-    $('#upcoming').innerHTML = upcoming.map(festivalCard).join('') || '<div class="card muted">Nog geen aankomende festivals.</div>';
+    $('#upcoming').innerHTML = (upcoming.map(festivalCard).join('') + datedEditions().filter(f => !festivalHasPassed(f) && savedKeys.includes(editionKey(f))).map(seasonRow).join('')) || '<button class="btn2" data-go="festivals">Kies een festival voor mijn planning</button>';
   }
 
   const query = $('#search')?.value || '';
@@ -487,7 +517,7 @@ function renderOfficialFestivalCatalog() {
   const query = $('#search')?.value || '';
   const catalog = festivalLineupUpdates
     .filter(update => update.officialCatalog)
-    .filter(update => !catalogHasPassed(update) || (query && matchesFestivalSearch(update, query)))
+    .filter(update => query.trim() ? matchesFestivalSearch(update, query.trim()) : !catalogHasPassed(update))
     .slice()
     .sort((a, b) => new Date(a.date || '9999-12-31') - new Date(b.date || '9999-12-31') ||
       String(a.festival || '').localeCompare(String(b.festival || '')));
@@ -514,6 +544,7 @@ function renderOfficialFestivalCatalog() {
           ${lineupCount ? `${lineupCount} acts in de festivalinformatie` : 'Er is nog geen timetable beschikbaar.'}
         </div>
         <button class="btn2" onclick="openOfficialLineup('${normalizeFestivalName(update.festival)}')">Bekijk timetable</button>
+        ${update.date ? `<button class="btn2" data-save-edition="${esc(editionKey(update))}" aria-pressed="${savedKeys.includes(editionKey(update))}">${savedKeys.includes(editionKey(update)) ? "Bewaard ✓" : "Bewaar festival"}</button>` : ""}
       </div>
     `;
   }).join('') || `<div class="card muted">${query ? 'Geen festivalinformatie gevonden voor deze zoekopdracht.' : 'Er zijn nog geen actuele festivaledities beschikbaar.'}</div>`;
@@ -542,7 +573,7 @@ function lineupOptions() {
       lineup: update.lineup || [], imageUrl: update.imageUrl || '',
       lineupSource: update.lineupSource || '', isImportedCatalog: true
     }));
-  return [...personal, ...catalog];
+  return [...personal, ...catalog].sort((a,b) => (a.date || '9999').localeCompare(b.date || '9999'));
 }
 
 function getSelectedLineup() {
@@ -616,11 +647,12 @@ function renderCal() {
   `;
 
   const days = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
-  let html = '';
-
+  let html = ['ma','di','wo','do','vr','za','zo'].map(label => '<b class="weekday">'+label+'</b>').join('');
+  html += '<div></div>'.repeat((new Date(now.getFullYear(), now.getMonth(), 1).getDay()+6)%7);
+  const events = [...festivals, ...datedEditions().map(f => ({...f,name:f.festival}))];
   for (let d = 1; d <= days; d++) {
     const date = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
-    const dayFestivals = festivals.filter(f => f.date === date);
+    const dayFestivals = events.filter(f => f.date && f.date <= date && (f.dateEnd || f.date) >= date).filter((f,i,all) => all.findIndex(x => normalizeFestivalName(x.name) === normalizeFestivalName(f.name)) === i);
 
     html += `
       <div class="day">
@@ -734,7 +766,7 @@ function renderLeaderboard() {
           <div class="muted">${score} festivals</div>
         </div>
       </div>
-    `).join('') || '<div class="card muted">Nog geen leaderboard data.</div>';
+    `).join('') || '<div class="card muted">De ranglijst verschijnt zodra iemand in je groep op ‘Ik ga’ tikt.</div>';
 }
 
 function renderLineup() {
@@ -823,7 +855,7 @@ async function addLineupItem() {
 }
 
 function countdown() {
-  const n = nextFest();
+  const n = nextFest() || datedEditions().find(f => !festivalHasPassed(f));
 
   if (!n) {
     ['#cdD', '#cdH', '#cdM', '#cdS'].forEach(x => { if ($(x)) $(x).textContent = '00'; });
@@ -875,6 +907,7 @@ function renderAll() {
   renderLineup();
   renderOfficialFestivalCatalog();
   renderHomeFestivalCatalog();
+  renderSeason();
   renderTheme();
   applyTheme();
   updateFirebaseNotice();
@@ -966,13 +999,7 @@ if ($('#resetTheme')) {
   };
 }
 
-let lastTouchEnd = 0;
 
-document.addEventListener('touchend', function(event) {
-  const now = Date.now();
-  if (now - lastTouchEnd <= 300) event.preventDefault();
-  lastTouchEnd = now;
-}, { passive: false });
 
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('service-worker.js');
