@@ -8,7 +8,7 @@ export const OFFICIAL_SOURCES = [
   { festival: "Harmony of Hardcore", aliases: ["HOH"], url: "https://www.harmonyofhardcore.nl/" },
   { festival: "Snakepit", aliases: [], url: "https://www.snakepithardcore.com/" },
   { festival: "Dominator", aliases: [], url: "https://www.dominatorfestival.com/" },
-  { festival: "Annihilation", aliases: [], url: "https://www.annihilation.nl/line-up", sourceType: "instagram", sourcePost: "https://www.instagram.com/annihilation.event/", editionYear: 2026, date: "2026-12-19", location: "Autotron, Rosmalen", staticLineup: [
+  { festival: "Annihilation", aliases: [], url: "https://www.annihilation.nl/line-up", sourceType: "instagram", sourcePost: "https://www.instagram.com/annihilation.nl/", editionYear: 2026, date: "2026-12-19", location: "Autotron, Rosmalen", staticLineup: [
       {
         "artist": "The Dispatcher vs Lucky Noise vs Mengers",
         "stage": "",
