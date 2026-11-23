@@ -614,8 +614,9 @@ function renderLineup() {
 
       return `
         <div class="card">
+          ${f.imageUrl ? `<div style="height:130px;border-radius:16px;margin-bottom:12px;background:linear-gradient(180deg,rgba(0,0,0,.02),rgba(0,0,0,.38)),url('${esc(f.imageUrl)}') center/cover"></div>` : ''}
           <b>${esc(f.name)}</b>
-          <div class="muted">${f.isImportedCatalog ? esc(f.location) : `${fmt(f.date)} · ${esc(f.location || '')}`}</div>
+          <div class="muted">${f.isImportedCatalog ? `${f.date ? fmt(f.date) + ' · ' : ''}${esc(f.location)}` : `${fmt(f.date)} · ${esc(f.location || '')}`}</div>
           ${f.isImportedCatalog ? '<div class="muted" style="margin-top:6px">Automatisch bijgewerkt vanaf de officiële festivalbron</div>' : ''}
           ${sources.length ? `<div class="muted" style="margin-top:6px">Automatisch bijgewerkt via ${sources.join(' en ')}</div>` : ''}
 
