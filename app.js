@@ -241,7 +241,8 @@ function applyFestivalLineupUpdates() {
       ...festival,
       lineup: [...manualItems, ...importedItems],
       lineupSource: update.lineupSource || '',
-      lineupUpdatedAt: update.lineupUpdatedAt || null
+      lineupUpdatedAt: update.lineupUpdatedAt || null,
+      imageUrl: update.imageUrl || festival.imageUrl || ''
     };
   });
 }
@@ -373,7 +374,7 @@ function festivalCard(f) {
         height:150px;
         border-radius:18px;
         margin-bottom:12px;
-        background-image:url('${STAGE_PHOTO}');
+        background-image:linear-gradient(180deg,rgba(0,0,0,.02),rgba(0,0,0,.28)),url('${esc(f.imageUrl || STAGE_PHOTO)}');
         background-size:cover;
         background-position:center;">
       </div>
@@ -596,6 +597,7 @@ function renderLineup() {
       date: update.date || '',
       location: update.location || (update.lineupEditionYear ? `Editie ${update.lineupEditionYear}` : 'Editiejaar nog niet bevestigd'),
       lineup: update.lineup || [],
+      imageUrl: update.imageUrl || '',
       lineupSource: update.lineupSource || '',
       isImportedCatalog: true
     }));
