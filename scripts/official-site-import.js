@@ -8,7 +8,7 @@ export const OFFICIAL_SOURCES = [
   { festival: "Harmony of Hardcore", aliases: ["HOH"], url: "https://www.harmonyofhardcore.nl/" },
   { festival: "Snakepit", aliases: [], url: "https://www.snakepithardcore.com/" },
   { festival: "Dominator", aliases: [], url: "https://www.dominatorfestival.com/" },
-  { festival: "Annihilation", aliases: [], url: "https://www.annihilation.nl/line-up", editionYear: 2026, headingTags: ["h2"] },
+  { festival: "Annihilation", aliases: [], url: "https://www.annihilation.nl/line-up", editionYear: 2026, headingTags: ["h2"], dynamic: "headings" },
   { festival: "Classified", aliases: ["Classified Events"], url: "https://www.classifiedevents.nl/" },
   { festival: "Rocketfest", aliases: [], url: "https://www.rocketfest.nl/" },
   { festival: "Tmo Bday Bash", aliases: ["T.M.O. B-Day Bash", "TMO Bday Bash"], url: "https://www.willem-twee.nl/alle-activiteiten/tmo-b-day-bash" },
@@ -149,9 +149,9 @@ async function readRebirthLineup(source) {
       const url = new URL(source.url);
       url.searchParams.set("day", day.toLowerCase());
       await page.goto(url.toString(), { waitUntil: "domcontentloaded", timeout: 60000 });
-      await page.locator(".lineup h3").first().waitFor({ state: "visible", timeout: 30000 });
+      await page.waitForFunction(() => document.querySelectorAll("h2").length > 3 && document.querySelectorAll("h3").length > 20, undefined, { timeout: 30000 });
 
-      const headings = await page.locator(".lineup h2, .lineup h3").evaluateAll((nodes) =>
+      const headings = await page.locator("h2, h3").evaluateAll((nodes) =>
         nodes.map((node) => ({ tag: node.tagName.toLowerCase(), text: node.textContent.trim() }))
       );
 
@@ -175,9 +175,40 @@ async function readRebirthLineup(source) {
   }
 }
 
+async function readBrowserHeadingSource(source) {
+  const browser = await chromium.launch({ headless: true });
+  try {
+    const page = await browser.newPage();
+    await page.goto(source.url, { waitUntil: "domcontentloaded", timeout: 60000 });
+    const selector = source.headingTags.join(",");
+    await page.locator(selector).first().waitFor({ state: "visible", timeout: 30000 });
+    const names = await page.locator(selector).allTextContents();
+    const lineup = [];
+    const seen = new Set();
+
+    for (const value of names) {
+      const artist = cleanHeading(value);
+      const key = artist.toLowerCase();
+      if (!artist || artist.length < 2 || artist.length > 80) continue;
+      if (/^(line.?up|artists?|line.?up not announced|full line.?up soon|tba|hosted by|live)$/i.test(artist)) continue;
+      if (seen.has(key)) continue;
+      seen.add(key);
+      lineup.push({ artist, stage: "", start: "", end: "" });
+    }
+
+    return lineup;
+  } finally {
+    await browser.close();
+  }
+}
+
 async function readOfficialSource(source, parseTimetable, minRows) {
   if (source.dynamic === "rebirth") {
     const lineup = await readRebirthLineup(source);
+    return { lineup, editionYear: source.editionYear };
+  }
+  if (source.dynamic === "headings") {
+    const lineup = await readBrowserHeadingSource(source);
     return { lineup, editionYear: source.editionYear };
   }
 
