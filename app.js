@@ -379,7 +379,7 @@ function festivalCard(f) {
       <div class="row" style="align-items:flex-start">
         <div class="grow">
           <b style="font-size:17px">${esc(f.name)}</b>
-          <div class="muted">${fmt(f.date)} · ${esc(f.location || '')}</div>
+          <div class="muted">${festivalDateLabel(f)} · ${esc(f.location || '')}</div>
           <span class="tag ${String(f.genre || '').toLowerCase()}">${esc(f.genre || 'Uptempo')}</span>
         </div>
         <button class="btn2" onclick="removeFestival('${f.id}')" aria-label="Festival verwijderen">Wis</button>
@@ -427,7 +427,7 @@ function festivalDateLabel(item) {
 
 function matchesFestivalSearch(item, query) {
   if (!query) return true;
-  const text = [item.name, item.festival, item.location, item.genre, item.lineupEditionYear]
+  const text = [item.name, item.festival, item.location, item.genre, item.lineupEditionYear, item.date ? new Date(item.date).getFullYear() : '', item.dateEnd ? new Date(item.dateEnd).getFullYear() : '']
     .filter(Boolean).join(' ');
   return normalizeFestivalName(text).includes(normalizeFestivalName(query));
 }
