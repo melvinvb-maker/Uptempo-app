@@ -747,7 +747,7 @@ function renderOfficialFestivalCatalog() {
   const query = $('#search')?.value || '';
   const catalog = festivalLineupUpdates
     .filter(update => update.officialCatalog)
-    .filter(update => query.trim() ? matchesFestivalSearch(update, query.trim()) : !catalogHasPassed(update))
+    .filter(update => query.trim() ? matchesFestivalSearch(update, query.trim()) : update.date && !catalogHasPassed(update))
     .slice()
     .sort((a, b) => new Date(a.date || '9999-12-31') - new Date(b.date || '9999-12-31') ||
       String(a.festival || '').localeCompare(String(b.festival || '')));
@@ -782,7 +782,7 @@ function renderOfficialFestivalCatalog() {
 
 function lineupOptions() {
   const personal = festivals.map(f => ({
-    key: 'personal:' + f.id, id: f.id, name: f.name, date: f.date || '',
+    key: 'personal:' + f.id, id: f.id, name: f.name, date: f.date || '', dateEnd: f.dateEnd || '',
     location: f.location || '', imageUrl: f.imageUrl || '', lineup: f.lineup || [],
     lineupSource: f.lineupSource || '', isImportedCatalog: false
   }));
@@ -798,7 +798,7 @@ function lineupOptions() {
     }))
     .map(update => ({
       key: 'catalog:' + normalizeFestivalName(update.festival),
-      name: update.festival || 'Festival', date: update.date || '',
+      name: update.festival || 'Festival', date: update.date || '', dateEnd: update.dateEnd || '',
       location: update.location || (update.lineupEditionYear ? 'Editie ' + update.lineupEditionYear : ''),
       lineup: update.lineup || [], imageUrl: update.imageUrl || '',
       lineupSource: update.lineupSource || '', isImportedCatalog: true
@@ -845,7 +845,7 @@ function renderHomeFestivalCatalog() {
   if (!container) return;
 
   const catalog = festivalLineupUpdates
-    .filter(update => update.officialCatalog && !catalogHasPassed(update))
+    .filter(update => update.officialCatalog && update.date && !catalogHasPassed(update))
     .slice()
     .sort((a, b) => new Date(a.date || '9999-12-31') - new Date(b.date || '9999-12-31') ||
       String(a.festival || '').localeCompare(String(b.festival || '')));
@@ -1090,7 +1090,7 @@ function renderLineup() {
     seasonPicker.style.marginBottom = '8px';
     picker.before(seasonPicker);
   }
-  const allOptions = lineupOptions();
+  const allOptions = lineupOptions().filter(f => f.key === selectedLineupKey || (f.date && !festivalHasPassed(f)));
   const years = [...new Set(allOptions.map(f => f.date.slice(0,4)).filter(Boolean))].sort();
   const previousYear = seasonPicker.value;
   seasonPicker.innerHTML = '<option value="">Alle jaren</option>' + years.map(year => '<option>'+esc(year)+'</option>').join('');
@@ -1238,6 +1238,7 @@ if ($('.tabs')) {
   $('.tabs').onclick = e => {
     const b = e.target.closest('.tab');
     if (!b) return;
+    if (b.dataset.tab === 'lineup') selectedLineupKey = '';
     switchTab(b.dataset.tab);
   };
 }
