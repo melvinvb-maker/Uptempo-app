@@ -1,0 +1,35 @@
+    match /uptempoChats/{room} {
+      function memberAccount() {
+        return request.auth != null && request.auth.token.firebase.sign_in_provider == 'password';
+      }
+      function participant() {
+        return memberAccount() && request.auth.uid in resource.data.members;
+      }
+      allow read: if participant();
+      allow create: if memberAccount()
+        && request.resource.data.keys().hasOnly(['members','from','state','label'])
+        && request.resource.data.from == request.auth.uid
+        && request.resource.data.state == 'pending'
+        && request.resource.data.label is string && request.resource.data.label.size() <= 60
+        && request.resource.data.members is list && request.resource.data.members.size() == 2
+        && request.auth.uid in request.resource.data.members
+        && request.resource.data.members[0] != request.resource.data.members[1]
+        && room == request.resource.data.members[0] + ':' + request.resource.data.members[1];
+      allow update: if participant() && resource.data.state == 'pending'
+        && request.auth.uid != resource.data.from
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['state','replyLabel'])
+        && request.resource.data.state == 'accepted'
+        && request.resource.data.replyLabel is string && request.resource.data.replyLabel.size() <= 60;
+      allow delete: if participant() && resource.data.state == 'pending';
+      match /messages/{message} {
+        function accepted() {
+          let chat = get(/databases/$(database)/documents/uptempoChats/$(room)).data;
+          return memberAccount() && request.auth.uid in chat.members && chat.state == 'accepted';
+        }
+        allow read: if accepted();
+        allow create: if accepted() && request.resource.data.keys().hasOnly(['text','from','at'])
+          && request.resource.data.from == request.auth.uid && request.resource.data.at == request.time
+          && request.resource.data.text is string && request.resource.data.text.size() > 0
+          && request.resource.data.text.size() <= 2000;
+      }
+    }

@@ -8,7 +8,6 @@ let friends = JSON.parse(localStorage.friends || '[]');
 let profile = JSON.parse(localStorage.profile || '{"name":""}');
 let groupId = localStorage.groupId || "";
 let calendarDate = new Date();
-let theme = JSON.parse(localStorage.theme || '{}');
 
 let db = null;
 let uid = null;
@@ -286,32 +285,6 @@ function save() {
   localStorage.groupId = groupId;
 }
 
-function applyTheme() {
-  if (theme.bg) document.documentElement.style.setProperty('--bg', theme.bg);
-  if (theme.card) document.documentElement.style.setProperty('--card', theme.card);
-  if (theme.accent) document.documentElement.style.setProperty('--pink', theme.accent);
-  if (theme.purple) document.documentElement.style.setProperty('--purple', theme.purple);
-
-  if (theme.card) {
-    document.querySelectorAll('.card,.stat,.sheet').forEach(el => {
-      el.style.background = theme.card;
-    });
-  }
-
-  if (theme.bg) {
-    document.body.style.background =
-      `radial-gradient(circle at 20% 0%, ${theme.purple || '#30105c'} 0, ${theme.bg} 35%, #05050b 100%)`;
-  }
-}
-
-function renderTheme() {
-  if (!$('#themeBg')) return;
-  $('#themeBg').value = theme.bg || '#090913';
-  $('#themeCard').value = theme.card || '#151522';
-  $('#themeAccent').value = theme.accent || '#ff2fb3';
-  $('#themePurple').value = theme.purple || '#8b35ff';
-}
-
 function launchConfetti() {
   const emojis = ['🎉','🎊','✨','💜','🎵'];
 
@@ -355,9 +328,17 @@ async function initFirebase() {
     db = getFirestore(app);
     const auth = getAuth(app);
 
-    await signInAnonymously(auth);
+    await auth.authStateReady();
+    if (!auth.currentUser) await signInAnonymously(auth);
+    const {setupAccount} = await import('./social/account.js');
+    setupAccount(auth,db);
 
     onAuthStateChanged(auth, user => {
+      if (!user) {
+        uid = null;
+        unsubscribeFestivals?.(); unsubscribeFriends?.(); unsubscribeFestivalLineups?.();
+        return;
+      }
       if (user) {
         uid = user.uid;
         updateFirebaseNotice();
@@ -1227,8 +1208,8 @@ function renderAll() {
   renderOfficialFestivalCatalog();
   renderHomeFestivalCatalog();
   renderSeason();
-  renderTheme();
-  applyTheme();
+
+
   updateFirebaseNotice();
 }
 
@@ -1296,28 +1277,7 @@ if ($('#addFriend')) {
 
 if ($('#addLineup')) $('#addLineup').onclick = addLineupItem;
 
-if ($('#saveTheme')) {
-  $('#saveTheme').onclick = () => {
-    theme = {
-      bg: $('#themeBg').value,
-      card: $('#themeCard').value,
-      accent: $('#themeAccent').value,
-      purple: $('#themePurple').value
-    };
 
-    localStorage.theme = JSON.stringify(theme);
-    applyTheme();
-    alert('Thema opgeslagen.');
-  };
-}
-
-if ($('#resetTheme')) {
-  $('#resetTheme').onclick = () => {
-    localStorage.removeItem('theme');
-    theme = {};
-    location.reload();
-  };
-}
 
 
 
@@ -1327,6 +1287,5 @@ if ('serviceWorker' in navigator) {
 
 setInterval(countdown, 1000);
 
-applyTheme();
 renderAll();
 initFirebase();
