@@ -368,11 +368,14 @@ function festivalCard(f) {
   const going = f.going || [];
   const myName = profile.name || 'Anoniem';
   const iAmGoing = going.includes(myName);
-  const image = f.imageUrl || STAGE_PHOTO;
+  const coverInitials = String(f.name || 'UP').split(/\\s+/).slice(0, 2).map(part => part[0]).join('').toUpperCase();
+  const cover = f.imageUrl
+    ? `<div class="festival-cover" style="background-image:linear-gradient(0deg,rgba(7,10,14,.72),transparent 68%),url('${esc(f.imageUrl)}')"></div>`
+    : `<div class="festival-cover no-image"><span>${esc(coverInitials)}</span></div>`;
 
   return `
     <article class="card">
-      <div class="festival-cover" style="background-image:linear-gradient(0deg,rgba(7,10,14,.72),transparent 68%),url('${esc(image)}')"></div>
+      ${cover}
       <div class="row" style="align-items:flex-start">
         <div class="grow">
           <b style="font-size:17px">${esc(f.name)}</b>
@@ -717,8 +720,10 @@ function renderLineup() {
   );
   const days = [...new Set(lineup.map(item => item.day).filter(Boolean))];
   if (selectedLineupDay !== 'all' && !days.includes(selectedLineupDay)) selectedLineupDay = 'all';
-  const visible = selectedLineupDay === 'all' ? lineup : lineup.filter(item => item.day === selectedLineupDay);
-  const image = selected.imageUrl || STAGE_PHOTO;
+  const dayLineup = selectedLineupDay === 'all' ? lineup : lineup.filter(item => item.day === selectedLineupDay);
+  const searchText = ($('#lineupSearch')?.value || '').trim().toLowerCase();
+  const visible = dayLineup.filter(item => `${item.artist || ''} ${item.stage || ''}`.toLowerCase().includes(searchText));
+  const image = selected.imageUrl || '';
   const source = selected.lineupSource
     ? `<a class="source-link" href="${esc(selected.lineupSource)}" target="_blank" rel="noopener noreferrer">Bekijk bron ↗</a>`
     : '';
@@ -745,7 +750,7 @@ function renderLineup() {
         <div class="set-row">
           <div class="set-time">${esc(item.start || dayName(item.day) || 'Tijd volgt')}${item.end ? '<br><span class="muted">tot ' + esc(item.end) + '</span>' : ''}</div>
           <div><div class="set-artist">${esc(item.artist || 'Artiest')}</div>${item.stage ? `<div class="set-stage">${esc(item.stage)}</div>` : ''}</div>
-        </div>`).join('') : '<div class="empty-state">De timetable is nog niet bekend. Zodra tijden beschikbaar zijn, verschijnen ze hier.</div>'}
+        </div>`).join('') : lineup.length ? '<div class="empty-state">Geen acts gevonden bij deze zoekopdracht.</div>' : '<div class="empty-state">De timetable is nog niet bekend. Zodra tijden beschikbaar zijn, verschijnen ze hier.</div>'}
     </div>
     <div style="padding:2px 4px">${source}</div>
   `;
@@ -871,6 +876,7 @@ if ($('#saveFestival')) {
 }
 
 if ($('#search')) $('#search').oninput = render;
+if ($('#lineupSearch')) $('#lineupSearch').oninput = renderLineup;
 
 if ($('#saveProfile')) {
   $('#saveProfile').onclick = async () => {
