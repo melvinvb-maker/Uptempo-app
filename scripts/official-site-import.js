@@ -194,7 +194,7 @@ async function readRebirthLineup(source) {
   }
 }
 
-async function readBrowserHeadingSource(source) {
+async function readBrowserHeadingSource(source, parseTimetable, minRows) {
   const browser = await chromium.launch({ headless: true });
   try {
     const page = await browser.newPage();
@@ -202,6 +202,12 @@ async function readBrowserHeadingSource(source) {
     const selector = source.headingTags.join(",");
     const imageUrl = await page.locator('meta[property="og:image"]').getAttribute("content").catch(() => "");
     await page.locator(selector).first().waitFor({ state: "visible", timeout: 30000 });
+    const pageText = await page.locator("body").innerText();
+    const timetableRows = parseTimetable ? parseTimetable(pageText) : [];
+    if (timetableRows.length >= minRows) {
+      return { lineup: timetableRows, imageUrl };
+    }
+
     const names = await page.locator(selector).allTextContents();
     const lineup = [];
     const seen = new Set();
@@ -228,7 +234,7 @@ async function readOfficialSource(source, parseTimetable, minRows) {
     return { lineup, imageUrl, editionYear: source.editionYear };
   }
   if (source.dynamic === "headings") {
-    const { lineup, imageUrl } = await readBrowserHeadingSource(source);
+    const { lineup, imageUrl } = await readBrowserHeadingSource(source, parseTimetable, minRows);
     return { lineup, imageUrl, editionYear: source.editionYear };
   }
 
