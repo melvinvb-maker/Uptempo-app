@@ -2,7 +2,7 @@
 
 De scheduled functie controleert elke dinsdag om 09.00 uur Nederlandse tijd openbare Instagram-posts van opgegeven festivalaccounts. Ze gebruikt Meta Business Discovery om posts te lezen en de OpenAI API om duidelijke line-up- en timetablegegevens uit captions en afbeeldingen te halen.
 
-De functie schrijft alleen updates met een hoge extractie-score naar bestaande festivaldocumenten in `groups/{groupId}/festivals`. Handmatig ingevoerde artiesten blijven staan. Geïmporteerde regels worden bijgewerkt of vervangen wanneer een post expliciet een complete timetable bevat. De bestaande app ontvangt de wijziging via de Firestore-listener.
+De functie schrijft alleen updates met een hoge extractie-score naar bestaande festivaldocumenten in `groups/{groupId}/festivals`. Handmatig ingevoerde artiesten blijven staan. Geïmporteerde regels worden bijgewerkt als tijden veranderen. Bestaande geïmporteerde regels worden alleen vervangen als een post duidelijk de complete timetable voor het hele festival laat zien. Handmatige regels blijven staan. De bestaande app ontvangt de wijziging via de Firestore-listener.
 
 ## Nodig voordat je dit uitrolt
 
@@ -10,7 +10,7 @@ De functie schrijft alleen updates met een hoge extractie-score naar bestaande f
 - Een Meta access token voor het gekoppelde professionele account.
 - Een OpenAI API key. Het verwerken van posts kan API-kosten veroorzaken.
 - Firebase Functions ingeschakeld voor project `uptempo-43116`. Firebase kan voor geplande functies een betaalde Blaze-configuratie vereisen.
-- De festivalgebruiker moet in UPTEMPO een groep gebruiken en daarin een festival met een overeenkomende naam hebben opgeslagen.
+- De app moet in Firestore leesrechten krijgen op de nieuwe collectie `festivalLineups`. Voeg de volgende regel toe binnen de bestaande `match /databases/{database}/documents`-sectie in Firestore Rules. Behoud de overige bestaande regels.\n\n```text\nmatch /festivalLineups/{festivalId} {\n  allow read: if request.auth != null;\n  allow write: if false;\n}\n```\n\nGebruikers kunnen alleen lezen. De geplande functie schrijft met de Firebase Admin SDK. De bestaande app moet Firebase-anoniem inloggen.\n- De festivalgebruiker moet in UPTEMPO een festival met een overeenkomende naam of ingestelde alias hebben opgeslagen. Dat mag lokaal of in een groep zijn.
 
 Instagram stories en videobeelden worden niet verwerkt. De importer scant recente feedposts en carouselafbeeldingen. Data uit posts wordt direct opgeslagen zonder handmatige goedkeuring.
 
@@ -36,7 +36,7 @@ De waarde van `INSTAGRAM_ACCOUNTS_JSON` is een JSON-array met voor elk festival 
 ]
 ```
 
-Vul hier de echte officiële accountnamen in. De import slaat een post over als de herkende festivalnaam niet overeenkomt met de ingestelde festivalnaam of alias.
+Vul voor alle twaalf festivals de juiste openbare professionele Instagram-gebruikersnamen in en controleer de aliases. De import slaat een post over als de herkende festivalnaam niet overeenkomt met de ingestelde festivalnaam of alias. Instagram Business Discovery en beeldherkenning zijn externe diensten. Meta-toegang kan goedkeuring vereisen. OpenAI API-gebruik en Firebase Functions/Cloud Scheduler kunnen kosten veroorzaken. De functie is nog niet uitgerold en er worden nog geen kosten gemaakt.
 
 ## Uitrollen
 
