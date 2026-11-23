@@ -586,6 +586,8 @@ function dayName(value) {
 }
 
 window.openOfficialLineup = slug => {
+  if ($('#timetableYear')) $('#timetableYear').value = '';
+  $('#lineupSearch').value = '';
   const update = festivalLineupUpdates.find(item => normalizeFestivalName(item.festival) === slug);
   const personal = update && festivals.find(festival => {
     const matches = [update.festival, ...(update.aliases || [])].some(name => normalizeFestivalName(name) === normalizeFestivalName(festival.name));
@@ -599,6 +601,8 @@ window.openOfficialLineup = slug => {
 };
 
 window.openFestivalLineup = id => {
+  if ($('#timetableYear')) $('#timetableYear').value = '';
+  $('#lineupSearch').value = '';
   selectedLineupKey = 'personal:' + id;
   selectedLineupDay = 'all';
   switchTab('lineup');
@@ -774,7 +778,21 @@ function renderLineup() {
   const container = $('#lineupList');
   if (!picker || !container) return;
 
-  const options = lineupOptions();
+  let seasonPicker = $('#timetableYear');
+  if (!seasonPicker) {
+    seasonPicker = document.createElement('select');
+    seasonPicker.id = 'timetableYear';
+    seasonPicker.setAttribute('aria-label','Filter timetable op jaar');
+    seasonPicker.style.marginBottom = '8px';
+    picker.before(seasonPicker);
+  }
+  const allOptions = lineupOptions();
+  const years = [...new Set(allOptions.map(f => f.date.slice(0,4)).filter(Boolean))].sort();
+  const previousYear = seasonPicker.value;
+  seasonPicker.innerHTML = '<option value="">Alle jaren</option>' + years.map(year => '<option>'+esc(year)+'</option>').join('');
+  seasonPicker.value = years.includes(previousYear) ? previousYear : '';
+  seasonPicker.onchange = () => { selectedLineupKey = ''; selectedLineupDay = 'all'; renderLineup(); };
+  const options = allOptions.filter(f => !seasonPicker.value || f.date.startsWith(seasonPicker.value));
   if (!options.some(f => f.key === selectedLineupKey)) selectedLineupKey = options[0]?.key || '';
   picker.innerHTML = options.map(f => `<option value="${esc(f.key)}">${esc(f.name)}${f.date ? ' · ' + esc(fmt(f.date)) : ''}</option>`).join('')
     || '<option value="">Geen festivals beschikbaar</option>';
