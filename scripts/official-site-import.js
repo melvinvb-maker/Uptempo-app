@@ -1,13 +1,14 @@
+import { chromium } from "playwright";
 import { FieldValue } from "firebase-admin/firestore";
 
 export const OFFICIAL_SOURCES = [
-  { festival: "Rebirth", aliases: ["REBiRTH Festival"], url: "https://www.rebirth-festival.nl/en/line-up/" },
+  { festival: "Rebirth", aliases: ["REBiRTH Festival"], url: "https://www.rebirth-festival.nl/en/line-up/", editionYear: 2027, dynamic: "rebirth" },
   { festival: "Rebellion", aliases: ["REBELLiON Outdoor"], url: "https://rebellionoutdoor.nl/" },
   { festival: "Intents", aliases: ["Intents Festival"], url: "https://www.intentsfestival.nl/" },
   { festival: "Harmony of Hardcore", aliases: ["HOH"], url: "https://www.harmonyofhardcore.nl/" },
   { festival: "Snakepit", aliases: [], url: "https://www.snakepithardcore.com/" },
   { festival: "Dominator", aliases: [], url: "https://www.dominatorfestival.com/" },
-  { festival: "Annihilation", aliases: [], url: "https://www.annihilation.nl/line-up" },
+  { festival: "Annihilation", aliases: [], url: "https://www.annihilation.nl/line-up", editionYear: 2026, headingTags: ["h2"] },
   { festival: "Classified", aliases: ["Classified Events"], url: "https://www.classifiedevents.nl/" },
   { festival: "Rocketfest", aliases: [], url: "https://www.rocketfest.nl/" },
   { festival: "Tmo Bday Bash", aliases: ["T.M.O. B-Day Bash", "TMO Bday Bash"], url: "https://www.willem-twee.nl/alle-activiteiten/tmo-b-day-bash" },
@@ -17,8 +18,8 @@ export const OFFICIAL_SOURCES = [
 
 function htmlToText(html) {
   return String(html || "")
-    .replace(/<(script|style|noscript|svg)[^>]*>[\s\S]*?<\/\1>/gi, " ")
-    .replace(/<\/(p|li|div|section|article|tr|h[1-6]|br|header|footer|main|td|th)>/gi, "\n")
+    .replace(/<(script|style|noscript|svg)[^>]*>[\\s\\S]*?<\\/\\1>/gi, " ")
+    .replace(/<\\/(p|li|div|section|article|tr|h[1-6]|br|header|footer|main|td|th)>/gi, "\\n")
     .replace(/<[^>]+>/g, " ")
     .replace(/&nbsp;|&#160;/gi, " ")
     .replace(/&amp;/gi, "&")
@@ -26,9 +27,9 @@ function htmlToText(html) {
     .replace(/&#39;|&apos;/gi, "'")
     .replace(/&lt;/gi, "<")
     .replace(/&gt;/gi, ">")
-    .replace(/[ \t]+/g, " ")
-    .replace(/\n[ \t]+/g, "\n")
-    .replace(/\n{2,}/g, "\n")
+    .replace(/[ \\t]+/g, " ")
+    .replace(/\\n[ \\t]+/g, "\\n")
+    .replace(/\\n{2,}/g, "\\n")
     .trim();
 }
 
@@ -80,7 +81,7 @@ function collectEventData(html) {
     }
   }
 
-  for (const match of String(html || "").matchAll(/<script[^>]*type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi)) {
+  for (const match of String(html || "").matchAll(/<script[^>]*type=["']application\\/ld\\+json["'][^>]*>([\\s\\S]*?)<\\/script>/gi)) {
     try {
       visit(JSON.parse(match[1]));
     } catch {
@@ -105,7 +106,81 @@ function chooseCurrentEvent(events) {
   return dated[0] || events[0];
 }
 
+function cleanHeading(value) {
+  return String(value || "")
+    .replace(/<[^>]+>/g, " ")
+    .replace(/&amp;/gi, "&")
+    .replace(/&nbsp;|&#160;/gi, " ")
+    .replace(/&quot;/gi, '"')
+    .replace(/&#39;|&apos;/gi, "'")
+    .replace(/&lt;/gi, "<")
+    .replace(/&gt;/gi, ">")
+    .replace(/\\s+/g, " ")
+    .trim();
+}
+
+function extractHeadingLineup(html, tags = []) {
+  const items = [];
+  const seen = new Set();
+
+  for (const tag of tags) {
+    const pattern = new RegExp("<" + tag + "[^>]*>([\\s\\S]*?)<\\/" + tag + ">", "gi");
+    for (const match of String(html || "").matchAll(pattern)) {
+      const artist = cleanHeading(match[1]);
+      const key = artist.toLowerCase();
+      if (!artist || artist.length < 2 || artist.length > 80) continue;
+      if (/^(line.?up|artists?|line.?up not announced|full line.?up soon|tba|hosted by|live)$/i.test(artist)) continue;
+      if (seen.has(key)) continue;
+      seen.add(key);
+      items.push({ artist, stage: "", start: "", end: "" });
+    }
+  }
+
+  return items;
+}
+
+async function readRebirthLineup(source) {
+  const browser = await chromium.launch({ headless: true });
+  try {
+    const page = await browser.newPage();
+    const lineup = [];
+
+    for (const day of ["Friday", "Saturday", "Sunday"]) {
+      const url = new URL(source.url);
+      url.searchParams.set("day", day.toLowerCase());
+      await page.goto(url.toString(), { waitUntil: "domcontentloaded", timeout: 60000 });
+      await page.locator(".lineup h3").first().waitFor({ state: "visible", timeout: 30000 });
+
+      const headings = await page.locator(".lineup h2, .lineup h3").evaluateAll((nodes) =>
+        nodes.map((node) => ({ tag: node.tagName.toLowerCase(), text: node.textContent.trim() }))
+      );
+
+      let stage = "";
+      for (const heading of headings) {
+        const text = heading.text.replace(/\\s+/g, " ").trim();
+        if (heading.tag === "h2") {
+          stage = text;
+          continue;
+        }
+        if (heading.tag !== "h3" || !text || text.length > 100) continue;
+        if (/^(line.?up|no results found|the full line.?up is now online)/i.test(text)) continue;
+
+        lineup.push({ artist: text, stage, day, start: "", end: "" });
+      }
+    }
+
+    return lineup;
+  } finally {
+    await browser.close();
+  }
+}
+
 async function readOfficialSource(source, parseTimetable, minRows) {
+  if (source.dynamic === "rebirth") {
+    const lineup = await readRebirthLineup(source);
+    return { lineup, editionYear: source.editionYear };
+  }
+
   const response = await fetch(source.url, {
     headers: { "user-agent": "UPTEMPO-festival-import/1.0" },
     signal: AbortSignal.timeout(20000),
@@ -115,23 +190,33 @@ async function readOfficialSource(source, parseTimetable, minRows) {
   const html = await response.text();
   const timetable = parseTimetable(htmlToText(html));
   const uniqueTimes = new Set(timetable.map((item) => item.start));
+  const event = chooseCurrentEvent(collectEventData(html));
+
   if (timetable.length >= minRows && uniqueTimes.size >= 3) {
-    const event = chooseCurrentEvent(collectEventData(html));
     return {
       lineup: timetable,
-      editionYear: event?.date?.getFullYear() || null,
+      editionYear: source.editionYear || event?.date?.getFullYear() || null,
     };
   }
 
-  const event = chooseCurrentEvent(collectEventData(html));
+  if (source.headingTags?.length) {
+    const headingLineup = extractHeadingLineup(html, source.headingTags);
+    if (headingLineup.length >= minRows) {
+      return {
+        lineup: headingLineup,
+        editionYear: source.editionYear || event?.date?.getFullYear() || null,
+      };
+    }
+  }
+
   if (event && event.names.length >= minRows) {
     return {
       lineup: event.names.map((artist) => ({ artist, stage: "", start: "", end: "" })),
-      editionYear: event.date?.getFullYear() || null,
+      editionYear: source.editionYear || event.date?.getFullYear() || null,
     };
   }
 
-  return { lineup: [], editionYear: event?.date?.getFullYear() || null };
+  return { lineup: [], editionYear: source.editionYear || event?.date?.getFullYear() || null };
 }
 
 export async function importOfficialSites({ db, normalizeName, itemId, parseTimetable, minRows }) {
@@ -217,6 +302,7 @@ export async function importOfficialSites({ db, normalizeName, itemId, parseTime
       }
 
       imported += 1;
+      console.log("Imported " + lineup.length + " lineup items for " + source.festival + " (" + (editionYear || "year unconfirmed") + ").");
     } catch (error) {
       console.warn("Could not read official source " + source.url + ": " + error.message);
     }
