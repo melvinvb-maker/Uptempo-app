@@ -221,11 +221,28 @@ function applyFestivalLineupUpdates() {
 
     if (!update) return festival;
 
+    const festivalYear = new Date(festival.date || '').getFullYear();
+    const lineupYear = Number(update.lineupEditionYear || 0);
+    if (lineupYear && Number.isFinite(festivalYear) && festivalYear !== lineupYear) return festival;
+
+    const hasUnversionedWebsiteData = (update.lineup || []).some(
+      item => item.source === 'official_website' && !item.editionYear
+    );
+    if (hasUnversionedWebsiteData &&
+        Number.isFinite(festivalYear) &&
+        festivalYear < new Date().getFullYear()) return festival;
+
+    const importedSources = new Set(['instagram', 'official_website']);
     const manualItems = (festival.lineup || [])
-      .filter(item => item.source !== 'instagram');
+      .filter(item => !importedSources.has(item.source));
     const importedItems = update.lineup || [];
 
-    return { ...festival, lineup: [...manualItems, ...importedItems] };
+    return {
+      ...festival,
+      lineup: [...manualItems, ...importedItems],
+      lineupSource: update.lineupSource || '',
+      lineupUpdatedAt: update.lineupUpdatedAt || null
+    };
   });
 }
 
@@ -567,10 +584,15 @@ function renderLineup() {
     festivals.map(f => {
       const lineup = f.lineup || [];
 
+      const sources = [...new Set(lineup
+        .map(item => item.source === 'official_website' ? 'officiële festivalwebsite' : item.source === 'instagram' ? 'Instagram' : '')
+        .filter(Boolean))];
+
       return `
         <div class="card">
           <b>${esc(f.name)}</b>
           <div class="muted">${fmt(f.date)} · ${esc(f.location || '')}</div>
+          ${sources.length ? `<div class="muted" style="margin-top:6px">Automatisch bijgewerkt via ${sources.join(' en ')}</div>` : ''}
 
           ${
             lineup.length
