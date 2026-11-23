@@ -475,7 +475,7 @@ export async function importOfficialSites({ db, normalizeName, itemId, parseTime
 
           const existing = Array.isArray(festival.lineup) ? festival.lineup : [];
           const retained = existing.filter((item) =>
-            !lineup.length || item.source !== "official_website" || item.sourceUrl !== source.url
+            !lineup.length || !item.source || item.sourceUrl !== source.url
           );
           const importedById = new Map(retained.map((item) => [item.id, item]));
 
