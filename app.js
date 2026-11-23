@@ -1019,6 +1019,64 @@ function renderLeaderboard() {
     `).join('') || '<div class="card muted">De ranglijst verschijnt zodra iemand in je groep op ‘Ik ga’ tikt.</div>';
 }
 
+function clockMinute(value) {
+  const match = /^(\d{1,2}):([0-5]\d)$/.exec(String(value || '').trim());
+  if (!match || Number(match[1]) > 23) return null;
+  return Number(match[1]) * 60 + Number(match[2]);
+}
+
+function stageSchedule(items, selected) {
+  const timed = items.filter(item => clockMinute(item.start) !== null);
+  const untimed = items.filter(item => clockMinute(item.start) === null);
+  const star = item => {
+    const key = setKey(selected, item);
+    const saved = favoriteSets.includes(key);
+    return '<button class="ttStar" data-set-key="'+esc(key)+'" aria-label="Favoriet: '+esc(item.artist)+'" aria-pressed="'+saved+'">'+(saved ? '★' : '☆')+'</button>';
+  };
+  const groups = [...new Set(timed.map(item => item.day || ''))];
+  const boards = groups.map(day => {
+    const rows = timed.filter(item => (item.day || '') === day);
+    const overnight = rows.some(item => clockMinute(item.start) >= 1080) &&
+      !rows.some(item => clockMinute(item.start) >= 360 && clockMinute(item.start) < 600);
+    const sets = rows.map(item => {
+      let start = clockMinute(item.start);
+      if (overnight && start < 360) start += 1440;
+      let end = clockMinute(item.end);
+      if (end !== null && end < start) end += 1440;
+      return {item,start,end: end !== null && end > start ? end : start + 1};
+    }).sort((a,b) => a.start-b.start);
+    const stages = [...new Set(sets.map(set => set.item.stage || 'Programma'))];
+    let column = 2;
+    const headers = stages.map(stage => {
+      const lanes = [];
+      const first = column;
+      sets.filter(set => (set.item.stage || 'Programma') === stage).forEach(set => {
+        let lane = lanes.findIndex(end => end <= set.start);
+        if (lane < 0) lane = lanes.length;
+        lanes[lane] = set.end;
+        set.column = first + lane;
+      });
+      column += lanes.length;
+      return '<b class="ttHead" style="grid-column:'+first+' / span '+lanes.length+';grid-row:1">'+esc(stage)+'</b>';
+    }).join('');
+    const first = Math.floor(sets[0].start/30)*30;
+    const last = Math.ceil(Math.max(...sets.map(set => set.end))/30)*30;
+    const ticks = [];
+    for (let minute=first; minute<=last; minute+=30) ticks.push(minute);
+    const points = [...new Set([...ticks,...sets.flatMap(set => [set.start,set.end])])].sort((a,b) => a-b);
+    const row = minute => points.indexOf(minute)+2;
+    const tracks = points.slice(1).map((minute,i) => 'minmax('+((minute-points[i])*2.1)+'px,auto)').join(' ');
+    const labels = ticks.map(minute => {
+      const time = String(Math.floor(minute/60)%24).padStart(2,'0')+':'+String(minute%60).padStart(2,'0');
+      return '<span class="ttTick" style="grid-row:'+row(minute)+'">'+time+'</span><i class="ttRule" style="grid-row:'+row(minute)+'"></i>';
+    }).join('');
+    const cards = sets.map(({item,start,end,column}) => '<article class="ttAct" style="grid-column:'+column+';grid-row:'+row(start)+' / '+row(end)+'"><small>'+esc(item.start)+(item.end ? ' – '+esc(item.end) : ' · eindtijd volgt')+'</small><strong>'+esc(item.artist)+'</strong>'+star(item)+'</article>').join('');
+    return (day ? '<h3>'+esc(dayName(day))+'</h3>' : '')+'<div class="ttScroll" tabindex="0" aria-label="Tijdrooster per podium"><div class="ttBoard" style="grid-template-columns:48px repeat('+(column-2)+',minmax(145px,1fr));grid-template-rows:auto '+tracks+' auto"><b class="ttHead ttClock">Tijd</b>'+headers+labels+cards+'</div></div>';
+  }).join('');
+  const pending = untimed.map(item => '<div class="ttPending"><div><strong>'+esc(item.artist)+'</strong><small>'+esc([dayName(item.day),item.stage].filter(Boolean).join(' · '))+'</small></div>'+star(item)+'</div>').join('');
+  return boards + (pending ? '<h3>Speeltijd volgt</h3>'+pending : '');
+}
+
 function renderLineup() {
   const picker = $('#lineupFestival');
   const container = $('#lineupList');
@@ -1084,13 +1142,7 @@ function renderLineup() {
       ${days.map(day => `<button class="day-chip ${selectedLineupDay === day ? 'active' : ''}" data-lineup-day="${esc(day)}">${esc(dayName(day))}</button>`).join('')}
     </div>` : ''}
     ${lineup.length ? `<button class="day-chip ${onlyFavoriteSets ? "active" : ""}" data-favorites-only aria-pressed="${onlyFavoriteSets}">Mijn favoriete acts</button>` : ""}
-    <div class="card set-list">
-      ${visible.length ? visible.map(item => `
-        <div class="set-row">
-          <div class="set-time">${esc(item.start || dayName(item.day) || 'Tijd volgt')}${item.end ? '<br><span class="muted">tot ' + esc(item.end) + '</span>' : ''}</div>
-          <div><div class="set-artist">${esc(item.artist || 'Artiest')}</div><button class="set-star" data-set-key="${esc(setKey(selected,item))}" aria-pressed="${favoriteSets.includes(setKey(selected,item))}" aria-label="Favoriet: ${esc(item.artist)}">${favoriteSets.includes(setKey(selected,item)) ? "★" : "☆"}</button>${item.stage ? `<div class="set-stage">${esc(item.stage)}</div>` : ''}</div>
-        </div>`).join('') : lineup.length ? '<div class="empty-state">Geen acts met deze filters.</div>' : '<div class="empty-state">De timetable is nog niet bekend. Zodra tijden beschikbaar zijn, verschijnen ze hier.</div>'}
-    </div>
+    ${visible.length ? stageSchedule(visible,selected) : '<div class="card empty-state">'+(lineup.length ? 'Geen acts met deze filters.' : 'De timetable is nog niet bekend.')+'</div>'}
     <div style="padding:2px 4px">${source}</div>
   `;
 
