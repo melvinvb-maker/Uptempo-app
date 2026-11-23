@@ -14,6 +14,7 @@ export const OFFICIAL_SOURCES = [
   { festival: "Tmo Bday Bash", aliases: ["T.M.O. B-Day Bash", "TMO Bday Bash"], url: "https://www.willem-twee.nl/alle-activiteiten/tmo-b-day-bash" },
   { festival: "Titanium", aliases: ["TITANIUM Festival"], url: "https://www.titaniumfestival.com/" },
   { festival: "Decibel", aliases: ["Decibel Outdoor"], url: "https://www.decibeloutdoor.com/" },
+  { festival: "Gezellige Clubtempo", aliases: ["Gezellige Clubtempo XXL"], url: "https://www.013.nl/programma/160082/gezellige-clubtempo-xxl-2026", editionYear: 2026, date: "2026-12-12", location: "013 Poppodium, Tilburg", headingTags: ["h3"] },
 ];
 
 function htmlToText(html) {
@@ -259,7 +260,6 @@ export async function importOfficialSites({ db, normalizeName, itemId, parseTime
       const { lineup, editionYear } = await readOfficialSource(source, parseTimetable, minRows);
       if (!lineup.length) {
         console.log("No clear published lineup found at " + source.url);
-        continue;
       }
 
       const ref = db.collection("festivalLineups").doc(normalizeName(source.festival));
@@ -287,7 +287,10 @@ export async function importOfficialSites({ db, normalizeName, itemId, parseTime
         aliases: source.aliases,
         lineup: [...byId.values()],
         lineupSource: source.url,
-        lineupEditionYear: editionYear,
+        lineupEditionYear: editionYear || source.editionYear || null,
+        officialCatalog: true,
+        ...(source.date ? { date: source.date } : {}),
+        ...(source.location ? { location: source.location } : {}),
         lineupUpdatedAt: FieldValue.serverTimestamp(),
       }, { merge: true });
 
