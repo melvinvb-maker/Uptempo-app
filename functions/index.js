@@ -52,6 +52,7 @@ exports.importFestivalUpdates = onSchedule(
           continue;
         }
 
+        await updateFestivalCatalogue(account, post, extracted);
         const affectedGroups = await applyLineupToGroups(account, post, extracted);
         if (affectedGroups > 0) {
           await processedRef.set({
@@ -210,6 +211,32 @@ function isUsableUpdate(update, account) {
     (!item.start || /^([01]\d|2[0-3]):[0-5]\d$/.test(item.start)) &&
     (!item.end || /^([01]\d|2[0-3]):[0-5]\d$/.test(item.end))
   );
+}
+
+async function updateFestivalCatalogue(account, post, update) {
+  const catalogueRef = db.collection("festivalLineups").doc(normalizeName(account.festival));
+  const snapshot = await catalogueRef.get();
+  const currentItems = snapshot.exists && Array.isArray(snapshot.data().lineup)
+    ? snapshot.data().lineup
+    : [];
+  const incomingItems = update.items.map((item) => ({
+    ...item,
+    id: stableId(post.id + "|" + item.artist + "|" + item.stage + "|" + item.start),
+    source: "instagram",
+    sourcePost: post.permalink || "",
+    sourceTimestamp: post.timestamp,
+  }));
+  const lineup = update.completeTimetable
+    ? incomingItems
+    : mergeLineupItems(currentItems, incomingItems);
+
+  await catalogueRef.set({
+    festival: account.festival,
+    aliases: account.aliases,
+    lineup,
+    lineupSource: post.permalink || "",
+    lineupUpdatedAt: FieldValue.serverTimestamp(),
+  }, { merge: true });
 }
 
 async function applyLineupToGroups(account, post, update) {
