@@ -578,10 +578,31 @@ function renderLineup() {
 
   $('#lineupFestival').innerHTML =
     festivals.map(f => `<option value="${f.id}">${esc(f.name)}</option>`).join('') ||
-    '<option value="">Geen festivals</option>';
+    '<option value="">Geen persoonlijke festivals</option>';
+
+  const importedCatalog = festivalLineupUpdates
+    .filter(update => Array.isArray(update.lineup) && update.lineup.length)
+    .filter(update => !festivals.some(festival => {
+      const sameName = [update.festival, ...(update.aliases || [])]
+        .some(name => normalizeFestivalName(name) === normalizeFestivalName(festival.name));
+      if (!sameName) return false;
+      const editionYear = Number(update.lineupEditionYear || 0);
+      const festivalYear = new Date(festival.date || '').getFullYear();
+      return !editionYear || festivalYear === editionYear;
+    }))
+    .map(update => ({
+      name: update.festival || 'Festival',
+      date: '',
+      location: update.lineupEditionYear ? `Editie ${update.lineupEditionYear}` : 'Editiejaar nog niet bevestigd',
+      lineup: update.lineup,
+      lineupSource: update.lineupSource || '',
+      isImportedCatalog: true
+    }));
+
+  const lineupFestivals = [...festivals, ...importedCatalog];
 
   $('#lineupList').innerHTML =
-    festivals.map(f => {
+    lineupFestivals.map(f => {
       const lineup = f.lineup || [];
 
       const sources = [...new Set(lineup
@@ -591,14 +612,15 @@ function renderLineup() {
       return `
         <div class="card">
           <b>${esc(f.name)}</b>
-          <div class="muted">${fmt(f.date)} · ${esc(f.location || '')}</div>
+          <div class="muted">${f.isImportedCatalog ? esc(f.location) : `${fmt(f.date)} · ${esc(f.location || '')}`}</div>
+          ${f.isImportedCatalog ? '<div class="muted" style="margin-top:6px">Automatisch beschikbaar vanuit de festivalcatalogus</div>' : ''}
           ${sources.length ? `<div class="muted" style="margin-top:6px">Automatisch bijgewerkt via ${sources.join(' en ')}</div>` : ''}
 
           ${
             lineup.length
               ? lineup
                   .slice()
-                  .sort((a, b) => String(a.start).localeCompare(String(b.start)))
+                  .sort((a, b) => String(a.day || '').localeCompare(String(b.day || '')) || String(a.start).localeCompare(String(b.start)))
                   .map(item => `
                     <div class="lineupItem">
                       <div><b>${esc(item.start || item.day || 'Tijd volgt')}</b>${item.end ? `<br><span class="muted">${esc(item.end)}</span>` : ''}</div>
@@ -612,7 +634,7 @@ function renderLineup() {
           }
         </div>
       `;
-    }).join('');
+    }).join('') || '<div class="card muted">Line-ups verschijnen hier automatisch zodra officiële gegevens beschikbaar zijn.</div>';
 }
 
 async function addLineupItem() {
