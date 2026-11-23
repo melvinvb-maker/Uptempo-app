@@ -382,11 +382,11 @@ function festivalCard(f) {
         <button class="btn2" onclick="removeFestival('${f.id}')" aria-label="Festival verwijderen">Wis</button>
       </div>
       <div class="row" style="justify-content:space-between;margin-top:14px;flex-wrap:wrap">
-        <button class="btn2" onclick="toggleGoing('${f.id}')">${iAmGoing ? '✅ Ik ga' : '🙋 Ik ga'}</button>
+        <button class="btn2" onclick="toggleGoing('${f.id}')">${iAmGoing ? 'Je gaat ✓' : 'Ik ga'}</button>
         <button class="btn2" onclick="openFestivalLineup('${f.id}')">♫ Timetable</button>
         <span class="muted">${going.length} gaan</span>
       </div>
-      ${going.length ? `<div class="muted" style="margin-top:10px">${going.map(name => '🙋 ' + esc(name)).join(' · ')}</div>` : ''}
+      ${going.length ? `<div class="muted" style="margin-top:10px">${going.map(esc).join(' · ')}</div>` : ''}
     </article>
   `;
 }
@@ -450,7 +450,7 @@ function renderOfficialFestivalCatalog() {
         : 'Editie nog niet bevestigd';
     const poster = update.imageUrl
       ? `<div style="height:150px;border-radius:16px;margin-bottom:12px;background:linear-gradient(180deg,rgba(0,0,0,.02),rgba(0,0,0,.38)),url('${esc(update.imageUrl)}') center/cover"></div>`
-      : `<div style="height:150px;border-radius:16px;margin-bottom:12px;background:linear-gradient(135deg,#28164a,#101a35);display:grid;place-items:center;font-size:42px">🎵</div>`;
+      : `<div style="height:150px;border-radius:16px;margin-bottom:12px;background:linear-gradient(135deg,#28164a,#101a35);display:grid;place-items:center;font-size:42px">U</div>`;
 
     return `
       <div class="card">
@@ -683,7 +683,7 @@ function renderLeaderboard() {
   $('#leaderboardList').innerHTML =
     ranking.map(([name, score], i) => `
       <div class="card row">
-        <div class="rank">${i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : i + 1}</div>
+        <div class="rank">${String(i + 1).padStart(2, '0')}</div>
         <div class="grow">
           <b>${esc(name)}</b>
           <div class="muted">${score} festivals</div>
