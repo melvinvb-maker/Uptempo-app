@@ -1,0 +1,11 @@
+{
+  "name": "uptempo-instagram-import",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "import": "node import-festivals.js"
+  },
+  "dependencies": {
+    "firebase-admin": "^13.0.0"
+  }
+}
