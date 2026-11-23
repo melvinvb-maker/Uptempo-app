@@ -1,6 +1,6 @@
 
 import * as authApi from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js';
-import {collection,doc,setDoc,updateDoc,deleteDoc,addDoc,query,where,onSnapshot,orderBy,limitToLast,serverTimestamp} from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js';
+import {getDoc,collection,doc,setDoc,updateDoc,deleteDoc,addDoc,query,where,onSnapshot,orderBy,limitToLast,serverTimestamp} from 'https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js';
 
 export function setupAccount(auth, db) {
   const el = id => document.getElementById(id);
@@ -85,7 +85,78 @@ export function setupAccount(auth, db) {
   });
   el('myFriendCode').after(copyCode);
   el('closeChat').onclick = closeChat;
+  let stopIdentity;
+  async function smallPortrait(file) {
+    const image = new Image();
+    const url = URL.createObjectURL(file);
+    try {
+      image.src = url; await image.decode();
+      const canvas = document.createElement('canvas'); canvas.width = canvas.height = 192;
+      const size = Math.min(image.naturalWidth,image.naturalHeight);
+      canvas.getContext('2d').drawImage(image,(image.naturalWidth-size)/2,(image.naturalHeight-size)/2,size,size,0,0,192,192);
+      return canvas.toDataURL('image/jpeg',0.82);
+    } finally { URL.revokeObjectURL(url); }
+  }
+  el('editIdentity').onsubmit = event => {
+    event.preventDefault();
+    run(async () => {
+      const user = auth.currentUser;
+      const name = el('handle').value.trim();
+      if (!name || !user || user.isAnonymous) return;
+      const file = el('portraitFile').files[0];
+      const patch = {name};
+      if (el('removePortrait').checked) patch.photo = '';
+      else if (file) patch.photo = await smallPortrait(file);
+      await setDoc(doc(db,'memberProfiles',user.uid),patch,{merge:true});
+      await authApi.updateProfile(user,{displayName:name});
+      el('portraitFile').value = ''; el('removePortrait').checked = false;
+      el('identityNotice').textContent = 'Profiel opgeslagen.';
+    });
+  };
+  function fillEdition() {
+    const item = new Map(window.editableEditions || []).get(el('adminEdition').value) || {};
+    for (const [id,key] of Object.entries({adminName:'festival',adminDate:'date',adminEnd:'dateEnd',adminPlace:'location',adminImage:'imageUrl'})) el(id).value = item[key] || '';
+    el('adminHide').checked = !!item.hidden;
+    el('adminSets').value = (item.lineup || []).map(row => [row.day,row.stage,row.start,row.end,row.artist].join(' | ')).join('\n');
+  }
+  function menu() {
+    const picker = el('adminEdition'), old = picker.value;
+    picker.replaceChildren(new Option('Nieuwe editie',''),...(window.editableEditions || []).map(([id,f]) => new Option(f.festival+' · '+(f.date || 'datum volgt'),id)));
+    picker.value = old;
+  }
+  window.addEventListener('catalog-ready',menu);
+  el('adminEdition').onchange = fillEdition;
+  el('catalogEditor').onsubmit = event => {
+    event.preventDefault();
+    run(async () => {
+      const date = el('adminDate').value, dateEnd = el('adminEnd').value || date;
+      const imageUrl = el('adminImage').value.trim();
+      if (dateEnd < date || (imageUrl && !/^https:\/\//i.test(imageUrl))) return el('adminNotice').textContent = 'Controleer de einddatum en de https-afbeelding.';
+      const lineup = [];
+      for (const line of el('adminSets').value.split('\n').filter(l => l.trim())) {
+        const parts = line.split('|').map(x => x.trim());
+        if (parts.length !== 5 || !parts[4] || parts.slice(2,4).some(t => t && !/^([01]\d|2[0-3]):[0-5]\d$/.test(t))) return el('adminNotice').textContent = 'Controleer de vijf velden en tijden (uu:mm) per set.';
+        const [day,stage,start,end,artist] = parts; lineup.push({day,stage,start,end,artist});
+      }
+      const id = el('adminEdition').value || crypto.randomUUID();
+      await setDoc(doc(db,'editionOverrides',id),{festival:el('adminName').value.trim(),location:el('adminPlace').value.trim(),date,dateEnd,imageUrl,lineup,hidden:el('adminHide').checked,lineupEditionYear:Number(date.slice(0,4))});
+      menu(); el('adminEdition').value = id; el('adminNotice').textContent = 'Gepubliceerd.';
+    });
+  };
   function show(user) {
+    stopIdentity?.(); window.accountPortrait = ''; window.accountName = ''; window.dispatchEvent(new Event('identity-changed'));
+    el('ownerPanel').hidden = true;
+    if (user && !user.isAnonymous) {
+      user.getIdTokenResult(true).then(token => { if (auth.currentUser?.uid === user.uid) el('ownerPanel').hidden = token.claims.uptempoOwner !== true; }).catch(()=>{});
+      stopIdentity = onSnapshot(doc(db,'memberProfiles',user.uid),snap => {
+        if (auth.currentUser?.uid !== user.uid) return;
+        const data = snap.data() || {};
+        window.accountName = data.name || user.displayName || '';
+        window.accountPortrait = /^data:image\/jpeg;base64,[A-Za-z0-9+/=]+$/.test(data.photo || '') ? data.photo : '';
+        el('handle').value = el('socialName').value = window.accountName;
+        window.dispatchEvent(new Event('identity-changed'));
+      });
+    }
     stopRooms?.(); closeChat(); el('connections').replaceChildren();
     const signed = user && !user.isAnonymous;
     el('accountForm').hidden = !!signed; el('memberTools').hidden = !signed;

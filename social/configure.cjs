@@ -28,6 +28,16 @@ async function main() {
    if ((await call(base+release.name)).rulesetName !== release.rulesetName) throw Error('Concurrent rules change');
    await call(base+release.name,'PATCH',{release:{name:release.name,rulesetName:created.name},updateMask:'rulesetName'});
  }
+ const extra = fs.readFileSync('social/profile.rules','utf8').trim();
+ if (!file.content.includes(extra)) {
+   const anchor = /match\s+\/databases\/\{database\}\/documents\s*\{/;
+   if (!anchor.test(file.content) || /match\s+\/(memberProfiles|editionOverrides|\{[^}]+=\*\*\})/.test(file.content)) throw Error('Conflicting profile rules');
+   file.content = file.content.replace(anchor,match=>match+'\n'+extra+'\n');
+   const live = await call(base+release.name);
+   const created = await call(base+project+'/rulesets','POST',{source:rules});
+   if ((await call(base+release.name)).rulesetName !== live.rulesetName) throw Error('Concurrent rules change');
+   await call(base+release.name,'PATCH',{release:{name:release.name,rulesetName:created.name},updateMask:'rulesetName'});
+ }
  console.log('Account provider and participant-only chat rules active');
 }
 main().catch(e=>{console.error(e.message);process.exitCode=1});

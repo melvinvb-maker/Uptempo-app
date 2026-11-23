@@ -436,17 +436,29 @@ function liveSync() {
   if (profile.name) saveProfileLive();
 }
 
+let rawEditions = festivalLineupUpdates;
+let editorial = new Map();
+let stopEditorial;
+function publishCatalog() {
+  const byId = new Map(rawEditions.map(item => [item.catalogKey || normalizeFestivalName(item.festival),item]));
+  for (const [id,patch] of editorial) byId.set(id,{...byId.get(id),...patch,catalogKey:id,officialCatalog:true});
+  window.editableEditions = [...byId.entries()];
+  festivalLineupUpdates = [...byId.values()].filter(item => !item.hidden);
+  applyFestivalLineupUpdates(); save(); renderAll();
+  window.dispatchEvent(new Event('catalog-ready'));
+}
 function watchFestivalLineups() {
   if (!db || !uid) return;
   if (unsubscribeFestivalLineups) unsubscribeFestivalLineups();
 
+  stopEditorial?.();
+  stopEditorial = window.fb.onSnapshot(window.fb.collection(db,'editionOverrides'), snap => {
+    editorial = new Map(snap.docs.map(d => [d.id,d.data()])); publishCatalog();
+  });
   unsubscribeFestivalLineups = window.fb.onSnapshot(
     window.fb.collection(db, 'festivalLineups'),
     snap => {
-      festivalLineupUpdates = snap.docs.map(d => d.data());
-      applyFestivalLineupUpdates();
-      save();
-      renderAll();
+      rawEditions = snap.docs.map(d => ({...d.data(),catalogKey:d.id})); publishCatalog();
     },
     error => console.warn('Festival line-up updates could not be loaded.', error)
   );
@@ -963,12 +975,19 @@ function renderGroupBox() {
 }
 
 function renderProfile() {
-  const name = profile.name || 'Naamloos';
+  const name = window.accountName || profile.name || 'Naamloos';
   const goingCount = festivals.filter(f => (f.going || []).includes(name)).length;
 
   if ($('#profileName')) $('#profileName').textContent = name;
   if ($('#profileAvatar')) $('#profileAvatar').textContent = name.slice(0, 1).toUpperCase();
   if ($('#headerAvatar')) $('#headerAvatar').textContent = name.slice(0, 1).toUpperCase();
+  for (const id of ['#profileAvatar','#headerAvatar']) {
+    const avatar = $(id);
+    if (avatar) {
+      avatar.style.backgroundImage = window.accountPortrait ? 'url('+JSON.stringify(window.accountPortrait)+')' : '';
+      if (window.accountPortrait) avatar.textContent = '';
+    }
+  }
   if ($('#profileGroup')) $('#profileGroup').textContent = groupId ? `Groep: ${groupId}` : 'Geen groep actief';
   if ($('#profileFestivalCount')) $('#profileFestivalCount').textContent = festivals.length;
   if ($('#profileGoingCount')) $('#profileGoingCount').textContent = goingCount;
@@ -1234,6 +1253,7 @@ function renderAll() {
   updateFirebaseNotice();
 }
 
+window.addEventListener('identity-changed', renderProfile);
 if ($('#headerProfile')) $('#headerProfile').onclick = () => switchTab('profile');
 
 if ($('.tabs')) {

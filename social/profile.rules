@@ -1,0 +1,7 @@
+match /memberProfiles/{uid} {
+  allow get, create, update: if request.auth != null && request.auth.uid == uid && request.auth.token.firebase.sign_in_provider == 'password';
+}
+match /editionOverrides/{edition} {
+  allow read: if request.auth != null;
+  allow write: if request.auth != null && request.auth.token.uptempoOwner == true;
+}
