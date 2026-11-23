@@ -75,7 +75,9 @@ button,input,select,textarea{font:inherit}button{cursor:pointer;color:inherit}bu
 @media(min-width:760px){.hero{min-height:410px;padding:34px}.hero-card{padding:23px}.homeFestivalGrid{grid-template-columns:repeat(3,minmax(0,1fr));gap:15px}.homeFestivalPoster{height:175px}.catalog-list{grid-template-columns:repeat(3,minmax(0,1fr))}.app{padding-bottom:125px}}
 @media(max-width:600px){.app{padding-left:15px;padding-right:15px;padding-top:calc(11px + env(safe-area-inset-top))}.hero{min-height:340px;padding:14px;border-radius:24px}.hero-card{padding:16px}.hero-card .h1{font-size:26px}.section{font-size:20px;margin-top:23px}.menuGrid{grid-template-columns:repeat(2,minmax(0,1fr))}.catalog-list{grid-template-columns:1fr}.festival-cover{height:150px}.lineup-heading h1{font-size:25px}.tabs{max-width:none;border-radius:18px 18px 0 0}.tab{font-size:9px}.set-list{padding:2px 11px}.set-row{grid-template-columns:68px minmax(0,1fr)}}
 @media(max-width:370px){.count{gap:5px}.count div{padding:8px 3px}.count b{font-size:20px}.homeFestivalGrid{grid-template-columns:1fr}.homeFestivalPoster{height:165px}.grid{gap:6px}.stat{padding:11px 4px}.tab b{font-size:18px}}
-.seasonRow{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 2px;border-bottom:1px solid var(--line)}.seasonRow small{display:block;color:var(--muted);margin-top:4px}.weekday{text-align:center;color:var(--muted);font-size:11px}.day .eventMark{color:var(--pink);font-size:10px;overflow:hidden;text-overflow:ellipsis}.seasonYear{font-size:18px;color:var(--pink);margin:20px 0 4px}.homeFestivalCardBody .btn2{min-height:40px}.screen h2{letter-spacing:-.03em}</style>
+.seasonRow{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 2px;border-bottom:1px solid var(--line)}.seasonRow small{display:block;color:var(--muted);margin-top:4px}.weekday{text-align:center;color:var(--muted);font-size:11px}.day .eventMark{color:var(--pink);font-size:10px;overflow:hidden;text-overflow:ellipsis}.seasonYear{font-size:18px;color:var(--pink);margin:20px 0 4px}.homeFestivalCardBody .btn2{min-height:40px}.screen h2{letter-spacing:-.03em}
+#homeFestivalCatalog>.section{grid-column:1/-1;margin:16px 0 0}.spotlight{position:relative;isolation:isolate;display:grid;align-content:end;min-height:clamp(255px,38vw,405px);padding:clamp(20px,4vw,44px);border-radius:24px;overflow:hidden;background:#16212c center/cover}.spotlight:before{content:"";position:absolute;inset:0;background:linear-gradient(0deg,#080d15 1%,rgba(5,10,20,.65) 40%,transparent 100%);z-index:-1}.spotlight h1{font-size:clamp(29px,5vw,56px);line-height:1.05;letter-spacing:-.045em;margin:7px 0}.spotlight p{margin:0 0 14px;color:#e3e9ef}.spotlight button{justify-self:start;width:auto}.screen{scroll-margin-top:12px}.homeFestivalCardBody b,.homeFestivalCardBody .muted{min-height:0}.homeFestivalCardBody b{font-size:17px}.homeFestivalCardBody{display:grid;align-content:start;gap:4px}.homeFestivalCardBody .btn2{margin-top:4px}.day-chip,.tab{min-height:44px}.homeFestivalPoster{aspect-ratio:16/10;height:auto}.menuTile{min-height:100px}.section{line-height:1.18}@media(prefers-reduced-motion:reduce){*,*:before,*:after{scroll-behavior:auto!important;animation:none!important;transition:none!important}}
+.set-row>div:last-child{position:relative;padding-right:44px}.set-star{position:absolute;right:0;top:50%;transform:translateY(-50%);height:44px;width:44px;border:0;background:transparent;color:var(--pink);font-size:22px}</style>
 </head>
 
 <body>
@@ -86,34 +88,9 @@ button,input,select,textarea{font:inherit}button{cursor:pointer;color:inherit}bu
     </div>
 
     <main id="dashboard" class="screen active">
-      <div class="hero">
-        <div class="hero-card">
-          <div class="label">Volgend festival</div>
-          <div id="nextName" class="h1">Nog niets gepland</div>
-          <div id="nextMeta" class="muted">Voeg je eerste festival toe</div>
-          <button class="btn2 hero-action" id="heroAction">Festival toevoegen</button>
-
-          <div class="count">
-            <div><b id="cdD">00</b><span>Dagen</span></div>
-            <div><b id="cdH">00</b><span>Uur</span></div>
-            <div><b id="cdM">00</b><span>Min</span></div>
-            <div><b id="cdS">00</b><span>Sec</span></div>
-          </div>
-        </div>
-      </div>
-
-      <div class="grid">
-        <div class="stat"><b id="totalFest">0</b><br><span class="muted">Gepland</span></div>
-        <div class="stat"><b id="doneFest">0</b><br><span class="muted">Afgelopen</span></div>
-        <div class="stat"><b id="friendCount">0</b><br><span class="muted">Vrienden</span></div>
-      </div>
-
-      <div class="section">Mijn planning</div>
-      <div id="upcoming" class="catalog-list"></div>
-
-      <div class="section">Ontdek festivals</div>
-      <div class="muted" style="margin:0 2px 12px">Bekijk de festivaldata en bewaar je favorieten.</div>
+      <div id="homeSpotlight"></div>
       <div id="homeFestivalCatalog" class="homeFestivalGrid"></div>
+      <section id="homePlans"><h2 class="section">Mijn planning</h2><div id="upcoming" class="catalog-list"></div></section>
     </main>
 
     <main id="calendar" class="screen">
@@ -134,7 +111,7 @@ button,input,select,textarea{font:inherit}button{cursor:pointer;color:inherit}bu
       <div id="festivalList" class="catalog-list"></div>
       <div id="festivalArchive" class="archive-list"></div>
       <div class="section">Ontdek festivals</div>
-      <div class="muted" style="margin:0 2px 12px">Bekijk festivalinformatie en beschikbare line-ups.</div>
+      
       <div id="officialFestivalCatalog" class="catalog-list"></div>
     </main>
 
@@ -163,9 +140,9 @@ button,input,select,textarea{font:inherit}button{cursor:pointer;color:inherit}bu
       <div class="menuGrid">
         <button class="menuTile" data-tab="profile"><b><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="3.5"/><path d="M4.5 20c.8-3.7 3.2-5.6 7.5-5.6s6.7 1.9 7.5 5.6"/></svg></b>Profiel</button>
         <button class="menuTile" data-tab="friends"><b><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3"/><path d="M3.5 19c.6-3.1 2.4-4.7 5.5-4.7 2.2 0 3.8.8 4.7 2.5"/><path d="M16 5.5a3 3 0 0 1 0 5.8M16 14c2.7.2 4.2 1.8 4.7 5"/></svg></b>Vrienden & groepen</button>
-        <button class="menuTile" data-tab="leaderboard"><b><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4h10v4.5a5 5 0 0 1-10 0V4Z"/><path d="M7 6H4v2a4 4 0 0 0 4 4M17 6h3v2a4 4 0 0 1-4 4M12 14v4m-4 2h8"/></svg></b>Leaderboard</button>
-        <button class="menuTile" data-tab="lineup"><b><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></b>Line-up</button>
-        <button class="menuTile" data-tab="stats"><b><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V11m5 9V5m5 15v-7m5 7V8"/></svg></b>Stats</button>
+        <button class="menuTile" data-tab="leaderboard"><b><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4h10v4.5a5 5 0 0 1-10 0V4Z"/><path d="M7 6H4v2a4 4 0 0 0 4 4M17 6h3v2a4 4 0 0 1-4 4M12 14v4m-4 2h8"/></svg></b>Groepsranglijst</button>
+        
+        <button class="menuTile" data-tab="stats"><b><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V11m5 9V5m5 15v-7m5 7V8"/></svg></b>Statistieken</button>
         <button class="menuTile" data-tab="theme"><b><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3a9 9 0 1 0 0 18h1.5a2 2 0 0 0 1.4-3.4 1.8 1.8 0 0 1 1.3-3.1h1A4.8 4.8 0 0 0 22 9.7C22 5.9 17.5 3 12 3Z"/><circle cx="7.5" cy="10" r=".8"/><circle cx="11" cy="7" r=".8"/><circle cx="15.5" cy="8" r=".8"/></svg></b>Thema</button>
       </div>
     </main>
@@ -191,7 +168,7 @@ button,input,select,textarea{font:inherit}button{cursor:pointer;color:inherit}bu
 </main>
 
     <main id="leaderboard" class="screen">
-      <div class="section">Leaderboard</div>
+      <div class="section">Groepsranglijst</div>
       <div class="notice">Ranking op basis van aantal festivals waar iemand op “Ik ga” staat.</div>
       <div id="leaderboardList"></div>
     <button class="btn2" data-go="friends">Naar mijn groep</button>
@@ -255,7 +232,7 @@ button,input,select,textarea{font:inherit}button{cursor:pointer;color:inherit}bu
 </main>
   </div>
 
-  <button class="fab" id="openAdd" aria-label="Festival toevoegen" title="Festival toevoegen">+</button>
+  <button class="fab" hidden id="openAdd" aria-label="Festival toevoegen" title="Festival toevoegen">+</button>
 
   <nav class="tabs" aria-label="Hoofdnavigatie">
     <button class="tab active" data-tab="dashboard"><b>⌂</b>Home</button>
