@@ -14,7 +14,7 @@ export const OFFICIAL_SOURCES = [
   { festival: "Tmo Bday Bash", aliases: ["T.M.O. B-Day Bash", "TMO Bday Bash"], url: "https://www.willem-twee.nl/alle-activiteiten/tmo-b-day-bash" },
   { festival: "Titanium", aliases: ["TITANIUM Festival"], url: "https://www.titaniumfestival.com/" },
   { festival: "Decibel", aliases: ["Decibel Outdoor"], url: "https://www.decibeloutdoor.com/" },
-  { festival: "Gezellige Clubtempo", aliases: ["Gezellige Clubtempo XXL"], url: "https://www.013.nl/programma/160082/gezellige-clubtempo-xxl-2026", editionYear: 2026, date: "2026-12-12", location: "013 Poppodium, Tilburg", headingTags: ["h3"] },
+  { festival: "Gezellige Clubtempo", aliases: ["Gezellige Clubtempo XXL"], url: "https://www.013.nl/programma/160082/gezellige-clubtempo-xxl-2026", editionYear: 2026, date: "2026-12-12", location: "013 Poppodium, Tilburg", imageUrl: "https://013.ams3.cdn.digitaloceanspaces.com/resized/main/events/_1250x680_crop_center-center_none/Gezellige-Clubtempo-Banner-01.jpg" },
 ];
 
 function htmlToText(html) {
@@ -364,6 +364,25 @@ export async function importOfficialSites({ db, normalizeName, itemId, parseTime
       console.log("Imported " + lineup.length + " lineup items for " + source.festival + " (" + (editionYear || "year unconfirmed") + ").");
     } catch (error) {
       console.warn("Could not read official source " + source.url + ": " + error.message);
+      try {
+        const ref = db.collection("festivalLineups").doc(normalizeName(source.festival));
+        const snapshot = await ref.get();
+        const previous = snapshot.exists ? snapshot.data() : {};
+        await ref.set({
+          festival: source.festival,
+          aliases: source.aliases,
+          lineup: Array.isArray(previous.lineup) ? previous.lineup : [],
+          lineupSource: source.url,
+          lineupEditionYear: source.editionYear || previous.lineupEditionYear || null,
+          officialCatalog: true,
+          imageUrl: source.imageUrl || previous.imageUrl || "",
+          ...(source.date ? { date: source.date } : {}),
+          ...(source.location ? { location: source.location } : {}),
+          lineupUpdatedAt: FieldValue.serverTimestamp(),
+        }, { merge: true });
+      } catch (catalogError) {
+        console.warn("Could not save catalog entry for " + source.festival + ": " + catalogError.message);
+      }
     }
   }
 
