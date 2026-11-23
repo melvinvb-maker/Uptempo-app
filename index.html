@@ -441,6 +441,49 @@
       .stat{padding:11px 6px}
     }
 
+
+    .homeFestivalGrid{
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:10px;
+      margin:10px 0 18px;
+    }
+    .homeFestivalCard{
+      padding:0;
+      margin:0;
+      overflow:hidden;
+      border-radius:20px;
+      background:linear-gradient(145deg,rgba(24,30,52,.98),rgba(16,20,37,.98));
+    }
+    .homeFestivalPoster{
+      height:112px;
+      background-position:center;
+      background-size:cover;
+    }
+    .homeFestivalCardBody{padding:11px}
+    .homeFestivalCardBody b{
+      display:block;
+      font-size:14px;
+      line-height:1.25;
+      min-height:35px;
+    }
+    .homeFestivalCardBody .muted{
+      display:block;
+      font-size:11px;
+      margin-top:5px;
+      min-height:26px;
+    }
+    .homeFestivalCardBody .btn2{
+      width:100%;
+      padding:8px 6px;
+      font-size:11px;
+      margin-top:9px;
+    }
+    @media (max-width:350px){
+      .homeFestivalGrid{grid-template-columns:1fr}
+      .homeFestivalPoster{height:150px}
+    }
+
   </style>
 </head>
 
@@ -474,6 +517,10 @@
 
       <div class="section">Jouw festivalzomer</div>
       <div id="upcoming"></div>
+
+      <div class="section">Ontdek festivals</div>
+      <div class="muted" style="margin:0 2px 12px">Alle uptempo-events op één plek. Line-ups en posters worden automatisch bijgewerkt.</div>
+      <div id="homeFestivalCatalog" class="homeFestivalGrid"></div>
     </main>
 
     <main id="calendar" class="screen">
