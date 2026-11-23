@@ -581,7 +581,7 @@ function renderLineup() {
     '<option value="">Geen persoonlijke festivals</option>';
 
   const importedCatalog = festivalLineupUpdates
-    .filter(update => Array.isArray(update.lineup) && update.lineup.length)
+    .filter(update => update.officialCatalog || (Array.isArray(update.lineup) && update.lineup.length))
     .filter(update => !festivals.some(festival => {
       const sameName = [update.festival, ...(update.aliases || [])]
         .some(name => normalizeFestivalName(name) === normalizeFestivalName(festival.name));
@@ -593,8 +593,9 @@ function renderLineup() {
     .map(update => ({
       name: update.festival || 'Festival',
       date: '',
-      location: update.lineupEditionYear ? `Editie ${update.lineupEditionYear}` : 'Editiejaar nog niet bevestigd',
-      lineup: update.lineup,
+      date: update.date || '',
+      location: update.location || (update.lineupEditionYear ? `Editie ${update.lineupEditionYear}` : 'Editiejaar nog niet bevestigd'),
+      lineup: update.lineup || [],
       lineupSource: update.lineupSource || '',
       isImportedCatalog: true
     }));
@@ -613,7 +614,7 @@ function renderLineup() {
         <div class="card">
           <b>${esc(f.name)}</b>
           <div class="muted">${f.isImportedCatalog ? esc(f.location) : `${fmt(f.date)} · ${esc(f.location || '')}`}</div>
-          ${f.isImportedCatalog ? '<div class="muted" style="margin-top:6px">Automatisch beschikbaar vanuit de festivalcatalogus</div>' : ''}
+          ${f.isImportedCatalog ? '<div class="muted" style="margin-top:6px">Automatisch bijgewerkt vanaf de officiële festivalbron</div>' : ''}
           ${sources.length ? `<div class="muted" style="margin-top:6px">Automatisch bijgewerkt via ${sources.join(' en ')}</div>` : ''}
 
           ${
