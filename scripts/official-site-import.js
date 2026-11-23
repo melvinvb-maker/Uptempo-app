@@ -35,7 +35,7 @@ function htmlToText(html) {
 }
 
 function getOpenGraphImage(html, baseUrl) {
-  const tags = String(html || "").match(/<meta\\b[^>]*>/gi) || [];
+  const tags = String(html || "").match(/<meta\b[^>]*>/gi) || [];
   for (const tag of tags) {
     const property = (tag.match(/(?:property|name)=["']([^"']+)["']/i) || [])[1] || "";
     if (property.toLowerCase() !== "og:image") continue;
