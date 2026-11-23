@@ -483,8 +483,42 @@ function renderOfficialFestivalCatalog() {
 window.openOfficialLineup = slug => {
   switchTab('lineup');
   const card = $('#catalog-' + slug);
-  if (card) card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  const target = card || $('#lineupList');
+  if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
 };
+
+
+function renderHomeFestivalCatalog() {
+  const container = $('#homeFestivalCatalog');
+  if (!container) return;
+
+  const catalog = festivalLineupUpdates
+    .filter(update => update.officialCatalog)
+    .slice()
+    .sort((a, b) => String(a.festival || '').localeCompare(String(b.festival || '')));
+
+  container.innerHTML = catalog.map(update => {
+    const edition = update.date
+      ? fmt(update.date)
+      : update.lineupEditionYear
+        ? `Editie ${update.lineupEditionYear}`
+        : 'Editie volgt';
+    const poster = update.imageUrl
+      ? `linear-gradient(180deg,rgba(0,0,0,.02),rgba(0,0,0,.35)),url('${esc(update.imageUrl)}')`
+      : 'linear-gradient(135deg,#28164a,#101a35)';
+
+    return `
+      <article class="card homeFestivalCard">
+        <div class="homeFestivalPoster" style="background-image:${poster}"></div>
+        <div class="homeFestivalCardBody">
+          <b>${esc(update.festival || 'Festival')}</b>
+          <span class="muted">${esc(edition)}${update.location ? ` · ${esc(update.location)}` : ''}</span>
+          <button class="btn2" onclick="openOfficialLineup('${normalizeFestivalName(update.festival)}')">Bekijk line-up</button>
+        </div>
+      </article>
+    `;
+  }).join('') || '<div class="card muted">Festivalupdates worden geladen.</div>';
+}
 
 function renderCal() {
   if (!$('#monthTitle') || !$('#calendarGrid')) return;
@@ -766,6 +800,7 @@ function renderAll() {
   renderLeaderboard();
   renderLineup();
   renderOfficialFestivalCatalog();
+  renderHomeFestivalCatalog();
   renderTheme();
   applyTheme();
   updateFirebaseNotice();
