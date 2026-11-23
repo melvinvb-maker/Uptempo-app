@@ -2,7 +2,7 @@ name: Import festival timetable
 
 on:
   schedule:
-    - cron: "15 8 * * 2"
+    - cron: "15 8 * * *"
   workflow_dispatch:
   push:
     branches:
