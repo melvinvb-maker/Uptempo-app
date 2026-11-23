@@ -9,6 +9,7 @@ on:
       - main
     paths:
       - ".github/workflows/import-festival-timetables.yml"
+      - "scripts/**"
 
 permissions:
   contents: read
@@ -42,6 +43,10 @@ jobs:
       - name: Install importer
         working-directory: scripts
         run: npm install --no-audit --no-fund
+
+      - name: Install Chromium for dynamic festival pages
+        working-directory: scripts
+        run: npx playwright install --with-deps chromium
 
       - name: Import new festival timetable posts
         working-directory: scripts
