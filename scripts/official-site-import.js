@@ -2,6 +2,389 @@ import { chromium } from "playwright";
 import { FieldValue } from "firebase-admin/firestore";
 
 export const OFFICIAL_SOURCES = [
+{
+  "festival": "Classified vs Overdrive – The Final Verdict",
+  "url": "https://www.classifiedevents.nl/events/the-final-verdict-case-reopened",
+  "date": "2026-12-27",
+  "location": "Vasim, Nijmegen",
+  "imageUrl": "https://www.classifiedevents.nl/assets/the%20final%20verdict.jpg",
+  "staticLineup": [
+    {
+      "artist": "Abaddon vs Screecher: Triplet Galore",
+      "stage": "Mainstage",
+      "day": "Sunday",
+      "start": "",
+      "end": ""
+    },
+    {
+      "artist": "Akimbo vs Eraized: The Verdict",
+      "stage": "Mainstage",
+      "day": "Sunday",
+      "start": "",
+      "end": ""
+    },
+    {
+      "artist": "Bossels LIVE",
+      "stage": "Mainstage",
+      "day": "Sunday",
+      "start": "",
+      "end": ""
+    },
+    {
+      "artist": "Damaxy & Missy: Koffiepauze",
+      "stage": "Mainstage",
+      "day": "Sunday",
+      "start": "",
+      "end": ""
+    },
+    {
+      "artist": "Dark Individual vs Deviation",
+      "stage": "Mainstage",
+      "day": "Sunday",
+      "start": "",
+      "end": ""
+    },
+    {
+      "artist": "DJ Contest",
+      "stage": "Mainstage",
+      "day": "Sunday",
+      "start": "",
+      "end": ""
+    },
+    {
+      "artist": "DMRC",
+      "stage": "Mainstage",
+      "day": "Sunday",
+      "start": "",
+      "end": ""
+    },
+    {
+      "artist": "Kemal",
+      "stage": "Mainstage",
+      "day": "Sunday",
+      "start": "",
+      "end": ""
+    },
+    {
+      "artist": "MC Robs",
+      "stage": "Mainstage",
+      "day": "Sunday",
+      "start": "",
+      "end": ""
+    },
+    {
+      "artist": "Noxiouz LIVE",
+      "stage": "Mainstage",
+      "day": "Sunday",
+      "start": "",
+      "end": ""
+    },
+    {
+      "artist": "Overdrive LIVE",
+      "stage": "Mainstage",
+      "day": "Sunday",
+      "start": "",
+      "end": ""
+    },
+    {
+      "artist": "Revealer",
+      "stage": "Mainstage",
+      "day": "Sunday",
+      "start": "",
+      "end": ""
+    },
+    {
+      "artist": "Rosbeek LIVE",
+      "stage": "Mainstage",
+      "day": "Sunday",
+      "start": "",
+      "end": ""
+    },
+    {
+      "artist": "Satirized",
+      "stage": "Mainstage",
+      "day": "Sunday",
+      "start": "",
+      "end": ""
+    },
+    {
+      "artist": "The Dark Horror vs Kili",
+      "stage": "Mainstage",
+      "day": "Sunday",
+      "start": "",
+      "end": ""
+    },
+    {
+      "artist": "ALBINO",
+      "stage": "Secondstage",
+      "day": "Sunday",
+      "start": "",
+      "end": ""
+    },
+    {
+      "artist": "Amigo",
+      "stage": "Secondstage",
+      "day": "Sunday",
+      "start": "",
+      "end": ""
+    },
+    {
+      "artist": "Amtrax vs Bounster",
+      "stage": "Secondstage",
+      "day": "Sunday",
+      "start": "",
+      "end": ""
+    },
+    {
+      "artist": "Chrizens",
+      "stage": "Secondstage",
+      "day": "Sunday",
+      "start": "",
+      "end": ""
+    },
+    {
+      "artist": "DJ Contest",
+      "stage": "Secondstage",
+      "day": "Sunday",
+      "start": "",
+      "end": ""
+    },
+    {
+      "artist": "Invicious",
+      "stage": "Secondstage",
+      "day": "Sunday",
+      "start": "",
+      "end": ""
+    },
+    {
+      "artist": "Korrupt vs Xplosiv",
+      "stage": "Secondstage",
+      "day": "Sunday",
+      "start": "",
+      "end": ""
+    },
+    {
+      "artist": "Lucky Noise",
+      "stage": "Secondstage",
+      "day": "Sunday",
+      "start": "",
+      "end": ""
+    },
+    {
+      "artist": "MC Party Never Ends",
+      "stage": "Secondstage",
+      "day": "Sunday",
+      "start": "",
+      "end": ""
+    },
+    {
+      "artist": "Mengers",
+      "stage": "Secondstage",
+      "day": "Sunday",
+      "start": "",
+      "end": ""
+    },
+    {
+      "artist": "MT",
+      "stage": "Secondstage",
+      "day": "Sunday",
+      "start": "",
+      "end": ""
+    },
+    {
+      "artist": "Mutant",
+      "stage": "Secondstage",
+      "day": "Sunday",
+      "start": "",
+      "end": ""
+    },
+    {
+      "artist": "Tayka vs Undivided",
+      "stage": "Secondstage",
+      "day": "Sunday",
+      "start": "",
+      "end": ""
+    }
+  ],
+  "editionYear": 2026,
+  "aliases": []
+},
+{
+  "festival": "REACTiVATE – The Label Edition",
+  "url": "https://www.013.nl/programma/156988/reactivate-2027",
+  "date": "2027-01-30",
+  "location": "013 Poppodium, Tilburg",
+  "imageUrl": "https://013.ams3.cdn.digitaloceanspaces.com/resized/main/events/_1250x680_crop_center-center_none/REACTiVATE-Hearder-20271030.jpg",
+  "staticLineup": [
+    {
+      "artist": "Adaro",
+      "stage": "",
+      "day": "Saturday",
+      "start": "",
+      "end": ""
+    },
+    {
+      "artist": "Alpha Twins",
+      "stage": "",
+      "day": "Saturday",
+      "start": "",
+      "end": ""
+    },
+    {
+      "artist": "Chain Reaction",
+      "stage": "",
+      "day": "Saturday",
+      "start": "",
+      "end": ""
+    },
+    {
+      "artist": "Coone",
+      "stage": "",
+      "day": "Saturday",
+      "start": "",
+      "end": ""
+    },
+    {
+      "artist": "Crypsis LIVE",
+      "stage": "",
+      "day": "Saturday",
+      "start": "",
+      "end": ""
+    },
+    {
+      "artist": "E-Force LIVE",
+      "stage": "",
+      "day": "Saturday",
+      "start": "",
+      "end": ""
+    },
+    {
+      "artist": "Luna",
+      "stage": "",
+      "day": "Saturday",
+      "start": "",
+      "end": ""
+    },
+    {
+      "artist": "Noisecontrollers LIVE",
+      "stage": "",
+      "day": "Saturday",
+      "start": "",
+      "end": ""
+    },
+    {
+      "artist": "Noisecult",
+      "stage": "",
+      "day": "Saturday",
+      "start": "",
+      "end": ""
+    },
+    {
+      "artist": "Psyko Punkz LIVE",
+      "stage": "",
+      "day": "Saturday",
+      "start": "",
+      "end": ""
+    },
+    {
+      "artist": "Zany",
+      "stage": "",
+      "day": "Saturday",
+      "start": "",
+      "end": ""
+    },
+    {
+      "artist": "The Force Italian Classics",
+      "stage": "",
+      "day": "Saturday",
+      "start": "",
+      "end": ""
+    },
+    {
+      "artist": "The Pitcher",
+      "stage": "",
+      "day": "Saturday",
+      "start": "",
+      "end": ""
+    },
+    {
+      "artist": "D-Verze",
+      "stage": "",
+      "day": "Saturday",
+      "start": "",
+      "end": ""
+    },
+    {
+      "artist": "Hardstyle Mafia",
+      "stage": "",
+      "day": "Saturday",
+      "start": "",
+      "end": ""
+    },
+    {
+      "artist": "Infirium",
+      "stage": "",
+      "day": "Saturday",
+      "start": "",
+      "end": ""
+    },
+    {
+      "artist": "Vyral vs Stratos",
+      "stage": "",
+      "day": "Saturday",
+      "start": "",
+      "end": ""
+    },
+    {
+      "artist": "Sasha F",
+      "stage": "",
+      "day": "Saturday",
+      "start": "",
+      "end": ""
+    },
+    {
+      "artist": "Mind Dimension & The Purge: 120 Minutes Closing",
+      "stage": "",
+      "day": "Saturday",
+      "start": "",
+      "end": ""
+    },
+    {
+      "artist": "MC Da Syndrome",
+      "stage": "",
+      "day": "Saturday",
+      "start": "",
+      "end": ""
+    },
+    {
+      "artist": "MC Barricade",
+      "stage": "",
+      "day": "Saturday",
+      "start": "",
+      "end": ""
+    }
+  ],
+  "editionYear": 2027,
+  "aliases": []
+},
+{
+  "festival": "Up Close with D-Block & S-te-Fan",
+  "url": "https://www.013.nl/programma/160973/up-close-with-d-block-s-te-fan",
+  "date": "2026-12-27",
+  "location": "013 Poppodium, Tilburg",
+  "imageUrl": "https://013.ams3.cdn.digitaloceanspaces.com/resized/main/events/_1250x680_crop_center-center_none/DBSTF-Banner-01.jpg",
+  "staticLineup": [
+    {
+      "artist": "D-Block & S-te-Fan",
+      "stage": "Main",
+      "day": "Sunday",
+      "start": "",
+      "end": ""
+    }
+  ],
+  "editionYear": 2026,
+  "aliases": []
+},
   { festival: "Rebirth", aliases: ["REBiRTH Festival"], url: "https://www.rebirth-festival.nl/en/line-up/", editionYear: 2027, date: "2027-04-09", dateEnd: "2027-04-11", location: "Haaren", dynamic: "rebirth" },
   { festival: "Rebellion", aliases: ["REBELLiON Outdoor"], url: "https://rebellionoutdoor.nl/" },
   { festival: "Intents", aliases: ["Intents Festival"], url: "https://www.intentsfestival.nl/", editionYear: 2027, date: "2027-06-04", dateEnd: "2027-06-06", location: "Oisterwijk" },
@@ -139,9 +522,9 @@ export const OFFICIAL_SOURCES = [
   { festival: "Classified", aliases: ["Classified Events"], url: "https://www.classifiedevents.nl/" },
   { festival: "Rocketfest", aliases: [], url: "https://www.rocketfest.nl/", imageUrl: "https://partyflock.nl/images/party/497693_1920x1080_752224/Rocketfest.jpg" },
   { festival: "Tmo Bday Bash", aliases: ["T.M.O. B-Day Bash", "TMO Bday Bash"], url: "https://www.willem-twee.nl/alle-activiteiten/tmo-b-day-bash" },
-  { festival: "Titanium", aliases: ["TITANIUM Festival"], url: "https://www.titaniumfestival.com/", editionYear: 2027, date: "2027-09-25", dateEnd: "2027-09-25", location: "Plas Middelwaard, Vianen" },
+  { imageUrl: "https://www.titaniumfestival.com/wp-content/uploads/2026/02/foto_titanium-1024x683.webp", festival: "Titanium", aliases: ["TITANIUM Festival"], url: "https://www.titaniumfestival.com/", editionYear: 2027, date: "2027-09-25", dateEnd: "2027-09-25", location: "Plas Middelwaard, Vianen" },
   { festival: "Decibel", aliases: ["Decibel Outdoor"], url: "https://www.decibeloutdoor.com/", editionYear: 2027, date: "2027-08-27", dateEnd: "2027-08-29", location: "Beekse Bergen, Hilvarenbeek", imageUrl: "https://d2oiyt60aney7e.cloudfront.net/2ck28wkq03nm/1q0ZoXBCZyt5QssHLRRsDV/41913f8ca4ba5570663f03b6a6b86501/DB25_CAMPAGNE-26_16x9.jpg" },
-  { festival: "Gezellige Clubtempo", aliases: ["Gezellige Clubtempo XXL"], url: "https://www.013.nl/programma/160082/gezellige-clubtempo-xxl-2026", editionYear: 2026, date: "2026-12-12", location: "013 Poppodium, Tilburg", imageUrl: "https://013.ams3.cdn.digitaloceanspaces.com/resized/main/events/_1250x680_crop_center-center_none/Gezellige-Clubtempo-Banner-01.jpg" },
+  { staticLineup: [{"artist":"Gezellige Uptempo: The Final Sh!t Happens XXL","stage":"","day":"Saturday","start":"","end":""},{"artist":"Gezellige Uptempo & Koffiepauze: Koffiepauze met Roze Koeken","stage":"","day":"Saturday","start":"","end":""},{"artist":"The Dark Horror vs Kemal vs Revealer: XXL Set","stage":"","day":"Saturday","start":"","end":""},{"artist":"Akimbo: Game Over","stage":"","day":"Saturday","start":"","end":""},{"artist":"Bössels vs Complex","stage":"","day":"Saturday","start":"","end":""},{"artist":"EZG LIVE","stage":"","day":"Saturday","start":"","end":""},{"artist":"Gezellige Uptempo","stage":"","day":"Saturday","start":"","end":""},{"artist":"Kili","stage":"","day":"Saturday","start":"","end":""},{"artist":"Missy & Dimma: Slopen de 013 LIVE","stage":"","day":"Saturday","start":"","end":""},{"artist":"Satirized: Neon Funfair LIVE","stage":"","day":"Saturday","start":"","end":""},{"artist":"T.M.O.: Brabantse Gezelligheid","stage":"","day":"Saturday","start":"","end":""},{"artist":"The Gezelligste DJ Contest Winner","stage":"","day":"Saturday","start":"","end":""},{"artist":"MC Barricade (host)","stage":"","day":"Saturday","start":"","end":""}], sourcePost: "https://timetable.lol/tables/gezellige_clubtempo_xxl_2026_lineup", festival: "Gezellige Clubtempo", aliases: ["Gezellige Clubtempo XXL"], url: "https://www.013.nl/programma/160082/gezellige-clubtempo-xxl-2026", editionYear: 2026, date: "2026-12-12", location: "013 Poppodium, Tilburg", imageUrl: "https://013.ams3.cdn.digitaloceanspaces.com/resized/main/events/_1250x680_crop_center-center_none/Gezellige-Clubtempo-Banner-01.jpg" },
 ];
 
 function htmlToText(html) {
@@ -298,7 +681,15 @@ async function readRebirthLineup(source) {
       await page.waitForFunction(() => document.querySelectorAll("h2").length > 3 && document.querySelectorAll("h3").length > 20, undefined, { timeout: 30000 });
 
       const headings = await page.locator("h2, h3").evaluateAll((nodes) =>
-        nodes.map((node) => ({ tag: node.tagName.toLowerCase(), text: node.textContent.trim() }))
+        nodes.map(node => {
+          let parent = node.parentElement, portrait = "";
+          for (let i=0; node.tagName === "H3" && parent && i<5; i++,parent=parent.parentElement) {
+            if (parent.querySelectorAll("h3").length !== 1) break;
+            const pictures = parent.querySelectorAll("img");
+            if (pictures.length === 1) { portrait = pictures[0].currentSrc || pictures[0].src; break; }
+          }
+          return {tag:node.tagName.toLowerCase(),text:node.textContent.trim(),portrait};
+        })
       );
 
       let stage = "";
@@ -311,7 +702,7 @@ async function readRebirthLineup(source) {
         if (heading.tag !== "h3" || !text || text.length > 100) continue;
         if (/^(line.?up|no results found|the full line.?up is now online)/i.test(text)) continue;
 
-        lineup.push({ artist: text, stage, day, start: "", end: "" });
+        lineup.push({ artist: text, stage, day, start: "", end: "", ...(heading.portrait?.startsWith("https://") ? {portrait:heading.portrait} : {}) });
       }
     }
 
@@ -462,7 +853,7 @@ export async function importOfficialSites({ db, normalizeName, itemId, parseTime
         lineupSource: source.sourcePost || source.url,
         lineupEditionYear: editionYear || source.editionYear || null,
         officialCatalog: true,
-        imageUrl: imageUrl || source.imageUrl || snapshot.data()?.imageUrl || "",
+        imageUrl: source.imageUrl || imageUrl || snapshot.data()?.imageUrl || "",
         ...(date || source.date ? { date: date || source.date } : {}),
         ...(dateEnd || source.dateEnd ? { dateEnd: dateEnd || source.dateEnd } : {}),
         ...(source.location ? { location: source.location } : {}),
@@ -505,7 +896,7 @@ export async function importOfficialSites({ db, normalizeName, itemId, parseTime
             lineup: [...importedById.values()],
             lineupSource: source.sourcePost || source.url,
             lineupEditionYear: editionYear || source.editionYear || null,
-            imageUrl: imageUrl || source.imageUrl || festival.imageUrl || "",
+            imageUrl: source.imageUrl || imageUrl || festival.imageUrl || "",
             ...(date || source.date ? { date: date || source.date } : {}),
             ...(dateEnd || source.dateEnd ? { dateEnd: dateEnd || source.dateEnd } : {}),
             lineupUpdatedAt: FieldValue.serverTimestamp(),

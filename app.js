@@ -206,7 +206,8 @@ let festivalLineupUpdates = [
     "location": "Plas Middelwaard, Vianen",
     "officialCatalog": true,
     "lineupEditionYear": 2027,
-    "lineupSource": "https://www.titaniumfestival.com/"
+    "lineupSource": "https://www.titaniumfestival.com/",
+    "imageUrl": "https://www.titaniumfestival.com/wp-content/uploads/2026/02/foto_titanium-1024x683.webp"
   },
   {
     "festival": "Decibel",
@@ -226,7 +227,486 @@ let festivalLineupUpdates = [
     "imageUrl": "https://013.ams3.cdn.digitaloceanspaces.com/resized/main/events/_1250x680_crop_center-center_none/Gezellige-Clubtempo-Banner-01.jpg",
     "officialCatalog": true,
     "lineupEditionYear": 2026,
-    "lineupSource": "https://www.013.nl/programma/160082/gezellige-clubtempo-xxl-2026"
+    "lineupSource": "https://www.013.nl/programma/160082/gezellige-clubtempo-xxl-2026",
+    "lineup": [
+      {
+        "artist": "Gezellige Uptempo: The Final Sh!t Happens XXL",
+        "stage": "",
+        "day": "Saturday",
+        "start": "",
+        "end": ""
+      },
+      {
+        "artist": "Gezellige Uptempo & Koffiepauze: Koffiepauze met Roze Koeken",
+        "stage": "",
+        "day": "Saturday",
+        "start": "",
+        "end": ""
+      },
+      {
+        "artist": "The Dark Horror vs Kemal vs Revealer: XXL Set",
+        "stage": "",
+        "day": "Saturday",
+        "start": "",
+        "end": ""
+      },
+      {
+        "artist": "Akimbo: Game Over",
+        "stage": "",
+        "day": "Saturday",
+        "start": "",
+        "end": ""
+      },
+      {
+        "artist": "Bössels vs Complex",
+        "stage": "",
+        "day": "Saturday",
+        "start": "",
+        "end": ""
+      },
+      {
+        "artist": "EZG LIVE",
+        "stage": "",
+        "day": "Saturday",
+        "start": "",
+        "end": ""
+      },
+      {
+        "artist": "Gezellige Uptempo",
+        "stage": "",
+        "day": "Saturday",
+        "start": "",
+        "end": ""
+      },
+      {
+        "artist": "Kili",
+        "stage": "",
+        "day": "Saturday",
+        "start": "",
+        "end": ""
+      },
+      {
+        "artist": "Missy & Dimma: Slopen de 013 LIVE",
+        "stage": "",
+        "day": "Saturday",
+        "start": "",
+        "end": ""
+      },
+      {
+        "artist": "Satirized: Neon Funfair LIVE",
+        "stage": "",
+        "day": "Saturday",
+        "start": "",
+        "end": ""
+      },
+      {
+        "artist": "T.M.O.: Brabantse Gezelligheid",
+        "stage": "",
+        "day": "Saturday",
+        "start": "",
+        "end": ""
+      },
+      {
+        "artist": "The Gezelligste DJ Contest Winner",
+        "stage": "",
+        "day": "Saturday",
+        "start": "",
+        "end": ""
+      },
+      {
+        "artist": "MC Barricade (host)",
+        "stage": "",
+        "day": "Saturday",
+        "start": "",
+        "end": ""
+      }
+    ]
+  },
+  {
+    "festival": "Classified vs Overdrive – The Final Verdict",
+    "officialCatalog": true,
+    "date": "2026-12-27",
+    "dateEnd": "2026-12-27",
+    "location": "Vasim, Nijmegen",
+    "imageUrl": "https://www.classifiedevents.nl/assets/the%20final%20verdict.jpg",
+    "lineup": [
+      {
+        "artist": "Abaddon vs Screecher: Triplet Galore",
+        "stage": "Mainstage",
+        "day": "Sunday",
+        "start": "",
+        "end": ""
+      },
+      {
+        "artist": "Akimbo vs Eraized: The Verdict",
+        "stage": "Mainstage",
+        "day": "Sunday",
+        "start": "",
+        "end": ""
+      },
+      {
+        "artist": "Bossels LIVE",
+        "stage": "Mainstage",
+        "day": "Sunday",
+        "start": "",
+        "end": ""
+      },
+      {
+        "artist": "Damaxy & Missy: Koffiepauze",
+        "stage": "Mainstage",
+        "day": "Sunday",
+        "start": "",
+        "end": ""
+      },
+      {
+        "artist": "Dark Individual vs Deviation",
+        "stage": "Mainstage",
+        "day": "Sunday",
+        "start": "",
+        "end": ""
+      },
+      {
+        "artist": "DJ Contest",
+        "stage": "Mainstage",
+        "day": "Sunday",
+        "start": "",
+        "end": ""
+      },
+      {
+        "artist": "DMRC",
+        "stage": "Mainstage",
+        "day": "Sunday",
+        "start": "",
+        "end": ""
+      },
+      {
+        "artist": "Kemal",
+        "stage": "Mainstage",
+        "day": "Sunday",
+        "start": "",
+        "end": ""
+      },
+      {
+        "artist": "MC Robs",
+        "stage": "Mainstage",
+        "day": "Sunday",
+        "start": "",
+        "end": ""
+      },
+      {
+        "artist": "Noxiouz LIVE",
+        "stage": "Mainstage",
+        "day": "Sunday",
+        "start": "",
+        "end": ""
+      },
+      {
+        "artist": "Overdrive LIVE",
+        "stage": "Mainstage",
+        "day": "Sunday",
+        "start": "",
+        "end": ""
+      },
+      {
+        "artist": "Revealer",
+        "stage": "Mainstage",
+        "day": "Sunday",
+        "start": "",
+        "end": ""
+      },
+      {
+        "artist": "Rosbeek LIVE",
+        "stage": "Mainstage",
+        "day": "Sunday",
+        "start": "",
+        "end": ""
+      },
+      {
+        "artist": "Satirized",
+        "stage": "Mainstage",
+        "day": "Sunday",
+        "start": "",
+        "end": ""
+      },
+      {
+        "artist": "The Dark Horror vs Kili",
+        "stage": "Mainstage",
+        "day": "Sunday",
+        "start": "",
+        "end": ""
+      },
+      {
+        "artist": "ALBINO",
+        "stage": "Secondstage",
+        "day": "Sunday",
+        "start": "",
+        "end": ""
+      },
+      {
+        "artist": "Amigo",
+        "stage": "Secondstage",
+        "day": "Sunday",
+        "start": "",
+        "end": ""
+      },
+      {
+        "artist": "Amtrax vs Bounster",
+        "stage": "Secondstage",
+        "day": "Sunday",
+        "start": "",
+        "end": ""
+      },
+      {
+        "artist": "Chrizens",
+        "stage": "Secondstage",
+        "day": "Sunday",
+        "start": "",
+        "end": ""
+      },
+      {
+        "artist": "DJ Contest",
+        "stage": "Secondstage",
+        "day": "Sunday",
+        "start": "",
+        "end": ""
+      },
+      {
+        "artist": "Invicious",
+        "stage": "Secondstage",
+        "day": "Sunday",
+        "start": "",
+        "end": ""
+      },
+      {
+        "artist": "Korrupt vs Xplosiv",
+        "stage": "Secondstage",
+        "day": "Sunday",
+        "start": "",
+        "end": ""
+      },
+      {
+        "artist": "Lucky Noise",
+        "stage": "Secondstage",
+        "day": "Sunday",
+        "start": "",
+        "end": ""
+      },
+      {
+        "artist": "MC Party Never Ends",
+        "stage": "Secondstage",
+        "day": "Sunday",
+        "start": "",
+        "end": ""
+      },
+      {
+        "artist": "Mengers",
+        "stage": "Secondstage",
+        "day": "Sunday",
+        "start": "",
+        "end": ""
+      },
+      {
+        "artist": "MT",
+        "stage": "Secondstage",
+        "day": "Sunday",
+        "start": "",
+        "end": ""
+      },
+      {
+        "artist": "Mutant",
+        "stage": "Secondstage",
+        "day": "Sunday",
+        "start": "",
+        "end": ""
+      },
+      {
+        "artist": "Tayka vs Undivided",
+        "stage": "Secondstage",
+        "day": "Sunday",
+        "start": "",
+        "end": ""
+      }
+    ],
+    "lineupEditionYear": 2026,
+    "lineupSource": "https://www.classifiedevents.nl/events/the-final-verdict-case-reopened"
+  },
+  {
+    "festival": "REACTiVATE – The Label Edition",
+    "officialCatalog": true,
+    "date": "2027-01-30",
+    "dateEnd": "2027-01-30",
+    "location": "013 Poppodium, Tilburg",
+    "imageUrl": "https://013.ams3.cdn.digitaloceanspaces.com/resized/main/events/_1250x680_crop_center-center_none/REACTiVATE-Hearder-20271030.jpg",
+    "lineup": [
+      {
+        "artist": "Adaro",
+        "stage": "",
+        "day": "Saturday",
+        "start": "",
+        "end": ""
+      },
+      {
+        "artist": "Alpha Twins",
+        "stage": "",
+        "day": "Saturday",
+        "start": "",
+        "end": ""
+      },
+      {
+        "artist": "Chain Reaction",
+        "stage": "",
+        "day": "Saturday",
+        "start": "",
+        "end": ""
+      },
+      {
+        "artist": "Coone",
+        "stage": "",
+        "day": "Saturday",
+        "start": "",
+        "end": ""
+      },
+      {
+        "artist": "Crypsis LIVE",
+        "stage": "",
+        "day": "Saturday",
+        "start": "",
+        "end": ""
+      },
+      {
+        "artist": "E-Force LIVE",
+        "stage": "",
+        "day": "Saturday",
+        "start": "",
+        "end": ""
+      },
+      {
+        "artist": "Luna",
+        "stage": "",
+        "day": "Saturday",
+        "start": "",
+        "end": ""
+      },
+      {
+        "artist": "Noisecontrollers LIVE",
+        "stage": "",
+        "day": "Saturday",
+        "start": "",
+        "end": ""
+      },
+      {
+        "artist": "Noisecult",
+        "stage": "",
+        "day": "Saturday",
+        "start": "",
+        "end": ""
+      },
+      {
+        "artist": "Psyko Punkz LIVE",
+        "stage": "",
+        "day": "Saturday",
+        "start": "",
+        "end": ""
+      },
+      {
+        "artist": "Zany",
+        "stage": "",
+        "day": "Saturday",
+        "start": "",
+        "end": ""
+      },
+      {
+        "artist": "The Force Italian Classics",
+        "stage": "",
+        "day": "Saturday",
+        "start": "",
+        "end": ""
+      },
+      {
+        "artist": "The Pitcher",
+        "stage": "",
+        "day": "Saturday",
+        "start": "",
+        "end": ""
+      },
+      {
+        "artist": "D-Verze",
+        "stage": "",
+        "day": "Saturday",
+        "start": "",
+        "end": ""
+      },
+      {
+        "artist": "Hardstyle Mafia",
+        "stage": "",
+        "day": "Saturday",
+        "start": "",
+        "end": ""
+      },
+      {
+        "artist": "Infirium",
+        "stage": "",
+        "day": "Saturday",
+        "start": "",
+        "end": ""
+      },
+      {
+        "artist": "Vyral vs Stratos",
+        "stage": "",
+        "day": "Saturday",
+        "start": "",
+        "end": ""
+      },
+      {
+        "artist": "Sasha F",
+        "stage": "",
+        "day": "Saturday",
+        "start": "",
+        "end": ""
+      },
+      {
+        "artist": "Mind Dimension & The Purge: 120 Minutes Closing",
+        "stage": "",
+        "day": "Saturday",
+        "start": "",
+        "end": ""
+      },
+      {
+        "artist": "MC Da Syndrome",
+        "stage": "",
+        "day": "Saturday",
+        "start": "",
+        "end": ""
+      },
+      {
+        "artist": "MC Barricade",
+        "stage": "",
+        "day": "Saturday",
+        "start": "",
+        "end": ""
+      }
+    ],
+    "lineupEditionYear": 2027,
+    "lineupSource": "https://www.013.nl/programma/156988/reactivate-2027"
+  },
+  {
+    "festival": "Up Close with D-Block & S-te-Fan",
+    "officialCatalog": true,
+    "date": "2026-12-27",
+    "dateEnd": "2026-12-27",
+    "location": "013 Poppodium, Tilburg",
+    "imageUrl": "https://013.ams3.cdn.digitaloceanspaces.com/resized/main/events/_1250x680_crop_center-center_none/DBSTF-Banner-01.jpg",
+    "lineup": [
+      {
+        "artist": "D-Block & S-te-Fan",
+        "stage": "Main",
+        "day": "Sunday",
+        "start": "",
+        "end": ""
+      }
+    ],
+    "lineupEditionYear": 2026,
+    "lineupSource": "https://www.013.nl/programma/160973/up-close-with-d-block-s-te-fan"
   }
 ];
 let savedKeys = JSON.parse(localStorage.uptempoSavedEditions || '[]');
@@ -1053,7 +1533,45 @@ function clockMinute(value) {
   return Number(match[1]) * 60 + Number(match[2]);
 }
 
+const officialActPhotos = {
+  "Conspirator vs Luxo vs D-Stroy": "https://cdn.prod.website-files.com/66221b2de9908b30889179e1/6a8abea29f5726c823bb56ae_annihilation-conspirator.webp",
+  "Aalst vs Latinity": "https://cdn.prod.website-files.com/66221b2de9908b30889179e1/6a8abaf30df595767a67b14a_annihilation-aalst.webp",
+  "Rosbeek vs Complex": "https://cdn.prod.website-files.com/66221b2de9908b30889179e1/6a8abdefd2c1d2f8d7774e1e_annihilation-complex-rosbeek.webp",
+  "Akimbo": "https://cdn.prod.website-files.com/66221b2de9908b30889179e1/6a8abcada6b96c71cc7cf2f9_annihilation-akimbo.webp",
+  "Annihilation Records Live (Eraized vs Udow vs Maintrex)": "https://cdn.prod.website-files.com/66221b2de9908b30889179e1/6a8ac13862645fab0c65ede8_annihilation-artist-eraised.webp",
+  "Deviation": "https://cdn.prod.website-files.com/66221b2de9908b30889179e1/6a8ac05ccc7cc962db4f21d6_annihilation-artist-dev.webp",
+  "Maistrø & Undivided": "https://cdn.prod.website-files.com/66221b2de9908b30889179e1/6a8ac219ce974591e0dc5dbc_annihilation-artist-maestro.webp",
+  "Dark Individual": "https://cdn.prod.website-files.com/66221b2de9908b30889179e1/6a8abf679658c055197e2eff_annihilation-dark-ndividual.webp",
+  "MT": "https://cdn.prod.website-files.com/66221b2de9908b30889179e1/6a8ac432aeab542ec270c44d_annihilation-artist-MT.webp",
+  "Noise of Aggression & Victus": "https://cdn.prod.website-files.com/66221b2de9908b30889179e1/6a8ac5012c7fa23562ccc880_annihilation-artist-Noise%20of%20Aggression%20%26%20Victus.webp",
+  "Missy vs Roosterz vs Screecher": "https://cdn.prod.website-files.com/66221b2de9908b30889179e1/6a8ac3c7ce974591e0dc9a13_annihilation-artist-MISSY.webp",
+  "Missy & Dimma": "https://cdn.prod.website-files.com/66221b2de9908b30889179e1/6a8ac3214d5c11cb3aff9c85_annihilation-artist-sdt.webp",
+  "Satirized vs Dimma": "https://cdn.prod.website-files.com/66221b2de9908b30889179e1/6a8ac7515217eb84be9992c5_annihilation-artist-DIMMA.webp",
+  "Revealer & Kili": "https://cdn.prod.website-files.com/66221b2de9908b30889179e1/6a8ac6495bd9598dd0b4cebe_annihilation-artist-KILI.webp",
+  "Samynator": "https://cdn.prod.website-files.com/66221b2de9908b30889179e1/6a8ac6cdb18c863ef2754110_annihilation-artist-Samynator.webp",
+  "Partyraiser vs Bössels vs TMO": "https://cdn.prod.website-files.com/66221b2de9908b30889179e1/6a8ac5a010c1d2eadf1cc10d_annihilation-artist-PR.webp",
+  "The Dispatcher vs Lucky Noise vs Mengers": "https://cdn.prod.website-files.com/66221b2de9908b30889179e1/6a8ac8542c7fa23562cd4894_annihilation-artist-FINAL.webp",
+  "Tayka vs Invicious vs Tob-E": "https://cdn.prod.website-files.com/66221b2de9908b30889179e1/6a8ac7b58cf8841cf6dd147f_annihilation-artist-TAYKE.webp"
+};
+function makePhotoIndex() {
+  const index = new Map();
+  const key = name => normalizeFestivalName(name.split(':')[0].replace(/\s+live$/i,''));
+  for (const edition of festivalLineupUpdates) for (const act of edition.lineup || []) {
+    if (act.portrait?.startsWith('https://')) index.set(key(act.artist),act.portrait);
+  }
+  for (const [name,url] of Object.entries(officialActPhotos)) index.set(key(name),url);
+  return item => {
+    const name = item.artist || '';
+    const artists = name.split(':')[0].replace(/\s+live$/i,'').split(/\s+(?:vs\.?|b2b|&)\s+/i);
+    const singles = artists.map(n=>index.get(key(n)));
+    const group = item.portrait || index.get(key(name));
+    const images = artists.length > 1 && singles.every(Boolean) ? singles : group ? [group] : singles;
+    if (!images.some(Boolean)) return '';
+    return '<div class="actPictures" aria-hidden="true">'+images.map((url,i)=>url ? '<img loading="lazy" alt="" src="'+esc(url)+'">' : '<span>'+esc(artists[i])+'</span>').join('')+'</div>';
+  };
+}
 function stageSchedule(items, selected) {
+  const pictures = makePhotoIndex();
   const timed = items.filter(item => clockMinute(item.start) !== null);
   const untimed = items.filter(item => clockMinute(item.start) === null);
   const star = item => {
@@ -1098,10 +1616,10 @@ function stageSchedule(items, selected) {
       const time = String(Math.floor(minute/60)%24).padStart(2,'0')+':'+String(minute%60).padStart(2,'0');
       return '<span class="ttTick" style="grid-row:'+row(minute)+'">'+time+'</span><i class="ttRule" style="grid-row:'+row(minute)+'"></i>';
     }).join('');
-    const cards = sets.map(({item,start,end,column}) => '<article class="ttAct" style="grid-column:'+column+';grid-row:'+row(start)+' / '+row(end)+'"><small>'+esc(item.start)+(item.end ? ' – '+esc(item.end) : ' · eindtijd volgt')+'</small><strong>'+esc(item.artist)+'</strong>'+star(item)+'</article>').join('');
+    const cards = sets.map(({item,start,end,column}) => '<article class="ttAct" style="grid-column:'+column+';grid-row:'+row(start)+' / '+row(end)+'">'+pictures(item)+'<small>'+esc(item.start)+(item.end ? ' – '+esc(item.end) : ' · eindtijd volgt')+'</small><strong>'+esc(item.artist)+'</strong>'+star(item)+'</article>').join('');
     return (day ? '<h3>'+esc(dayName(day))+'</h3>' : '')+'<div class="ttScroll" tabindex="0" aria-label="Tijdrooster per podium"><div class="ttBoard" style="grid-template-columns:48px repeat('+(column-2)+',minmax(145px,1fr));grid-template-rows:auto '+tracks+' auto"><b class="ttHead ttClock">Tijd</b>'+headers+labels+cards+'</div></div>';
   }).join('');
-  const pending = untimed.map(item => '<div class="ttPending"><div><strong>'+esc(item.artist)+'</strong><small>'+esc([dayName(item.day),item.stage].filter(Boolean).join(' · '))+'</small></div>'+star(item)+'</div>').join('');
+  const pending = untimed.map(item => '<div class="ttPending">'+pictures(item)+'<div><strong>'+esc(item.artist)+'</strong><small>'+esc([dayName(item.day),item.stage].filter(Boolean).join(' · '))+'</small></div>'+star(item)+'</div>').join('');
   return boards + (pending ? '<h3>Speeltijd volgt</h3>'+pending : '');
 }
 
