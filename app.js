@@ -360,7 +360,7 @@ window.changeMonth = amount => {
 
 function nextFest() {
   return festivals
-    .filter(f => new Date(f.date) >= new Date(new Date().toDateString()))
+    .filter(f => !festivalHasPassed(f))
     .sort((a, b) => new Date(a.date) - new Date(b.date))[0];
 }
 
@@ -394,66 +394,111 @@ function festivalCard(f) {
   `;
 }
 
+function startOfToday() {
+  const today = new Date();
+  return new Date(today.getFullYear(), today.getMonth(), today.getDate());
+}
+
+function festivalHasPassed(festival) {
+  const endDate = festival.dateEnd || festival.date || '';
+  const date = new Date(endDate);
+  return Number.isFinite(date.getTime()) && date < startOfToday();
+}
+
+function catalogHasPassed(update) {
+  if (update.dateEnd || update.date) return festivalHasPassed(update);
+  const year = Number(update.lineupEditionYear || 0);
+  return year > 0 && year < new Date().getFullYear();
+}
+
+function festivalDateLabel(item) {
+  const start = fmt(item.date);
+  const end = fmt(item.dateEnd);
+  if (start && end && item.date !== item.dateEnd) {
+    const startDate = new Date(item.date);
+    const endDate = new Date(item.dateEnd);
+    if (startDate.getMonth() === endDate.getMonth() && startDate.getFullYear() === endDate.getFullYear()) {
+      return `${startDate.getDate()}–${endDate.getDate()} ${endDate.toLocaleDateString('nl-NL', { month: 'long', year: 'numeric' })}`;
+    }
+    return `${start} – ${end}`;
+  }
+  return start || (item.lineupEditionYear ? `Editie ${item.lineupEditionYear}` : 'Datum volgt');
+}
+
+function matchesFestivalSearch(item, query) {
+  if (!query) return true;
+  const text = [item.name, item.festival, item.location, item.genre, item.lineupEditionYear]
+    .filter(Boolean).join(' ');
+  return normalizeFestivalName(text).includes(normalizeFestivalName(query));
+}
+
 function render() {
   const n = nextFest();
+  const activeFestivals = festivals.filter(f => !festivalHasPassed(f));
+  const archivedFestivals = festivals.filter(festivalHasPassed);
 
   if ($('#nextName')) $('#nextName').textContent = n ? n.name : 'Nog niets gepland';
-  if ($('#nextMeta')) $('#nextMeta').textContent = n ? `${fmt(n.date)} · ${n.location || ''}` : 'Voeg je eerste festival toe';
+  if ($('#nextMeta')) $('#nextMeta').textContent = n ? `${festivalDateLabel(n)} · ${n.location || ''}` : 'Voeg je eerste festival toe';
   if ($('#heroAction')) {
     $('#heroAction').textContent = n ? 'Bekijk mijn festivals' : 'Festival toevoegen';
     $('#heroAction').onclick = () => n ? switchTab('festivals') : $('#modal').classList.add('active');
   }
 
-  if ($('#totalFest')) $('#totalFest').textContent = festivals.length;
-  if ($('#doneFest')) $('#doneFest').textContent = festivals.filter(f => new Date(f.date) < new Date()).length;
+  if ($('#totalFest')) $('#totalFest').textContent = activeFestivals.length;
+  if ($('#doneFest')) $('#doneFest').textContent = archivedFestivals.length;
   if ($('#friendCount')) $('#friendCount').textContent = friends.length;
 
-  if ($('#sPlanned')) $('#sPlanned').textContent = festivals.length;
-  if ($('#sVisited')) $('#sVisited').textContent = festivals.filter(f => new Date(f.date) < new Date()).length;
+  if ($('#sPlanned')) $('#sPlanned').textContent = activeFestivals.length;
+  if ($('#sVisited')) $('#sVisited').textContent = archivedFestivals.length;
   if ($('#sCities')) $('#sCities').textContent = new Set(festivals.map(f => f.location).filter(Boolean)).size;
 
-  const upcoming = festivals
+  const upcoming = activeFestivals
     .slice()
-    .sort((a, b) => new Date(a.date) - new Date(b.date))
-    .filter(f => new Date(f.date) >= new Date(new Date().toDateString()));
+    .sort((a, b) => new Date(a.date || '9999-12-31') - new Date(b.date || '9999-12-31'));
 
   if ($('#upcoming')) {
-    $('#upcoming').innerHTML = upcoming.map(festivalCard).join('') || '<div class="card muted">Nog geen festivals.</div>';
+    $('#upcoming').innerHTML = upcoming.map(festivalCard).join('') || '<div class="card muted">Nog geen aankomende festivals.</div>';
   }
 
-  const q = ($('#search')?.value || '').toLowerCase();
+  const query = $('#search')?.value || '';
+  const activeMatches = activeFestivals.filter(f => matchesFestivalSearch(f, query));
+  const archiveMatches = query ? archivedFestivals.filter(f => matchesFestivalSearch(f, query)) : [];
 
   if ($('#festivalList')) {
     $('#festivalList').innerHTML =
-      festivals
-        .filter(f => (f.name + f.location + f.genre).toLowerCase().includes(q))
-        .map(festivalCard)
-        .join('') || '<div class="card muted">Geen festivals gevonden.</div>';
+      activeMatches.map(festivalCard).join('') ||
+      (query ? '<div class="card muted">Geen aankomende festivals gevonden.</div>' : '<div class="card muted">Nog geen aankomende festivals. Ontdek hieronder edities die al bekend zijn.</div>');
+  }
+
+  const archive = $('#festivalArchive');
+  if (archive) {
+    archive.innerHTML = query
+      ? `${archiveMatches.length ? '<div class="section">Afgelopen festivals</div>' : ''}${archiveMatches.map(festivalCard).join('')}`
+      : '<div class="muted archive-hint">Afgelopen edities zijn bewaard. Zoek hierboven op naam om ze terug te vinden.</div>';
   }
 
   countdown();
 }
 
-
 function renderOfficialFestivalCatalog() {
   const container = $('#officialFestivalCatalog');
   if (!container) return;
 
+  const query = $('#search')?.value || '';
   const catalog = festivalLineupUpdates
     .filter(update => update.officialCatalog)
+    .filter(update => !catalogHasPassed(update) || (query && matchesFestivalSearch(update, query)))
     .slice()
-    .sort((a, b) => String(a.festival || '').localeCompare(String(b.festival || '')));
+    .sort((a, b) => new Date(a.date || '9999-12-31') - new Date(b.date || '9999-12-31') ||
+      String(a.festival || '').localeCompare(String(b.festival || '')));
 
   container.innerHTML = catalog.map(update => {
     const lineupCount = (update.lineup || []).length;
-    const edition = update.date
-      ? fmt(update.date)
-      : update.lineupEditionYear
-        ? `Editie ${update.lineupEditionYear}`
-        : 'Editie nog niet bevestigd';
+    const edition = festivalDateLabel(update);
+    const archived = catalogHasPassed(update);
     const poster = update.imageUrl
       ? `<div style="height:150px;border-radius:16px;margin-bottom:12px;background:linear-gradient(180deg,rgba(0,0,0,.02),rgba(0,0,0,.38)),url('${esc(update.imageUrl)}') center/cover"></div>`
-      : `<div class="catalog-placeholder">U</div>`;
+      : `<div class="catalog-placeholder">${esc(String(update.festival || 'U').slice(0, 1))}</div>`;
 
     return `
       <div class="card">
@@ -461,7 +506,7 @@ function renderOfficialFestivalCatalog() {
         <div class="row" style="justify-content:space-between">
           <div class="grow">
             <b>${esc(update.festival || 'Festival')}</b>
-            <div class="muted">${esc(edition)}${update.location ? ` · ${esc(update.location)}` : ''}</div>
+            <div class="muted">${archived ? 'Archief · ' : ''}${esc(edition)}${update.location ? ` · ${esc(update.location)}` : ''}</div>
           </div>
           <span class="tag">Uptempo</span>
         </div>
@@ -471,7 +516,7 @@ function renderOfficialFestivalCatalog() {
         <button class="btn2" onclick="openOfficialLineup('${normalizeFestivalName(update.festival)}')">Bekijk timetable</button>
       </div>
     `;
-  }).join('') || '<div class="card muted">De officiële festivalcatalogus wordt geladen.</div>';
+  }).join('') || `<div class="card muted">${query ? 'Geen festivalinformatie gevonden voor deze zoekopdracht.' : 'Er zijn nog geen actuele festivaledities beschikbaar.'}</div>`;
 }
 
 function lineupOptions() {
@@ -533,16 +578,13 @@ function renderHomeFestivalCatalog() {
   if (!container) return;
 
   const catalog = festivalLineupUpdates
-    .filter(update => update.officialCatalog)
+    .filter(update => update.officialCatalog && !catalogHasPassed(update))
     .slice()
-    .sort((a, b) => String(a.festival || '').localeCompare(String(b.festival || '')));
+    .sort((a, b) => new Date(a.date || '9999-12-31') - new Date(b.date || '9999-12-31') ||
+      String(a.festival || '').localeCompare(String(b.festival || '')));
 
   container.innerHTML = catalog.map(update => {
-    const edition = update.date
-      ? fmt(update.date)
-      : update.lineupEditionYear
-        ? `Editie ${update.lineupEditionYear}`
-        : 'Editie volgt';
+    const edition = festivalDateLabel(update);
     const poster = update.imageUrl
       ? `linear-gradient(180deg,rgba(0,0,0,.02),rgba(0,0,0,.35)),url('${esc(update.imageUrl)}')`
       : 'linear-gradient(135deg,#28164a,#101a35)';
@@ -557,7 +599,7 @@ function renderHomeFestivalCatalog() {
         </div>
       </article>
     `;
-  }).join('') || '<div class="card muted">Festivalupdates worden geladen.</div>';
+  }).join('') || '<div class="card muted">Er zijn nog geen actuele festivaledities bekend.</div>';
 }
 
 function renderCal() {
@@ -875,7 +917,7 @@ if ($('#saveFestival')) {
   };
 }
 
-if ($('#search')) $('#search').oninput = render;
+if ($('#search')) $('#search').oninput = () => { render(); renderOfficialFestivalCatalog(); };
 if ($('#lineupSearch')) $('#lineupSearch').oninput = renderLineup;
 
 if ($('#saveProfile')) {
