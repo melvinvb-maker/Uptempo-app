@@ -6,13 +6,13 @@ De functie schrijft alleen updates met een hoge extractie-score naar bestaande f
 
 ## Nodig voordat je dit uitrolt
 
-- Een Meta Developer-app met Instagram Graph API en toegang via een Instagram Business- of Creator-account. Business Discovery moet toegang kunnen geven tot de openbare professionele festivalaccounts.
+- Een Meta Developer-app met Instagram Graph API, Facebook Login for Business en toegang via een Instagram Business- of Creator-account. Business Discovery moet toegang kunnen geven tot de openbare professionele festivalaccounts.
 - Een Meta access token voor het gekoppelde professionele account.
 - Een OpenAI API key. Het verwerken van posts kan API-kosten veroorzaken.
 - Firebase Functions ingeschakeld voor project `uptempo-43116`. Firebase kan voor geplande functies een betaalde Blaze-configuratie vereisen.
-- De app moet in Firestore leesrechten krijgen op de nieuwe collectie `festivalLineups`. Voeg de volgende regel toe binnen de bestaande `match /databases/{database}/documents`-sectie in Firestore Rules. Behoud de overige bestaande regels.\n\n```text\nmatch /festivalLineups/{festivalId} {\n  allow read: if request.auth != null;\n  allow write: if false;\n}\n```\n\nGebruikers kunnen alleen lezen. De geplande functie schrijft met de Firebase Admin SDK. De bestaande app moet Firebase-anoniem inloggen.\n- De festivalgebruiker moet in UPTEMPO een festival met een overeenkomende naam of ingestelde alias hebben opgeslagen. Dat mag lokaal of in een groep zijn.
+- De app moet in Firestore leesrechten krijgen op de nieuwe collectie `festivalLineups`. Voeg de volgende regel toe binnen de bestaande `match /databases/{database}/documents`-sectie in Firestore Rules. Behoud de overige bestaande regels.\n\n```text\nmatch /festivalLineups/{festivalId} {\n  allow read: if request.auth != null;\n  allow write: if false;\n}\n```\n\nGebruikers kunnen alleen lezen. De geplande functie schrijft met de Firebase Admin SDK. De bestaande app moet Firebase-anoniem inloggen.\n- De gebruiker moet ingelogd zijn met de bestaande anonieme Firebase-login. De update wordt getoond bij festivals die lokaal of in een groep zijn opgeslagen en qua naam of alias overeenkomen.
 
-Instagram stories en videobeelden worden niet verwerkt. De importer scant recente feedposts en carouselafbeeldingen. Data uit posts wordt direct opgeslagen zonder handmatige goedkeuring.
+Instagram stories en videobeelden worden niet verwerkt. Captions van feedposts worden wel gelezen, en de importer kan afbeeldingen en carouselafbeeldingen verwerken. Data uit posts wordt direct opgeslagen zonder handmatige goedkeuring.
 
 ## Geheimen instellen
 
