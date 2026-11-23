@@ -14,6 +14,8 @@ let db = null;
 let uid = null;
 let unsubscribeFestivals = null;
 let unsubscribeFriends = null;
+let unsubscribeFestivalLineups = null;
+let festivalLineupUpdates = [];
 
 function save() {
   localStorage.festivals = JSON.stringify(festivals);
@@ -97,6 +99,7 @@ async function initFirebase() {
       if (user) {
         uid = user.uid;
         updateFirebaseNotice();
+        watchFestivalLineups();
         if (groupId) liveSync();
       }
     });
@@ -176,6 +179,7 @@ function liveSync() {
 
   unsubscribeFestivals = window.fb.onSnapshot(groupPath('festivals'), snap => {
     festivals = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    applyFestivalLineupUpdates();
     save();
     renderAll();
   });
@@ -187,6 +191,50 @@ function liveSync() {
   });
 
   if (profile.name) saveProfileLive();
+}
+
+function watchFestivalLineups() {
+  if (!db || !uid) return;
+  if (unsubscribeFestivalLineups) unsubscribeFestivalLineups();
+
+  unsubscribeFestivalLineups = window.fb.onSnapshot(
+    window.fb.collection(db, 'festivalLineups'),
+    snap => {
+      festivalLineupUpdates = snap.docs.map(d => d.data());
+      applyFestivalLineupUpdates();
+      save();
+      renderAll();
+    },
+    error => console.warn('Festival line-up updates could not be loaded.', error)
+  );
+}
+
+function applyFestivalLineupUpdates() {
+  if (!festivalLineupUpdates.length) return;
+
+  festivals = festivals.map(festival => {
+    const festivalName = normalizeFestivalName(festival.name);
+    const update = festivalLineupUpdates.find(item =>
+      [item.festival, ...(item.aliases || [])]
+        .some(name => normalizeFestivalName(name) === festivalName)
+    );
+
+    if (!update) return festival;
+
+    const manualItems = (festival.lineup || [])
+      .filter(item => item.source !== 'instagram');
+    const importedItems = update.lineup || [];
+
+    return { ...festival, lineup: [...manualItems, ...importedItems] };
+  });
+}
+
+function normalizeFestivalName(value) {
+  return String(value || '')
+    .normalize('NFD')
+    .replace(/[\\u0300-\\u036f]/g, '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]/g, '');
 }
 
 async function saveProfileLive() {
