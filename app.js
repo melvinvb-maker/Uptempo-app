@@ -979,6 +979,15 @@ document.addEventListener('click', event => {
     const key = button.dataset.setKey;
     favoriteSets = favoriteSets.includes(key) ? favoriteSets.filter(value => value !== key) : [...favoriteSets,key];
     localStorage.uptempoFavoriteSets = JSON.stringify(favoriteSets);
+    if (!onlyFavoriteSets) {
+      const saved = favoriteSets.includes(key);
+      for (const star of document.querySelectorAll('[data-set-key]')) {
+        if (star.dataset.setKey !== key) continue;
+        star.setAttribute('aria-pressed', String(saved));
+        star.textContent = saved ? '★' : '☆';
+      }
+      return;
+    }
   }
   renderLineup();
 });
@@ -2074,9 +2083,18 @@ function renderAll() {
   renderGroupBox();
   renderProfile();
   renderLeaderboard();
-  renderLineup();
-  renderOfficialFestivalCatalog();
-  renderHomeFestivalCatalog();
+  if ($('#lineup.active')) {
+    const positions = Array.from(document.querySelectorAll('.ttScroll'), board => [board.scrollLeft, board.scrollTop]);
+    const edition = $('#lineupFestival')?.value;
+    renderLineup();
+    if (edition === $('#lineupFestival')?.value) {
+      document.querySelectorAll('.ttScroll').forEach((board, i) => {
+        if (positions[i]) board.scrollTo(...positions[i]);
+      });
+    }
+  }
+  if ($('#festivals.active')) renderOfficialFestivalCatalog();
+  if ($('#dashboard.active')) renderHomeFestivalCatalog();
   renderSeason();
 
 
