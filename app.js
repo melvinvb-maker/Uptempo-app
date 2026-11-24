@@ -2019,6 +2019,13 @@ function renderLineup() {
     ${lineup.length ? `<button class="day-chip ${onlyFavoriteSets ? "active" : ""}" data-favorites-only aria-pressed="${onlyFavoriteSets}">Mijn favoriete acts</button>` : ""}
     ${visible.length ? stageSchedule(visible,selected) : '<div class="card empty-state">'+(lineup.length ? 'Geen acts met deze filters.' : 'De timetable is nog niet bekend.')+'</div>'}
     <div style="padding:2px 4px">${mapLink(selected)}${source}</div>
+    ${selected.date === '2027-03-27' && /masters of hardcore/i.test(selected.name) ? `<section class="card masters-gallery">
+      <h3>Sfeerbeelden · Masters of Hardcore 2026</h3>
+      <div>
+        <a href="images/festivals/masters-2026-1.webp"><img loading="lazy" src="images/festivals/masters-2026-1.webp" alt="Het publiek voor het goudverlichte podium van Masters of Hardcore"></a>
+        <a href="images/festivals/masters-2026-2.webp"><img loading="lazy" src="images/festivals/masters-2026-2.webp" alt="Lichtbundels boven de dansvloer van Masters of Hardcore"></a>
+      </div>
+    </section>` : ''}
   `;
 
   container.querySelectorAll('[data-stage-filter]').forEach(button => {
