@@ -943,7 +943,7 @@ function datedEditions() {
   return festivalLineupUpdates.filter(f => f.officialCatalog && f.date).sort((a,b) => a.date.localeCompare(b.date));
 }
 function seasonRow(f) {
-  return '<div class="seasonRow"><div><b>'+esc(f.festival)+'</b><small>'+esc(festivalDateLabel(f))+' · '+esc(f.location)+'</small></div><button class="btn2" data-edition="'+normalizeFestivalName(f.festival)+'">Bekijk</button></div>';
+  return '<button class="seasonRow seasonOpen" data-edition="'+normalizeFestivalName(f.festival)+'"><span><b>'+esc(f.festival)+'</b><small>'+esc(festivalDateLabel(f))+' · '+esc(f.location)+'</small></span></button>';
 }
 function renderSeason() {
   if (!$('#seasonAgenda') || !$('#seasonStats') || !$('#savedEditions')) return;
@@ -956,6 +956,8 @@ function renderSeason() {
   $('#seasonStats').innerHTML = '<b>'+season.length+' bevestigde edities</b>'+season.map(seasonRow).join('');
 }
 document.addEventListener('click', event => {
+  const personal = event.target.closest('[data-personal]');
+  if (personal) return window.openFestivalLineup(personal.dataset.personal);
   const button = event.target.closest('[data-go],[data-edition],[data-save-edition]');
   if (!button) return;
   if (button.dataset.go) return switchTab(button.dataset.go);
@@ -1346,11 +1348,11 @@ function festivalCard(f) {
     : `<div class="festival-cover no-image"><span>${esc(coverInitials)}</span></div>`;
 
   return `
-    <article class="card">
+    <article class="card personalFest">
       ${cover}
       <div class="row" style="align-items:flex-start">
         <div class="grow">
-          <b style="font-size:17px">${esc(f.name)}</b>
+          <b><button class="stretchedTitle" data-personal="${esc(f.id)}">${esc(f.name)}</button></b>
           <div class="muted">${festivalDateLabel(f)} · ${esc(f.location || '')}</div>
           <span class="tag ${String(f.genre || '').toLowerCase()}">${esc(f.genre || 'Uptempo')}</span>
         </div>
@@ -1358,7 +1360,6 @@ function festivalCard(f) {
       </div>
       <div class="row" style="justify-content:space-between;margin-top:14px;flex-wrap:wrap">
         <button class="btn2" onclick="toggleGoing('${f.id}')">${iAmGoing ? 'Je gaat ✓' : 'Ik ga'}</button>
-        <button class="btn2" onclick="openFestivalLineup('${f.id}')">♫ Timetable</button>
         <span class="muted">${going.length} gaan</span>
       </div>
       ${going.length ? `<div class="muted" style="margin-top:10px">${going.map(esc).join(' · ')}</div>` : ''}
@@ -1452,6 +1453,15 @@ function render() {
   countdown();
 }
 
+function compactFestival(update, archived = false) {
+  const name = update.festival || 'Festival';
+  const key = editionKey(update);
+  const saved = savedKeys.includes(key);
+  const subtitle = [archived ? 'Archief' : '', festivalDateLabel(update), update.location].filter(Boolean).join(' · ');
+  const art = update.imageUrl ? '<img loading="lazy" decoding="async" alt="" src="'+esc(update.imageUrl)+'">' : '<span class="rowInitial">'+esc(name.slice(0,1))+'</span>';
+  return '<article class="festivalRow"><button type="button" class="festivalOpen" data-edition="'+esc(normalizeFestivalName(name))+'">'+art+'<span><strong>'+esc(name)+'</strong><small>'+esc(subtitle)+'</small></span></button>'+
+    (update.date ? '<button class="rowSave" data-save-edition="'+esc(key)+'" aria-label="'+esc((saved?'Verwijder uit planning: ':'Bewaar festival: ')+name)+'" aria-pressed="'+saved+'"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h12v18l-6-4-6 4z"/></svg></button>' : '')+'</article>';
+}
 function renderOfficialFestivalCatalog() {
   const container = $('#officialFestivalCatalog');
   if (!container) return;
@@ -1464,32 +1474,7 @@ function renderOfficialFestivalCatalog() {
     .sort((a, b) => new Date(a.date || '9999-12-31') - new Date(b.date || '9999-12-31') ||
       String(a.festival || '').localeCompare(String(b.festival || '')));
 
-  container.innerHTML = catalog.map(update => {
-    const lineupCount = (update.lineup || []).length;
-    const edition = festivalDateLabel(update);
-    const archived = catalogHasPassed(update);
-    const poster = update.imageUrl
-      ? `<div style="height:150px;border-radius:16px;margin-bottom:12px;background:linear-gradient(180deg,rgba(0,0,0,.02),rgba(0,0,0,.38)),url('${esc(update.imageUrl)}') center/cover"></div>`
-      : `<div class="catalog-placeholder">${esc(String(update.festival || 'U').slice(0, 1))}</div>`;
-
-    return `
-      <div class="card">
-        ${poster}
-        <div class="row" style="justify-content:space-between">
-          <div class="grow">
-            <b>${esc(update.festival || 'Festival')}</b>
-            <div class="muted">${archived ? 'Archief · ' : ''}${esc(edition)}${update.location ? ` · ${esc(update.location)}` : ''}</div>
-          </div>
-          <span class="tag">Uptempo</span>
-        </div>
-        <div class="muted" style="margin:10px 0 12px">
-          ${lineupCount ? `${lineupCount} acts in de festivalinformatie` : 'Er is nog geen timetable beschikbaar.'}
-        </div>
-        <button class="btn2" onclick="openOfficialLineup('${normalizeFestivalName(update.festival)}')">Bekijk timetable</button>
-        ${update.date ? `<button class="btn2" data-save-edition="${esc(editionKey(update))}" aria-pressed="${savedKeys.includes(editionKey(update))}">${savedKeys.includes(editionKey(update)) ? "Bewaard ✓" : "Bewaar festival"}</button>` : ""}
-      </div>
-    `;
-  }).join('') || `<div class="card muted">${query ? 'Geen festivalinformatie gevonden voor deze zoekopdracht.' : 'Er zijn nog geen actuele festivaledities beschikbaar.'}</div>`;
+  container.innerHTML = catalog.map(update => compactFestival(update, catalogHasPassed(update))).join('') || `<div class="card muted">${query ? 'Geen festivalinformatie gevonden voor deze zoekopdracht.' : 'Er zijn nog geen actuele festivaledities beschikbaar.'}</div>`;
 }
 
 function lineupOptions() {
@@ -1567,7 +1552,7 @@ function renderHomeFestivalCatalog() {
   const spotlight = $('#homeSpotlight');
   if (spotlight && feature) {
     const timed = (feature.lineup || []).filter(set => set.start && set.end).length;
-    spotlight.innerHTML = '<article class="spotlight"><span class="eyebrow">'+(timed ? 'Timetable beschikbaar' : 'Eerstvolgende editie')+'</span><h1>'+esc(feature.festival)+'</h1><p>'+esc(festivalDateLabel(feature))+' · '+esc(feature.location || '')+'</p><button class="btn" data-edition="'+normalizeFestivalName(feature.festival)+'">'+(timed ? 'Bekijk '+timed+' sets' : 'Bekijk festival')+'</button></article>';
+    spotlight.innerHTML = '<article class="spotlight"><span class="eyebrow">'+(timed ? 'Timetable beschikbaar' : 'Eerstvolgende editie')+'</span><h1><button class="stretchedTitle" data-edition="'+normalizeFestivalName(feature.festival)+'">'+esc(feature.festival)+'</button></h1><p>'+esc(festivalDateLabel(feature))+' · '+esc(feature.location || '')+'</p></article>';
     if (feature.imageUrl) spotlight.firstElementChild.style.backgroundImage = 'url('+JSON.stringify(feature.imageUrl)+')';
   }
   const plans = $('#homePlans');
@@ -1577,22 +1562,7 @@ function renderHomeFestivalCatalog() {
     const section = update.date ? 'Festivals '+update.date.slice(0,4) : 'Datum volgt';
     const heading = section === lastSection ? '' : '<h2 class="section">'+esc(section)+'</h2>';
     lastSection = section;
-    const edition = festivalDateLabel(update);
-    const poster = update.imageUrl
-      ? `linear-gradient(180deg,rgba(0,0,0,.02),rgba(0,0,0,.35)),url('${esc(update.imageUrl)}')`
-      : 'linear-gradient(135deg,#28164a,#101a35)';
-
-    return `
-      ${heading}<article class="card homeFestivalCard">
-        <div class="homeFestivalPoster" style="background-image:${poster}"></div>
-        <div class="homeFestivalCardBody">
-          <b>${esc(update.festival || 'Festival')}</b>
-          <span class="muted">${esc(edition)}${update.location ? ` · ${esc(update.location)}` : ''}</span>
-          <button class="btn2" onclick="openOfficialLineup('${normalizeFestivalName(update.festival)}')">${(update.lineup || []).some(set => set.start) ? "Bekijk timetable" : "Festivalinformatie"}</button>
-          ${update.date ? `<button class="btn2" data-save-edition="${editionKey(update)}" aria-pressed="${savedKeys.includes(editionKey(update))}">${savedKeys.includes(editionKey(update)) ? "Bewaard ✓" : "Bewaar"}</button>` : ""}
-        </div>
-      </article>
-    `;
+    return heading + compactFestival(update);
   }).join('') || '<div class="card muted">Er zijn nog geen actuele festivaledities bekend.</div>';
 }
 
@@ -1621,9 +1591,7 @@ function renderCal() {
       <div class="day">
         <b>${d}</b>
         ${dayFestivals.map(f => `
-          <div style="margin-top:5px;padding:3px 5px;border-radius:8px;background:rgba(255,47,179,.25);font-size:10px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;">
-            ${esc(f.name)}
-          </div>
+          <button class="calendarFestival" ${f.festival ? `data-edition="${esc(normalizeFestivalName(f.festival))}"` : `data-personal="${esc(f.id)}"`} title="${esc(f.name)}">${esc(f.name)}</button>
         `).join('')}
       </div>
     `;

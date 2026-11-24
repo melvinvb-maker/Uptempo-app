@@ -59,7 +59,7 @@ export function setupGuide({editions,passed,favorite,dateLabel,dayName,open}){
     const user=document.createElement('p');user.className='guideUser';user.textContent=text;
     const [message,links=[]]=reply(text);
     const answer=document.createElement('div');answer.className='guideAnswer';answer.textContent=message;
-    for(const f of links){const b=document.createElement('button');b.type='button';b.className='day-chip';b.textContent='Bekijk '+f.name;b.onclick=()=>open(f);answer.append(document.createElement('br'),b);}
+    for(const f of links){const b=document.createElement('button');b.type='button';b.className='day-chip';b.textContent=f.name;b.onclick=()=>open(f);answer.append(document.createElement('br'),b);}
     log.append(user,answer);form.elements.question.value='';log.scrollTop=log.scrollHeight;
   }
   form.onsubmit=e=>{e.preventDefault();send(form.elements.question.value);};
