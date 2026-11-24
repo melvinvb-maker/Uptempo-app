@@ -94,14 +94,14 @@ button,input,select,textarea{font:inherit}button{cursor:pointer;color:inherit}bu
   .sheet,.artistDialog{overscroll-behavior:contain}
   body:has(.modal.active),body:has(dialog[open]){overflow:hidden}
 }
-</style>
+.topActions,.guideQuick,#guideForm{display:flex;align-items:center;gap:8px}.guideQuick{flex-wrap:wrap}.guideQuick button{white-space:normal}.guideUser,.guideAnswer{white-space:pre-line;overflow-wrap:anywhere;padding:12px 15px;border-radius:18px;line-height:1.5}.guideUser{background:#364229;color:white;margin:10px 0 10px auto;width:fit-content;max-width:86%}.guideAnswer{background:var(--card);border:1px solid var(--line);max-width:94%}.guideAnswer button{margin-top:8px}#guideLog{max-height:46dvh;overflow:auto;margin:14px 0}#guideForm input{min-width:0;flex:1;font:inherit;font-size:16px;border:1px solid var(--line);background:var(--card);color:inherit;padding:13px;border-radius:16px}#guideForm button{width:48px;min-height:48px}.tabs{box-shadow:0 -4px 22px #0004}.tab.active{box-shadow:inset 0 2px var(--pink)}@media(max-width:600px){.topActions .profile-chip span:last-child:not(.avatar){display:none}.top{position:sticky;top:0;z-index:3;background:var(--bg);padding:8px 0}.brand-sub{font-size:9px}#guideLaunch{font-size:12px}}.navIcon{display:block;width:21px;height:21px;margin:0 auto 4px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}.tab{font-size:11px}.topActions{flex-shrink:0}</style>
 </head>
 
 <body>
   <div class="app">
     <div class="top">
       <div class="brand-lockup"><img class="brand-mark" src="uptempo-512.png" alt=""><div><div class="brand">UPTEMPO</div><div class="brand-sub">FESTIVAL PLANNER</div></div></div>
-      <button class="profile-chip" id="headerProfile" aria-label="Open profiel"><span class="avatar" id="headerAvatar">?</span><span>Mijn profiel</span></button>
+      <div class="topActions"><button id="guideLaunch" class="day-chip">✦ Festivalchat</button><button class="profile-chip" id="headerProfile" aria-label="Open profiel"><span class="avatar" id="headerAvatar">?</span><span>Mijn profiel</span></button></div>
     </div>
 
     <main id="dashboard" class="screen active">
@@ -153,9 +153,10 @@ button,input,select,textarea{font:inherit}button{cursor:pointer;color:inherit}bu
       <div id="friendsList"></div>
     </main>
 
+    <main id="guide" class="screen"><h1>Festivalchat</h1><p class="muted">Vraag naar een festival, artiest of je favoriete sets.</p><div class="guideQuick"><button class="day-chip" data-guide>Komende festivals</button><button class="day-chip" data-guide>Hoe laat draait Missy bij Annihilation?</button><button class="day-chip" data-guide>Mijn favoriete sets</button></div><div id="guideLog" role="log" aria-live="polite"></div><form id="guideForm"><input name="question" type="text" maxlength="400" required aria-label="Je festivalvraag" placeholder="Stel je vraag…" enterkeyhint="send"><button class="btn" aria-label="Verstuur vraag">↑</button></form></main>
     <main id="more" class="screen">
       <div class="section">Meer</div>
-      <div class="menuGrid">
+      <div class="menuGrid"><button class="menuTile" data-tab="guide"><b>✦</b>Festivalchat</button>
         <button class="menuTile" data-tab="profile"><b><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="3.5"/><path d="M4.5 20c.8-3.7 3.2-5.6 7.5-5.6s6.7 1.9 7.5 5.6"/></svg></b>Profiel</button>
         <button class="menuTile" data-tab="friends"><b><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3"/><path d="M3.5 19c.6-3.1 2.4-4.7 5.5-4.7 2.2 0 3.8.8 4.7 2.5"/><path d="M16 5.5a3 3 0 0 1 0 5.8M16 14c2.7.2 4.2 1.8 4.7 5"/></svg></b>Vrienden & groepen</button>
         <button class="menuTile" data-tab="leaderboard"><b><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4h10v4.5a5 5 0 0 1-10 0V4Z"/><path d="M7 6H4v2a4 4 0 0 0 4 4M17 6h3v2a4 4 0 0 1-4 4M12 14v4m-4 2h8"/></svg></b>Groepsranglijst</button>
@@ -234,11 +235,11 @@ button,input,select,textarea{font:inherit}button{cursor:pointer;color:inherit}bu
   <button class="fab" hidden id="openAdd" aria-label="Festival toevoegen" title="Festival toevoegen">+</button>
 
   <nav class="tabs" aria-label="Hoofdnavigatie">
-    <button class="tab active" data-tab="dashboard"><b>⌂</b>Home</button>
-    <button class="tab" data-tab="festivals"><b>▦</b>Festivals</button>
-    <button class="tab" data-tab="lineup"><b>♫</b>Timetable</button>
-    <button class="tab" data-tab="calendar"><b>▣</b>Agenda</button>
-    <button class="tab" data-tab="more"><b>•••</b>Meer</button>
+    <button class="tab active" data-tab="dashboard"><svg class="navIcon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11 12 3l9 8v9h-6v-6H9v6H3z"/></svg>Home</button>
+    <button class="tab" data-tab="festivals"><svg class="navIcon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7h18v3a2 2 0 0 0 0 4v3H3v-3a2 2 0 0 0 0-4z M15 8v2m0 2v2m0 2v1"/></svg>Festivals</button>
+    <button class="tab" data-tab="lineup"><svg class="navIcon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4v16m5-15h11v4H9zm0 8h7v5H9z"/></svg>Timetable</button>
+    <button class="tab" data-tab="calendar"><svg class="navIcon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16v15H4z M4 10h16M8 3v5m8-5v5"/></svg>Agenda</button>
+    <button class="tab" data-tab="more"><svg class="navIcon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h1m5 0h1m5 0h1"/></svg>Meer</button>
   </nav>
 
   <div class="modal" id="modal">
@@ -277,5 +278,6 @@ button,input,select,textarea{font:inherit}button{cursor:pointer;color:inherit}bu
     <div class="artistMembers"></div>
     <a hidden target="_blank" rel="noopener noreferrer"></a>
   </dialog>
-  <script type="module" src="app.js?v=follow-map-1"></script>
+  <script type="module" src="app.js?v=festivalchat-1"></script>
+
 

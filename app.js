@@ -1,3 +1,4 @@
+import {setupGuide} from './festival-guide.js';
 import { artistBios } from './artist-bios.js';
 import { artistPortraits, rebirthSets } from './timetable-photos.js';
 import { firebaseEnabled, firebaseConfig } from './firebase-config.js';
@@ -2232,3 +2233,10 @@ setInterval(countdown, 1000);
 renderAll();
 initFirebase();
 
+
+
+setupGuide({editions:lineupOptions,passed:festivalHasPassed,dateLabel:festivalDateLabel,dayName,
+  favorite:(f,a)=>favoriteSets.includes(setKey(f,a)),
+  open:f=>f.isImportedCatalog ? window.openOfficialLineup(normalizeFestivalName(f.name)) : window.openFestivalLineup(f.id)
+});
+$('#guideLaunch').onclick=()=>switchTab('guide');
