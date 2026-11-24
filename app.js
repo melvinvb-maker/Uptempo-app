@@ -18,6 +18,131 @@ let unsubscribeFriends = null;
 let unsubscribeFestivalLineups = null;
 let festivalLineupUpdates = [
 {
+  "festival": "RESET 2027 – United by Oldschool",
+  "date": "2027-02-20",
+  "dateEnd": "2027-02-20",
+  "location": "013 Poppodium, Tilburg",
+  "imageUrl": "https://013.ams3.cdn.digitaloceanspaces.com/resized/main/events/_1250x680_crop_center-center_none/RESET-2027-ARTWORK-Banner-1920x1080.jpg",
+  "catalogKey": "reset2027",
+  "officialCatalog": true,
+  "lineupSource": "https://reset.rebirth-events.nl/",
+  "lineupEditionYear": 2027,
+  "lineup": [
+    {
+      "artist": "DJ Francois",
+      "stage": "Area 1",
+      "day": "Saturday",
+      "start": "",
+      "end": ""
+    },
+    {
+      "artist": "DJ J.D.A.",
+      "stage": "Area 1",
+      "day": "Saturday",
+      "start": "",
+      "end": ""
+    },
+    {
+      "artist": "Korsakoff vs The Darkraver",
+      "stage": "Area 1",
+      "day": "Saturday",
+      "start": "",
+      "end": ""
+    },
+    {
+      "artist": "Neophyte vs Panic",
+      "stage": "Area 1",
+      "day": "Saturday",
+      "start": "",
+      "end": ""
+    },
+    {
+      "artist": "Nosferatu vs Tha Playah",
+      "stage": "Area 1",
+      "day": "Saturday",
+      "start": "",
+      "end": ""
+    },
+    {
+      "artist": "Noxa",
+      "stage": "Area 1",
+      "day": "Saturday",
+      "start": "",
+      "end": ""
+    },
+    {
+      "artist": "Pat B",
+      "stage": "Area 1",
+      "day": "Saturday",
+      "start": "",
+      "end": ""
+    },
+    {
+      "artist": "Promo",
+      "stage": "Area 1",
+      "day": "Saturday",
+      "start": "",
+      "end": ""
+    },
+    {
+      "artist": "The Viper vs Vince",
+      "stage": "Area 1",
+      "day": "Saturday",
+      "start": "",
+      "end": ""
+    },
+    {
+      "artist": "MC Alee",
+      "stage": "Area 1",
+      "day": "Saturday",
+      "start": "",
+      "end": ""
+    },
+    {
+      "artist": "Drokz",
+      "stage": "Area 2",
+      "day": "Saturday",
+      "start": "",
+      "end": ""
+    },
+    {
+      "artist": "Painbringer",
+      "stage": "Area 2",
+      "day": "Saturday",
+      "start": "",
+      "end": ""
+    },
+    {
+      "artist": "Ruffneck",
+      "stage": "Area 2",
+      "day": "Saturday",
+      "start": "",
+      "end": ""
+    },
+    {
+      "artist": "The Raver",
+      "stage": "Area 2",
+      "day": "Saturday",
+      "start": "",
+      "end": ""
+    },
+    {
+      "artist": "Tommyknocker",
+      "stage": "Area 2",
+      "day": "Saturday",
+      "start": "",
+      "end": ""
+    },
+    {
+      "artist": "MC Axys",
+      "stage": "Area 2",
+      "day": "Saturday",
+      "start": "",
+      "end": ""
+    }
+  ]
+},
+{
   "festival": "White Noise",
   "date": "2027-03-13",
   "dateEnd": "2027-03-13",
