@@ -106,6 +106,7 @@ button,input,select,textarea{font:inherit}button{cursor:pointer;color:inherit}bu
 
     <main id="dashboard" class="screen active">
       <div id="homeSpotlight"></div>
+      <section id="followedArtists" hidden><h2 class="section">Artiesten die je volgt</h2><div class="followShows"></div></section>
       <div id="homeFestivalCatalog" class="homeFestivalGrid"></div>
       <section id="homePlans"><h2 class="section">Mijn planning</h2><div id="upcoming" class="catalog-list"></div></section>
     </main>
@@ -272,8 +273,9 @@ button,input,select,textarea{font:inherit}button{cursor:pointer;color:inherit}bu
     <h2 id="artistName" tabindex="-1"></h2>
     <div class="eyebrow artistSection"></div>
     <p class="artistBio"></p>
+    <button type="button" class="btn2 followArtist" hidden>Artiest volgen</button>
     <div class="artistMembers"></div>
     <a hidden target="_blank" rel="noopener noreferrer"></a>
   </dialog>
-  <script type="module" src="app.js?v=touch-1"></script>
+  <script type="module" src="app.js?v=follow-map-1"></script>
 

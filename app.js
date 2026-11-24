@@ -1552,6 +1552,7 @@ window.openFestivalLineup = id => {
 };
 
 function renderHomeFestivalCatalog() {
+  renderFollowed();
   const container = $('#homeFestivalCatalog');
   if (!container) return;
 
@@ -1811,6 +1812,44 @@ function artistLink(item) {
   return '<button type="button" class="artistLink" data-artist-info="'+esc(item.artist)+'" aria-haspopup="dialog">'+esc(item.artist)+'</button>';
 }
 
+const knownArtists = [...artistRecords.values()].sort((a,b) => b.name.length - a.name.length);
+function resolveArtist(name, showTitle) {
+  return artistRecords.get(artistKey(name)) || (showTitle && knownArtists.find(entry =>
+    name.toLowerCase().startsWith(entry.name.toLowerCase()+' ')
+  ));
+}
+const followed = new Map(JSON.parse(localStorage.getItem('uptempoFollowedArtists') || '[]'));
+function renderFollowed() {
+  const section = $('#followedArtists');
+  section.hidden = !followed.size;
+  if (!followed.size) return;
+  const shows = [];
+  for (const edition of datedEditions().filter(f => !catalogHasPassed(f))) {
+    const names = new Set();
+    for (const set of edition.lineup || []) {
+      const members = performers(set.artist);
+      for (const member of members) {
+        const id = artistKey(resolveArtist(member, members.length === 1)?.name || member);
+        if (followed.has(id)) names.add(followed.get(id));
+      }
+    }
+    if (names.size) shows.push('<button class="btn2" data-edition="'+esc(normalizeFestivalName(edition.festival))+'">'+esc(edition.festival)+' · '+esc(fmt(edition.date))+'<br>'+esc([...names].join(', '))+'</button>');
+  }
+  section.querySelector('.followShows').innerHTML = shows.join(' ') || 'Er zijn nog geen komende optredens bevestigd.';
+}
+
+function mapLink(festival) {
+  const edition = festivalLineupUpdates.find(f => f.date === festival.date && normalizeFestivalName(f.festival) === normalizeFestivalName(festival.name));
+  let url = edition?.floorplanUrl;
+  let label = 'Festivalplattegrond';
+  if (!/^https:\/\//i.test(url || '')) {
+    label = 'Plattegrond van de locatie';
+    if (/autotron/i.test(festival.location)) url = 'https://www.autotron.nl/wp-content/uploads/sites/4/2018/08/Plattegrond-Autotron.pdf';
+    else if (/brabanthallen/i.test(festival.location)) url = 'https://www.brabanthallen.nl/wp-content/uploads/2026/01/Plattegrond-Brabanthallen-s-Hertogenbosch-JAN2026.pdf';
+    else return '';
+  }
+  return '<p><a class="btn2" target="_blank" rel="noopener noreferrer" href="'+esc(url)+'">'+label+' ↗</a></p>';
+}
 function showArtist(label, chosen) {
   const festival = getSelectedLineup();
   const act = festival?.lineup?.find(item => item.artist === label);
@@ -1818,9 +1857,7 @@ function showArtist(label, chosen) {
   const names = performers(label);
   const name = chosen && names.includes(chosen) ? chosen : names.length === 1 ? names[0] : profileName(label);
   const id = artistKey(name);
-  const record = artistRecords.get(id) || (names.length === 1 && !chosen && [...artistRecords.values()]
-    .sort((a,b) => b.name.length - a.name.length)
-    .find(entry => name.toLowerCase().startsWith(entry.name.toLowerCase()+' ')));
+  const record = resolveArtist(name, names.length === 1 && !chosen);
   const appearances = festivalLineupUpdates.filter(edition => edition.lineup?.some(item =>
     artistKey(profileName(item.artist)) === id || performers(item.artist).some(artist => artistKey(artist) === id)
   ));
@@ -1853,6 +1890,22 @@ function showArtist(label, chosen) {
     button.onclick = () => {showArtist(label,artist); dialog.querySelector('h2').focus();};
     links.append(button);
   }
+  const follow = dialog.querySelector('.followArtist');
+  follow.hidden = group;
+  const displayName = record?.name || name;
+  const followId = artistKey(displayName);
+  const updateButton = () => {
+    follow.textContent = followed.has(followId) ? 'Ontvolgen' : 'Artiest volgen';
+    follow.setAttribute('aria-pressed', String(followed.has(followId)));
+  };
+  updateButton();
+  follow.onclick = () => {
+    if (followed.has(followId)) followed.delete(followId);
+    else followed.set(followId, displayName);
+    localStorage.setItem('uptempoFollowedArtists', JSON.stringify([...followed]));
+    updateButton();
+    renderFollowed();
+  };
   const source = dialog.querySelector('a');
   const url = record?.url || festival.lineupSource;
   source.hidden = !/^https?:\/\//i.test(url || '');
@@ -1996,7 +2049,7 @@ function renderLineup() {
     </div></fieldset>` : ''}
     ${lineup.length ? `<button class="day-chip ${onlyFavoriteSets ? "active" : ""}" data-favorites-only aria-pressed="${onlyFavoriteSets}">Mijn favoriete acts</button>` : ""}
     ${visible.length ? stageSchedule(visible,selected) : '<div class="card empty-state">'+(lineup.length ? 'Geen acts met deze filters.' : 'De timetable is nog niet bekend.')+'</div>'}
-    <div style="padding:2px 4px">${source}</div>
+    <div style="padding:2px 4px">${mapLink(selected)}${source}</div>
   `;
 
   container.querySelectorAll('[data-stage-filter]').forEach(button => {
