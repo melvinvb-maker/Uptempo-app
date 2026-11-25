@@ -1198,100 +1198,156 @@ let festivalLineupUpdates = [
     "imageUrl": "https://013.ams3.cdn.digitaloceanspaces.com/resized/main/events/_1250x680_crop_center-center_none/Gezellige-Clubtempo-Banner-01.jpg",
     "officialCatalog": true,
     "lineupEditionYear": 2026,
-    "lineupSource": "https://www.013.nl/programma/160082/gezellige-clubtempo-xxl-2026",
+    "lineupSource": "https://melvinvb-maker.github.io/Uptempo-app/images/festivals/clubtempo-2026-main-timetable.jpg",
     "lineup": [
-      {
-        "artist": "Gezellige Uptempo: The Final Sh!t Happens XXL",
-        "stage": "",
-        "day": "Saturday",
-        "start": "",
-        "end": ""
-      },
-      {
-        "artist": "Gezellige Uptempo & Koffiepauze: Koffiepauze met Roze Koeken",
-        "stage": "",
-        "day": "Saturday",
-        "start": "",
-        "end": ""
-      },
-      {
-        "artist": "The Dark Horror vs Kemal vs Revealer: XXL Set",
-        "stage": "",
-        "day": "Saturday",
-        "start": "",
-        "end": ""
-      },
-      {
-        "artist": "Akimbo: Game Over",
-        "stage": "",
-        "day": "Saturday",
-        "start": "",
-        "end": ""
-      },
-      {
-        "artist": "Bössels vs Complex",
-        "stage": "",
-        "day": "Saturday",
-        "start": "",
-        "end": ""
-      },
-      {
-        "artist": "EZG LIVE",
-        "stage": "",
-        "day": "Saturday",
-        "start": "",
-        "end": ""
-      },
-      {
-        "artist": "Gezellige Uptempo",
-        "stage": "",
-        "day": "Saturday",
-        "start": "",
-        "end": ""
-      },
-      {
-        "artist": "Kili",
-        "stage": "",
-        "day": "Saturday",
-        "start": "",
-        "end": ""
-      },
-      {
-        "artist": "Missy & Dimma: Slopen de 013 LIVE",
-        "stage": "",
-        "day": "Saturday",
-        "start": "",
-        "end": ""
-      },
-      {
-        "artist": "Satirized: Neon Funfair LIVE",
-        "stage": "",
-        "day": "Saturday",
-        "start": "",
-        "end": ""
-      },
-      {
-        "artist": "T.M.O.: Brabantse Gezelligheid",
-        "stage": "",
-        "day": "Saturday",
-        "start": "",
-        "end": ""
-      },
-      {
-        "artist": "The Gezelligste DJ Contest Winner",
-        "stage": "",
-        "day": "Saturday",
-        "start": "",
-        "end": ""
-      },
-      {
-        "artist": "MC Barricade (host)",
-        "stage": "",
-        "day": "Saturday",
-        "start": "",
-        "end": ""
-      }
-    ]
+  {
+    "artist": "Misfits vs RMPAGE (contest winners)",
+    "stage": "Main",
+    "day": "Saturday",
+    "start": "14:00",
+    "end": "15:00"
+  },
+  {
+    "artist": "Bössels vs Complex",
+    "stage": "Main",
+    "day": "Saturday",
+    "start": "15:00",
+    "end": "16:00"
+  },
+  {
+    "artist": "EZG LIVE",
+    "stage": "Main",
+    "day": "Saturday",
+    "start": "16:00",
+    "end": "16:30"
+  },
+  {
+    "artist": "Gezellige Uptempo",
+    "stage": "Main",
+    "day": "Saturday",
+    "start": "16:30",
+    "end": "17:00"
+  },
+  {
+    "artist": "T.M.O.: Brabantse Gezelligheid",
+    "stage": "Main",
+    "day": "Saturday",
+    "start": "17:00",
+    "end": "17:45"
+  },
+  {
+    "artist": "Gezellige Uptempo & Koffiepauze: Koffiepauze met Roze Koeken",
+    "stage": "Main",
+    "day": "Saturday",
+    "start": "17:45",
+    "end": "18:30"
+  },
+  {
+    "artist": "Akimbo: Game Over",
+    "stage": "Main",
+    "day": "Saturday",
+    "start": "18:30",
+    "end": "19:00"
+  },
+  {
+    "artist": "Gezellige Uptempo: The Final Sh!t Happens XXL",
+    "stage": "Main",
+    "day": "Saturday",
+    "start": "19:00",
+    "end": "19:45"
+  },
+  {
+    "artist": "The Dark Horror vs Kemal vs Revealer: 1,5 hour XXL set",
+    "stage": "Main",
+    "day": "Saturday",
+    "start": "19:45",
+    "end": "21:15"
+  },
+  {
+    "artist": "Kili",
+    "stage": "Main",
+    "day": "Saturday",
+    "start": "21:15",
+    "end": "21:45"
+  },
+  {
+    "artist": "Satirized: Neon Funfair LIVE",
+    "stage": "Main",
+    "day": "Saturday",
+    "start": "21:45",
+    "end": "22:30"
+  },
+  {
+    "artist": "Missy & Dimma: Slopen de 013 LIVE",
+    "stage": "Main",
+    "day": "Saturday",
+    "start": "22:30",
+    "end": "23:00"
+  },
+  {
+    "artist": "MC Barricade (host)",
+    "stage": "Main",
+    "day": "Saturday",
+    "start": "",
+    "end": ""
+  },
+  {
+    "artist": "Aurøra",
+    "stage": "Next",
+    "day": "Saturday",
+    "start": "",
+    "end": ""
+  },
+  {
+    "artist": "Bössels vs Rosbeek vs Complex",
+    "stage": "Next",
+    "day": "Saturday",
+    "start": "",
+    "end": ""
+  },
+  {
+    "artist": "DJ Content",
+    "stage": "Next",
+    "day": "Saturday",
+    "start": "",
+    "end": ""
+  },
+  {
+    "artist": "Dr. Z",
+    "stage": "Next",
+    "day": "Saturday",
+    "start": "",
+    "end": ""
+  },
+  {
+    "artist": "Ketanoise vs Recharge",
+    "stage": "Next",
+    "day": "Saturday",
+    "start": "",
+    "end": ""
+  },
+  {
+    "artist": "Missy vs Breezy",
+    "stage": "Next",
+    "day": "Saturday",
+    "start": "",
+    "end": ""
+  },
+  {
+    "artist": "Slechtpicknick vs Jorrit Gevaarlijk",
+    "stage": "Next",
+    "day": "Saturday",
+    "start": "",
+    "end": ""
+  },
+  {
+    "artist": "Spiady",
+    "stage": "Next",
+    "day": "Saturday",
+    "start": "",
+    "end": ""
+  }
+]
   },
   {
     "festival": "Classified vs Overdrive – The Final Verdict",
