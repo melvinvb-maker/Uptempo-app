@@ -584,7 +584,7 @@ export const OFFICIAL_SOURCES = [
   "dateEnd": "2027-03-27",
   "location": "Brabanthallen, ’s-Hertogenbosch",
   "url": "https://www.mastersofhardcore.com/en/masters-of-hardcore-2027-the-masterplan",
-  "imageUrl": "https://www.brabanthallen.nl/wp-content/uploads/2024/12/Uitgelicht_MOH_1200x630_bbh-2.jpg",
+  "imageUrl": "https://melvinvb-maker.github.io/Uptempo-app/images/festivals/masters-the-masterplan-2027.webp",
   "aliases": [],
   "editionYear": 2027
 },
