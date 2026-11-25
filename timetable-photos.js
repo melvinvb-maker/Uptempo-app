@@ -1,5 +1,6 @@
 // Publicity portraits from the official Annihilation, Second 2 None and Most Wanted artist rosters.
 export const artistPortraits = {
+  "Promo": "https://images.ctfassets.net/gke9ybw4n0iv/3Tm9PWtPf0NMeWdzqCtwvO/8e82fa8ecb3335d5f0a9cd6ccd3c3ef7/DSC_9556.jpg?w=600",
   "99PRBLMZ": "https://second2none.dj/thumbs/600x600/gfx/S2N%20Artists/99PRBLMZ/99PRBLMZ.jpg",
   "Bössels": "https://second2none.dj/thumbs/600x600/gfx/S2N%20Artists/B%C3%B6ssels/Scherm_%EF%BF%BDafbeelding_2026_07_09_om_12-48-21.png",
   "Cold Confusion & Revolve pres. The Ancients": "https://second2none.dj/thumbs/600x600/gfx/S2N%20Artists/The%20Ancients/v2323e2.png",

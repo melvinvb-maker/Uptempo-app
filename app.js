@@ -19,6 +19,382 @@ let unsubscribeFriends = null;
 let unsubscribeFestivalLineups = null;
 let festivalLineupUpdates = [
 {
+  "festival": "Loudness",
+  "date": "2026-11-28",
+  "dateEnd": "2026-11-28",
+  "location": "Maassilo, Rotterdam",
+  "imageUrl": "https://www.b2s.nl/126800/1783084975-ln26_artwork-new-date_1x1.jpg",
+  "catalogKey": "loudness20261128",
+  "officialCatalog": true,
+  "lineupEditionYear": 2026,
+  "lineupSource": "https://www.b2s.nl/en/faq-loudness",
+  "lineup": [
+    {
+      "artist": "Degos & Re-Done",
+      "stage": "Area 1",
+      "day": "Saturday",
+      "start": "14:00",
+      "end": "15:30"
+    },
+    {
+      "artist": "Crypsis",
+      "stage": "Area 1",
+      "day": "Saturday",
+      "start": "15:30",
+      "end": "16:30"
+    },
+    {
+      "artist": "Adaro",
+      "stage": "Area 1",
+      "day": "Saturday",
+      "start": "16:30",
+      "end": "17:30"
+    },
+    {
+      "artist": "B-Front",
+      "stage": "Area 1",
+      "day": "Saturday",
+      "start": "17:30",
+      "end": "18:30"
+    },
+    {
+      "artist": "Rejecta",
+      "stage": "Area 1",
+      "day": "Saturday",
+      "start": "18:30",
+      "end": "19:30"
+    },
+    {
+      "artist": "E-Force",
+      "stage": "Area 1",
+      "day": "Saturday",
+      "start": "19:30",
+      "end": "20:30"
+    },
+    {
+      "artist": "The Purge",
+      "stage": "Area 1",
+      "day": "Saturday",
+      "start": "20:30",
+      "end": "21:15"
+    },
+    {
+      "artist": "Mind Dimension",
+      "stage": "Area 1",
+      "day": "Saturday",
+      "start": "21:15",
+      "end": "22:00"
+    },
+    {
+      "artist": "Regain",
+      "stage": "Area 1",
+      "day": "Saturday",
+      "start": "22:00",
+      "end": "23:00"
+    },
+    {
+      "artist": "Da Syndrome (host)",
+      "stage": "Area 1",
+      "day": "Saturday",
+      "start": "",
+      "end": ""
+    },
+    {
+      "artist": "Blackburn & Aeros",
+      "stage": "Area 2",
+      "day": "Saturday",
+      "start": "14:30",
+      "end": "16:00"
+    },
+    {
+      "artist": "Prefix & Density",
+      "stage": "Area 2",
+      "day": "Saturday",
+      "start": "16:00",
+      "end": "17:00"
+    },
+    {
+      "artist": "Sub Sonik",
+      "stage": "Area 2",
+      "day": "Saturday",
+      "start": "17:00",
+      "end": "18:00"
+    },
+    {
+      "artist": "Artifact",
+      "stage": "Area 2",
+      "day": "Saturday",
+      "start": "18:00",
+      "end": "19:00"
+    },
+    {
+      "artist": "Solutio & The I’s",
+      "stage": "Area 2",
+      "day": "Saturday",
+      "start": "19:00",
+      "end": "20:30"
+    },
+    {
+      "artist": "Hardstyle Mafia pres. Spoontech Eternal",
+      "stage": "Area 2",
+      "day": "Saturday",
+      "start": "20:30",
+      "end": "22:00"
+    },
+    {
+      "artist": "Element",
+      "stage": "Area 2",
+      "day": "Saturday",
+      "start": "22:00",
+      "end": "23:00"
+    },
+    {
+      "artist": "Flo (host)",
+      "stage": "Area 2",
+      "day": "Saturday",
+      "start": "",
+      "end": ""
+    },
+    {
+      "artist": "Deetox",
+      "stage": "Area 3",
+      "day": "Saturday",
+      "start": "15:00",
+      "end": "16:30"
+    },
+    {
+      "artist": "Chain Reaction",
+      "stage": "Area 3",
+      "day": "Saturday",
+      "start": "16:30",
+      "end": "17:45"
+    },
+    {
+      "artist": "Titan",
+      "stage": "Area 3",
+      "day": "Saturday",
+      "start": "17:45",
+      "end": "18:45"
+    },
+    {
+      "artist": "Digital Punk",
+      "stage": "Area 3",
+      "day": "Saturday",
+      "start": "18:45",
+      "end": "20:15"
+    },
+    {
+      "artist": "DJ Thera",
+      "stage": "Area 3",
+      "day": "Saturday",
+      "start": "20:15",
+      "end": "21:30"
+    },
+    {
+      "artist": "Jason Payne",
+      "stage": "Area 3",
+      "day": "Saturday",
+      "start": "21:30",
+      "end": "23:00"
+    },
+    {
+      "artist": "Livid (host)",
+      "stage": "Area 3",
+      "day": "Saturday",
+      "start": "",
+      "end": ""
+    }
+  ]
+},
+{
+  "festival": "Ghosttown – The Forest of Fear",
+  "date": "2027-01-09",
+  "dateEnd": "2027-01-10",
+  "location": "TivoliVredenburg, Utrecht",
+  "imageUrl": "https://www.dance2eden.nl/uploads/images/events/gt27-1520x856.png",
+  "catalogKey": "ghosttown20270109",
+  "officialCatalog": true,
+  "lineupEditionYear": 2027,
+  "lineupSource": "https://www.dance2eden.nl/events/ghosttown-09-01-2027/",
+  "lineup": [
+    {
+      "artist": "Dr. Macabre",
+      "stage": "Ghosttown: Early hardcore",
+      "day": "",
+      "start": "",
+      "end": ""
+    },
+    {
+      "artist": "Ruffneck vs MD&A",
+      "stage": "Ghosttown: Early hardcore",
+      "day": "",
+      "start": "",
+      "end": ""
+    },
+    {
+      "artist": "Promo",
+      "stage": "Ghosttown: Early hardcore",
+      "day": "",
+      "start": "",
+      "end": ""
+    },
+    {
+      "artist": "The Darkraver",
+      "stage": "Ghosttown: Early hardcore",
+      "day": "",
+      "start": "",
+      "end": ""
+    },
+    {
+      "artist": "Painbringer",
+      "stage": "Ghosttown: Early hardcore",
+      "day": "",
+      "start": "",
+      "end": ""
+    },
+    {
+      "artist": "Ska",
+      "stage": "Ghosttown: Early hardcore",
+      "day": "",
+      "start": "",
+      "end": ""
+    },
+    {
+      "artist": "To-B",
+      "stage": "Ghosttown: Early hardcore",
+      "day": "",
+      "start": "",
+      "end": ""
+    },
+    {
+      "artist": "MC Axys",
+      "stage": "Ghosttown: Early hardcore",
+      "day": "",
+      "start": "",
+      "end": ""
+    },
+    {
+      "artist": "The Resonant Squad",
+      "stage": "The Freak Room: New Early",
+      "day": "",
+      "start": "",
+      "end": ""
+    },
+    {
+      "artist": "Xqruciator",
+      "stage": "The Freak Room: New Early",
+      "day": "",
+      "start": "",
+      "end": ""
+    },
+    {
+      "artist": "Los Muñaños",
+      "stage": "The Freak Room: New Early",
+      "day": "",
+      "start": "",
+      "end": ""
+    },
+    {
+      "artist": "The Raver",
+      "stage": "The Freak Room: New Early",
+      "day": "",
+      "start": "",
+      "end": ""
+    },
+    {
+      "artist": "The Bloody Deamon",
+      "stage": "The Freak Room: New Early",
+      "day": "",
+      "start": "",
+      "end": ""
+    },
+    {
+      "artist": "Faniac",
+      "stage": "The Freak Room: New Early",
+      "day": "",
+      "start": "",
+      "end": ""
+    },
+    {
+      "artist": "Undecided",
+      "stage": "The Freak Room: New Early",
+      "day": "",
+      "start": "",
+      "end": ""
+    },
+    {
+      "artist": "Preachers Of Doom",
+      "stage": "The Freak Room: New Early",
+      "day": "",
+      "start": "",
+      "end": ""
+    },
+    {
+      "artist": "MC M-Core",
+      "stage": "The Freak Room: New Early",
+      "day": "",
+      "start": "",
+      "end": ""
+    },
+    {
+      "artist": "DJ Rob & MC Joe",
+      "stage": "Flashbackz: Rave & oldschool",
+      "day": "",
+      "start": "",
+      "end": ""
+    },
+    {
+      "artist": "Human Resource",
+      "stage": "Flashbackz: Rave & oldschool",
+      "day": "",
+      "start": "",
+      "end": ""
+    },
+    {
+      "artist": "Pavo",
+      "stage": "Flashbackz: Rave & oldschool",
+      "day": "",
+      "start": "",
+      "end": ""
+    },
+    {
+      "artist": "Gizmo",
+      "stage": "Flashbackz: Rave & oldschool",
+      "day": "",
+      "start": "",
+      "end": ""
+    },
+    {
+      "artist": "Petrov",
+      "stage": "Flashbackz: Rave & oldschool",
+      "day": "",
+      "start": "",
+      "end": ""
+    },
+    {
+      "artist": "Stanton",
+      "stage": "Flashbackz: Rave & oldschool",
+      "day": "",
+      "start": "",
+      "end": ""
+    },
+    {
+      "artist": "MC Renegade",
+      "stage": "Flashbackz: Rave & oldschool",
+      "day": "",
+      "start": "",
+      "end": ""
+    },
+    {
+      "artist": "Menace II Society",
+      "stage": "",
+      "day": "",
+      "start": "",
+      "end": ""
+    }
+  ]
+},
+{
   "festival": "RESET 2027 – United by Oldschool",
   "date": "2027-02-20",
   "dateEnd": "2027-02-20",
