@@ -19,6 +19,229 @@ let unsubscribeFriends = null;
 let unsubscribeFestivalLineups = null;
 let festivalLineupUpdates = [
 {
+  "festival": "BKJN vs. Partyraiser – The Blood Eclipse",
+  "date": "2027-01-30",
+  "dateEnd": "2027-01-30",
+  "location": "SilverDome, Zoetermeer",
+  "imageUrl": "https://bkjn.nl/wp-content/uploads/2026/10/bvp27-share.jpg",
+  "catalogKey": "bkjnvspartyraiser20270130",
+  "officialCatalog": true,
+  "lineupEditionYear": 2027,
+  "lineupSource": "https://bkjn.nl/bkjnvspartyraiser/",
+  "lineup": [
+    {
+      "stage": "Mainstage",
+      "artist": "Partyraiser: The Opening (ft. Da Mouth of Madness)",
+      "day": "Saturday",
+      "start": "",
+      "end": ""
+    },
+    {
+      "stage": "Mainstage",
+      "artist": "Partyraiser vs. Bulletproof vs. Sandy Warez",
+      "day": "Saturday",
+      "start": "",
+      "end": ""
+    },
+    {
+      "stage": "Mainstage",
+      "artist": "Partyraiser vs. Complex",
+      "day": "Saturday",
+      "start": "",
+      "end": ""
+    },
+    {
+      "stage": "Mainstage",
+      "artist": "Partyraiser vs. Pinotello vs. EZG",
+      "day": "Saturday",
+      "start": "",
+      "end": ""
+    },
+    {
+      "stage": "Mainstage",
+      "artist": "Partyraiser: The Anthem Show (ft. Gezellige Uptempo)",
+      "day": "Saturday",
+      "start": "",
+      "end": ""
+    },
+    {
+      "stage": "Mainstage",
+      "artist": "Partyraiser vs. The Dark Horror vs. Kemal",
+      "day": "Saturday",
+      "start": "",
+      "end": ""
+    },
+    {
+      "stage": "Mainstage",
+      "artist": "Partyraiser vs. Dimitri K vs. The Dope Doctor",
+      "day": "Saturday",
+      "start": "",
+      "end": ""
+    },
+    {
+      "stage": "Mainstage",
+      "artist": "Akimbo vs. Kili",
+      "day": "Saturday",
+      "start": "",
+      "end": ""
+    },
+    {
+      "stage": "Mainstage",
+      "artist": "Dimma vs. Udow",
+      "day": "Saturday",
+      "start": "",
+      "end": ""
+    },
+    {
+      "stage": "Mainstage",
+      "artist": "Roosterz vs. Rosbeek",
+      "day": "Saturday",
+      "start": "",
+      "end": ""
+    },
+    {
+      "stage": "Mainstage",
+      "artist": "Lekkerfaces",
+      "day": "Saturday",
+      "start": "",
+      "end": ""
+    },
+    {
+      "stage": "Mainstage",
+      "artist": "Major Conspiracy",
+      "day": "Saturday",
+      "start": "",
+      "end": ""
+    },
+    {
+      "stage": "Mainstage",
+      "artist": "Satirized (Neon Funfair Live)",
+      "day": "Saturday",
+      "start": "",
+      "end": ""
+    },
+    {
+      "stage": "Mainstage",
+      "artist": "Soulblast",
+      "day": "Saturday",
+      "start": "",
+      "end": ""
+    },
+    {
+      "stage": "Mainstage",
+      "artist": "Valhalla (New Album Experience)",
+      "day": "Saturday",
+      "start": "",
+      "end": ""
+    },
+    {
+      "stage": "Mainstage",
+      "artist": "Yoshiko",
+      "day": "Saturday",
+      "start": "",
+      "end": ""
+    },
+    {
+      "stage": "Mainstage",
+      "artist": "Tha Watcher (host)",
+      "day": "Saturday",
+      "start": "",
+      "end": ""
+    },
+    {
+      "stage": "Beter Kom Je Niet",
+      "artist": "Bulletproof (Nostalgica)",
+      "day": "Saturday",
+      "start": "",
+      "end": ""
+    },
+    {
+      "stage": "Beter Kom Je Niet",
+      "artist": "Chaotic Hostility",
+      "day": "Saturday",
+      "start": "",
+      "end": ""
+    },
+    {
+      "stage": "Beter Kom Je Niet",
+      "artist": "Deejay Not DJ",
+      "day": "Saturday",
+      "start": "",
+      "end": ""
+    },
+    {
+      "stage": "Beter Kom Je Niet",
+      "artist": "Ditzkickz (Achterlijk Hard Live)",
+      "day": "Saturday",
+      "start": "",
+      "end": ""
+    },
+    {
+      "stage": "Beter Kom Je Niet",
+      "artist": "Dr.Z",
+      "day": "Saturday",
+      "start": "",
+      "end": ""
+    },
+    {
+      "stage": "Beter Kom Je Niet",
+      "artist": "F.Nøize vs. S-Kill",
+      "day": "Saturday",
+      "start": "",
+      "end": ""
+    },
+    {
+      "stage": "Beter Kom Je Niet",
+      "artist": "Guizcore vs. Mind Compressor",
+      "day": "Saturday",
+      "start": "",
+      "end": ""
+    },
+    {
+      "stage": "Beter Kom Je Niet",
+      "artist": "Vandal!sm",
+      "day": "Saturday",
+      "start": "",
+      "end": ""
+    },
+    {
+      "stage": "Beter Kom Je Niet",
+      "artist": "Svenergy",
+      "day": "Saturday",
+      "start": "",
+      "end": ""
+    },
+    {
+      "stage": "Beter Kom Je Niet",
+      "artist": "Sabeautaged",
+      "day": "Saturday",
+      "start": "",
+      "end": ""
+    },
+    {
+      "stage": "Beter Kom Je Niet",
+      "artist": "Tomsku",
+      "day": "Saturday",
+      "start": "",
+      "end": ""
+    },
+    {
+      "stage": "Beter Kom Je Niet",
+      "artist": "Xplosiv",
+      "day": "Saturday",
+      "start": "",
+      "end": ""
+    },
+    {
+      "stage": "Beter Kom Je Niet",
+      "artist": "MC RG (host)",
+      "day": "Saturday",
+      "start": "",
+      "end": ""
+    }
+  ]
+},
+{
   "festival": "Loudness",
   "date": "2026-11-28",
   "dateEnd": "2026-11-28",
