@@ -19,6 +19,152 @@ let unsubscribeFriends = null;
 let unsubscribeFestivalLineups = null;
 let festivalLineupUpdates = [
 {
+  "festival": "Dimitri K – Sacrifice Day",
+  "date": "2026-11-28",
+  "dateEnd": "2026-11-28",
+  "location": "Breepark, Breda",
+  "imageUrl": "https://dimitrikevent.com/wp-content/uploads/2026/09/Sacrifice-Day-background.jpg",
+  "catalogKey": "sacrificeday20261128",
+  "officialCatalog": true,
+  "lineupEditionYear": 2026,
+  "lineupSource": "https://dimitrikevent.com/",
+  "lineup": [
+    {
+      "artist": "Dimma vs. Missy vs. MT",
+      "day": "Saturday",
+      "stage": "",
+      "start": "",
+      "end": ""
+    },
+    {
+      "artist": "Dimitri K vs. Noxiouz vs. Satirized",
+      "day": "Saturday",
+      "stage": "",
+      "start": "",
+      "end": ""
+    },
+    {
+      "artist": "Dimitri K vs. Lekkerfaces vs. Yoshiko",
+      "day": "Saturday",
+      "stage": "",
+      "start": "",
+      "end": ""
+    },
+    {
+      "artist": "Dimitri K vs. The Dark Horror",
+      "day": "Saturday",
+      "stage": "",
+      "start": "",
+      "end": ""
+    },
+    {
+      "artist": "Noxiouz pres. Subatomic",
+      "day": "Saturday",
+      "stage": "",
+      "start": "",
+      "end": ""
+    },
+    {
+      "artist": "Satirized pres. Neon Funfair Live",
+      "day": "Saturday",
+      "stage": "",
+      "start": "",
+      "end": ""
+    },
+    {
+      "artist": "Noxiouz vs. Satirized vs. Partyraiser",
+      "day": "Saturday",
+      "stage": "",
+      "start": "",
+      "end": ""
+    },
+    {
+      "artist": "Akimbo vs. Complex vs. Rosbeek",
+      "day": "Saturday",
+      "stage": "",
+      "start": "",
+      "end": ""
+    },
+    {
+      "artist": "Lekkerfaces vs. Yoshiko",
+      "day": "Saturday",
+      "stage": "",
+      "start": "",
+      "end": ""
+    },
+    {
+      "artist": "Lekkerfaces vs. Yoshiko vs. The Straikerz",
+      "day": "Saturday",
+      "stage": "",
+      "start": "",
+      "end": ""
+    },
+    {
+      "artist": "F.Nøize vs. Mind Compressor",
+      "day": "Saturday",
+      "stage": "",
+      "start": "",
+      "end": ""
+    },
+    {
+      "artist": "Pinotello vs. Major Conspiracy vs. The Dope Doctor",
+      "day": "Saturday",
+      "stage": "",
+      "start": "",
+      "end": ""
+    },
+    {
+      "artist": "Déjà Vu by Dimitri K",
+      "day": "Saturday",
+      "stage": "",
+      "start": "",
+      "end": ""
+    },
+    {
+      "artist": "Dimitri K: Survivor Live",
+      "day": "Saturday",
+      "stage": "",
+      "start": "",
+      "end": ""
+    },
+    {
+      "artist": "The Dark Horror",
+      "day": "Saturday",
+      "stage": "",
+      "start": "",
+      "end": ""
+    },
+    {
+      "artist": "Dimitri K vs. Sickmode vs. Levenkhan",
+      "day": "Saturday",
+      "stage": "",
+      "start": "",
+      "end": ""
+    },
+    {
+      "artist": "The Dark Horror vs. Kemal vs. Kili",
+      "day": "Saturday",
+      "stage": "",
+      "start": "",
+      "end": ""
+    },
+    {
+      "artist": "Guizcore pres. Adrenaline Surge Live",
+      "day": "Saturday",
+      "stage": "",
+      "start": "",
+      "end": ""
+    },
+    {
+      "artist": "Da Mouth of Madness & MC Robs (hosts)",
+      "day": "Saturday",
+      "stage": "",
+      "start": "",
+      "end": ""
+    }
+  ]
+},
+{
   "festival": "BKJN vs. Partyraiser – The Blood Eclipse",
   "date": "2027-01-30",
   "dateEnd": "2027-01-30",
