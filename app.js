@@ -2410,15 +2410,31 @@ function renderLineup() {
     const board = document.createElement('div');
     board.innerHTML = stageSchedule(lineup, selected);
     for (const button of board.querySelectorAll('button')) {
-      const label = document.createElement('span');
-      label.textContent = button.hasAttribute('data-set-key')
-        ? (button.getAttribute('aria-pressed') === 'true' ? '★ Favoriet' : '')
-        : button.textContent;
-      button.replaceWith(label);
+      if (button.hasAttribute('data-set-key')) {
+        if (button.getAttribute('aria-pressed') !== 'true') { button.remove(); continue; }
+        button.closest('article, .ttPending')?.classList.add('savedSet');
+        const star = document.createElement('span');
+        star.className = 'setMark';
+        star.textContent = '★ Favoriet';
+        button.replaceWith(star);
+      } else {
+        const name = document.createElement('strong');
+        name.textContent = button.textContent;
+        button.replaceWith(name);
+      }
     }
     const meta = [selected.date && fmt(selected.date),selected.location].filter(Boolean).join(' · ');
-    const css = 'body{font:16px system-ui;color:#f5f5f5;background:#101314;margin:1rem}.ttScroll{overflow:auto;max-height:80vh}.ttBoard{display:grid}.ttHead,.ttTick{background:#242929;position:sticky;padding:4px}.ttHead{top:0;z-index:2}.ttTick,.ttClock{grid-column:1;left:0}.ttRule{grid-column:2/-1;border-top:1px solid #494949}.ttAct,.ttPending{background:#263130;border:1px solid #667571;border-radius:6px;padding:5px;z-index:1}.ttAct span,.ttAct small,.ttPending small{display:block}.ttAct small,.ttPending small{color:#bde4c0}';
-    const html = '<!doctype html><html lang="nl"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>'+esc(selected.name)+'</title><style>'+css+'</style><h1>'+esc(selected.name)+'</h1><p>'+esc(meta)+'</p><p>Opgeslagen op '+new Date().toLocaleString('nl-NL')+'</p>'+board.innerHTML+'</html>';
+    const css = `:root{color-scheme:dark;--lime:#c2f66b;--line:#33393c}
+*{box-sizing:border-box}body{font:15px/1.45 system-ui,sans-serif;background:#101214;color:#f7f8f5;max-width:76rem;margin:auto;padding:clamp(14px,3vw,32px)}
+h1{font-size:clamp(24px,5vw,38px);letter-spacing:-.045em;line-height:1.1;margin:10px 0 4px}h3{margin:22px 0 8px}p{color:#bbc2c1;margin:4px 0}
+header{border-top:3px solid var(--lime);padding:12px 0 16px}header small,footer{color:#a9b3ad;font-size:12px}footer{margin:16px 0}
+.ttScroll{overflow:auto;max-height:76vh;border:1px solid var(--line);border-radius:12px;background:#131618;margin:10px 0}.ttBoard{display:grid;position:relative;isolation:isolate}
+.ttHead,.ttTick{position:sticky;background:#23282a}.ttHead{top:0;padding:10px 6px;border-bottom:1px solid var(--line);font-size:13px;text-align:center;z-index:3}
+.ttTick,.ttClock{grid-column:1;left:0}.ttClock{grid-row:1;z-index:4}.ttTick{font:600 11px/1.4 system-ui;font-variant-numeric:tabular-nums;padding:4px;z-index:2;color:#c7cfcb}
+.ttRule{grid-column:2/-1;border-top:1px solid var(--line)}.ttAct{z-index:1;min-width:0;border-left:3px solid #788b79;border-radius:6px;background:#292f31;margin:2px;padding:5px 8px;overflow-wrap:anywhere;line-height:1.22}
+.ttAct small,.ttPending small{display:block;color:#bcc7c0;font-size:11px;font-variant-numeric:tabular-nums}.ttAct strong,.ttPending strong{font-size:14px;display:block;margin:3px 0}.ttPending{padding:9px 12px;border-bottom:1px solid var(--line)}
+.savedSet{background:#263521;border-left:3px solid var(--lime)}.setMark{font-size:11px;color:var(--lime)}`;
+    const html = '<!doctype html><html lang="nl"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>'+esc(selected.name)+'</title><style>'+css+'</style><header><small>UPTEMPO · Timetable</small><h1>'+esc(selected.name)+'</h1><p>'+esc(meta)+'</p></header>'+board.innerHTML+'<footer>Opgeslagen op '+new Date().toLocaleString('nl-NL')+'</footer></html>';
     const link = document.createElement('a');
     link.href = URL.createObjectURL(new Blob([html],{type:'text/html;charset=utf-8'}));
     link.download = normalizeFestivalName(selected.name)+'-'+selected.date+'-timetable.html';
