@@ -1,4 +1,4 @@
-const CACHE = 'uptempo-offline-timetables-v2';
+const CACHE = 'uptempo-offline-timetables-v3';
 const offlinePage = new URL('offline.html', self.registration.scope).href;
 self.addEventListener('install', event => event.waitUntil((async () => {
   const cache = await caches.open(CACHE);

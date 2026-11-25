@@ -98,6 +98,7 @@ button,input,select,textarea{font:inherit}button{cursor:pointer;color:inherit}bu
 .masters-gallery h3 { margin: 0 0 .65rem; font-size: 1rem; }
 .masters-gallery > div { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: .5rem; }
 .masters-gallery img { display: block; width: 100%; aspect-ratio: 3/2; object-fit: cover; border-radius: .65rem; }
+#lineup .saved-timetables-link{display:flex;align-items:center;justify-content:space-between;color:var(--text,white);font-weight:700;text-decoration:none;border:1px solid #373e40;border-radius:12px;padding:10px 14px;margin:8px 0;background:#202527}#lineup .saved-timetables-link span{color:#c2f66b}#lineup [data-download-status]:not(:empty){padding:8px 2px;font-size:13px;color:#c2f66b}#lineup [data-download-timetable]{margin:6px 0 12px}
 </style>
 </head>
 
@@ -200,6 +201,7 @@ button,input,select,textarea{font:inherit}button{cursor:pointer;color:inherit}bu
     <main id="lineup" class="screen">
       <div class="lineup-heading"><div><div class="eyebrow">Jouw festivalgids</div><h1>Timetable</h1><div class="muted">Kies een festival en bekijk de set-tijden.</div></div></div>
       <div class="lineup-picker"><select id="lineupFestival" aria-label="Kies festival"></select></div>
+      <a class="saved-timetables-link" href="./offline.html">Mijn timetables <span aria-hidden="true">›</span></a>
       <input id="lineupSearch" class="lineup-search" type="search" placeholder="Zoek artiest of podium" aria-label="Zoek artiest of podium">
       <div id="lineupList"></div>
       <details class="card lineup-manual" id="lineupManual">
@@ -282,6 +284,6 @@ button,input,select,textarea{font:inherit}button{cursor:pointer;color:inherit}bu
     <div class="artistMembers"></div>
     <a hidden target="_blank" rel="noopener noreferrer"></a>
   </dialog>
-  <script type="module" src="app.js?v=offline-layout-2"></script>
+  <script type="module" src="app.js?v=in-app-timetables-3"></script>
 
 

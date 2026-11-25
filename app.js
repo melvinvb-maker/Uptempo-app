@@ -2385,7 +2385,7 @@ function renderLineup() {
         <span class="muted">${lineup.length ? selected.isImportedCatalog ? 'Festivalupdate' : 'Persoonlijke timetable' : 'Nog geen tijden bekend'}</span>
       </div>
     </div>
-    ${lineup.length ? '<button class="btn2" data-download-timetable>Download timetable</button> <a class="source-link" href="offline.html">Mijn offline timetables</a><div role="status" data-download-status></div>' : ''}
+    ${lineup.length ? '<button class="btn2" data-download-timetable>Bewaar offline</button><div role="status" data-download-status></div>' : ''}
     ${days.length ? `<div class="lineup-days">
       <button class="day-chip ${selectedLineupDay === 'all' ? 'active' : ''}" data-lineup-day="all">Alle dagen</button>
       ${days.map(day => `<button class="day-chip ${selectedLineupDay === day ? 'active' : ''}" data-lineup-day="${esc(day)}">${esc(dayName(day))}</button>`).join('')}
@@ -2406,6 +2406,12 @@ function renderLineup() {
   `;
 
   const download = container.querySelector('[data-download-timetable]');
+  const copyKey = JSON.stringify([selected.key,selected.date]);
+  if (download) {
+    try {
+      if (JSON.parse(localStorage.uptempoOfflineSchedules || '{}')[copyKey]) download.textContent = 'Offline versie bijwerken';
+    } catch {}
+  }
   if (download) download.onclick = () => {
     const board = document.createElement('div');
     board.innerHTML = stageSchedule(lineup, selected);
@@ -2435,18 +2441,14 @@ header{border-top:3px solid var(--lime);padding:12px 0 16px}header small,footer{
 .ttAct small,.ttPending small{display:block;color:#bcc7c0;font-size:11px;font-variant-numeric:tabular-nums}.ttAct strong,.ttPending strong{font-size:14px;display:block;margin:3px 0}.ttPending{padding:9px 12px;border-bottom:1px solid var(--line)}
 .savedSet{background:#263521;border-left:3px solid var(--lime)}.setMark{font-size:11px;color:var(--lime)}`;
     const html = '<!doctype html><html lang="nl"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>'+esc(selected.name)+'</title><style>'+css+'</style><header><small>UPTEMPO · Timetable</small><h1>'+esc(selected.name)+'</h1><p>'+esc(meta)+'</p></header>'+board.innerHTML+'<footer>Opgeslagen op '+new Date().toLocaleString('nl-NL')+'</footer></html>';
-    const link = document.createElement('a');
-    link.href = URL.createObjectURL(new Blob([html],{type:'text/html;charset=utf-8'}));
-    link.download = normalizeFestivalName(selected.name)+'-'+selected.date+'-timetable.html';
-    document.body.append(link); link.click(); link.remove();
-    setTimeout(()=>URL.revokeObjectURL(link.href),60000);
     const status = container.querySelector('[data-download-status]');
     try {
       const copies = JSON.parse(localStorage.uptempoOfflineSchedules || '{}');
-      copies[JSON.stringify([selected.key,selected.date])] = {name:selected.name,meta,html};
+      copies[copyKey] = {name:selected.name,meta,html};
       localStorage.uptempoOfflineSchedules = JSON.stringify(copies);
-      status.textContent = 'Download gestart. Ook bewaard onder Mijn offline timetables.';
-    } catch { status.textContent = 'Download gestart. De opslag in de app is niet beschikbaar.'; }
+      download.textContent = 'Offline versie bijwerken';
+      status.textContent = 'Bewaard op dit toestel · Bekijk in Mijn timetables.';
+    } catch { status.textContent = 'Opslaan is niet gelukt. Controleer de vrije opslag op je toestel en probeer opnieuw.'; }
   };
   container.querySelectorAll('[data-stage-filter]').forEach(button => {
     button.onclick = () => {
