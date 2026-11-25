@@ -1,0 +1,9 @@
+<!doctype html><html lang="nl"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Offline timetables · UPTEMPO</title><style>body{font:16px system-ui;background:#101314;color:white;max-width:52rem;margin:auto;padding:1rem}button,a{display:block;background:#25352c;color:white;padding:1rem;margin:.5rem 0;border:0;border-radius:.6rem;font:inherit}iframe{width:100%;height:78vh;border:0}</style><h1>Mijn offline timetables</h1><main></main><a href="./">Terug naar Home</a><script>
+const main=document.querySelector('main');
+const copies=Object.values(JSON.parse(localStorage.uptempoOfflineSchedules || '{}'));
+if (!copies.length) main.textContent='Je hebt nog geen timetables opgeslagen. Open online een festival en tik op Download timetable.';
+for (const copy of copies) {
+  const button=document.createElement('button');button.textContent=[copy.name,copy.meta].filter(Boolean).join(' · ');main.append(button);
+  button.onclick=()=>{document.querySelector('iframe')?.remove();const frame=document.createElement('iframe');frame.title=copy.name;frame.setAttribute('sandbox','');frame.srcdoc=copy.html;main.after(frame);frame.scrollIntoView();};
+}
+</script></html>
