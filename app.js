@@ -7,6 +7,22 @@ import { firebaseEnabled, firebaseConfig } from './firebase-config.js';
 const STAGE_PHOTO = "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?auto=format&fit=crop&w=1200&q=80";
 const $ = s => document.querySelector(s);
 
+// Short message at the bottom of the screen instead of a blocking browser popup.
+function toast(message, duration = 3500) {
+  let box = document.getElementById('toast');
+  if (!box) {
+    box = document.createElement('div');
+    box.id = 'toast';
+    box.setAttribute('role', 'status');
+    box.setAttribute('aria-live', 'polite');
+    document.body.append(box);
+  }
+  box.textContent = message;
+  box.classList.add('show');
+  clearTimeout(toast.timer);
+  toast.timer = setTimeout(() => box.classList.remove('show'), duration);
+}
+
 // Reads saved JSON safely: damaged or blocked storage falls back instead of stopping the whole app.
 function stored(key, fallback) {
   try {
@@ -2068,14 +2084,14 @@ function newGroupCode() {
 }
 
 async function createGroup() {
-  if (!db || !uid) return alert('Firebase is nog niet actief.');
+  if (!db || !uid) return toast('Firebase is nog niet actief.');
 
   let code = '';
   for (let attempt = 0; attempt < 5 && !code; attempt++) {
     const candidate = newGroupCode();
     if (!(await window.fb.getDoc(window.fb.doc(db, 'groups', candidate))).exists()) code = candidate;
   }
-  if (!code) return alert('Er kon geen groepscode worden gemaakt. Probeer het opnieuw.');
+  if (!code) return toast('Er kon geen groepscode worden gemaakt. Probeer het opnieuw.');
   groupId = code;
   save();
 
@@ -2089,16 +2105,16 @@ async function createGroup() {
 
   liveSync();
   renderAll();
-  alert('Groep aangemaakt: ' + groupId);
+  toast('Groep aangemaakt: ' + groupId + ' · deel deze code met je vrienden', 8000);
 }
 
 async function joinGroup() {
   const code = ($('#joinGroupCode')?.value || '').trim().toUpperCase();
-  if (!code) return alert('Vul een groepscode in.');
-  if (!db || !uid) return alert('Firebase is nog niet actief.');
+  if (!code) return toast('Vul een groepscode in.');
+  if (!db || !uid) return toast('Firebase is nog niet actief.');
 
   const snap = await window.fb.getDoc(window.fb.doc(db, 'groups', code));
-  if (!snap.exists()) return alert('Deze groep bestaat niet.');
+  if (!snap.exists()) return toast('Deze groep bestaat niet.');
 
   groupId = code;
   festivals = [];
@@ -2264,7 +2280,7 @@ async function addFestivalLive(f) {
   if (db && groupId) {
     await window.fb.addDoc(groupPath('festivals'), item);
   } else if (db && !groupId) {
-    alert('Maak of join eerst een groep.');
+    toast('Maak of join eerst een groep.');
   } else {
     festivals.push({ ...item, id: crypto.randomUUID() });
     save();
@@ -2649,7 +2665,7 @@ function refreshFriendStatus() {
     const isMember = !!friend?.uid && friend.uid === friend.id;
     const confirmed = friend?.lastSeen?.toMillis?.() || 0;
     const age = now - Math.min(confirmed, Number(friend?.activeAt || 0));
-    const active = isMember && navigator.onLine && age >= -5000 && age < 65000;
+    const active = isMember && navigator.onLine && age >= -5000 && age < 200000;
     label.textContent = active ? '● Online' : isMember ? 'Offline' : 'Groepslijst';
     label.className = active ? 'online' : 'muted';
   });
@@ -2659,7 +2675,8 @@ function updatePresence() {
   if (!profile.name || !groupId || !uid || !db || !navigator.onLine) return;
   saveProfileLive().catch(() => { /* The last confirmed heartbeat expires automatically. */ });
 }
-setInterval(() => { if (!document.hidden) updatePresence(); }, 30000);
+// Every 90 s: each heartbeat is one write plus one read per group member, so this keeps a group within Firebase's free daily quota.
+setInterval(() => { if (!document.hidden) updatePresence(); }, 90000);
 setInterval(refreshFriendStatus, 5000);
 document.addEventListener('visibilitychange', updatePresence);
 window.addEventListener('pagehide', () => {
@@ -2682,7 +2699,7 @@ function renderGroupBox() {
     <b>Groep</b>
     <div class="muted">${groupId ? `Jouw groepscode: <b>${groupId}</b>` : 'Maak een groep of join met een code.'}</div>
     <button class="btn" id="createGroupBtn">Groep aanmaken</button>
-    <input id="joinGroupCode" placeholder="Groepscode, bijvoorbeeld UPT-K7Q9-X2MF">
+    <input id="joinGroupCode" placeholder="Groepscode, bijv. UPT-K7Q9">
     <button class="btn2" id="joinGroupBtn">Groep joinen</button>
     ${groupId ? '<button class="btn2" id="leaveGroupBtn">Groep verlaten</button>' : ''}
   `;
@@ -3168,13 +3185,13 @@ header{border-top:3px solid var(--lime);padding:12px 0 16px}header small,footer{
 async function addLineupItem() {
   const selected = getSelectedLineup();
   const fest = selected && !selected.isImportedCatalog ? festivals.find(f => f.id === selected.id) : null;
-  if (!fest) return alert('Kies eerst een festival uit jouw eigen festivaloverzicht.');
+  if (!fest) return toast('Kies eerst een festival uit jouw eigen festivaloverzicht.');
 
   const artist = $('#lineupArtist').value.trim();
   const stage = $('#lineupStage').value.trim();
   const start = $('#lineupStart').value;
   const end = $('#lineupEnd').value;
-  if (!artist) return alert('Vul minimaal een artiest of act in.');
+  if (!artist) return toast('Vul minimaal een artiest of act in.');
 
   fest.lineup = fest.lineup || [];
   fest.lineup.push({ id: crypto.randomUUID(), artist, stage, start, end });
@@ -3211,7 +3228,7 @@ function fmt(d) {
 }
 
 function esc(s) {
-  return String(s || '').replace(/[&<>"]/g, m => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;' }[m]));
+  return String(s ?? '').replace(/[&<>"']/g, m => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[m]));
 }
 
 function switchTab(tab) {
@@ -3284,7 +3301,7 @@ if ($('#saveFestival')) {
       notes: $('#fNotes').value.trim()
     };
 
-    if (!f.name || !f.date) return alert('Vul minimaal naam en datum in.');
+    if (!f.name || !f.date) return toast('Vul minimaal naam en datum in.');
 
     await addFestivalLive(f);
 
