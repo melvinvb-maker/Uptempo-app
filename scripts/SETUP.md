@@ -54,3 +54,9 @@ Na elke import draait `collect-photos.js`. Het zoekt in de geïmporteerde line-u
 ## Automatische test
 
 Bij elke pull request en elke wijziging op `main` draait `.github/workflows/test.yml`. Die controleert de code met ESLint en opent de app in Chromium (`tests/smoke.mjs`): alle tabbladen, Nu & straks, overlap, agenda-export, planningsafbeelding, artiestenvenster, starten met beschadigde opslag en zonder verbinding, en of alle artiestenfoto's bestaan. Lokaal draaien: `cd tests && npm install && npx playwright install chromium && npm run lint && npm run smoke`.
+
+## Firestore-beveiligingsregels
+
+De regels staan in `firestore.rules`. Publiceren gaat via de Firebase-console: Firestore Database → Rules → de volledige inhoud van `firestore.rules` erin plakken → Publish. Wijzig de regels altijd eerst in dit bestand, zodat de automatische test (`npm run rules` in `tests/`) ze tegen de Firestore-emulator controleert: wat de app nodig heeft moet lukken, wat een buitenstaander probeert moet mislukken.
+
+Belangrijk: zet nooit `match /{document=**} { allow read, write: if true; }` terug. Daarmee kan iedereen op internet alle gegevens lezen, wijzigen en verwijderen.
