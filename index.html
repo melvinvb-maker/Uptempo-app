@@ -86,7 +86,7 @@ button,input,select,textarea{font:inherit}button{cursor:pointer;color:inherit}bu
 @media(max-width:480px){.app:has(#dashboard.active) #headerProfile{padding:6px}.app:has(#dashboard.active) #headerProfile span:last-child{display:none}}
 #profileAvatar,#headerAvatar{background-position:center;background-size:cover}.form input[type=file]{max-width:100%}.ttAct:has(.ttStar[aria-pressed="true"]),.ttPending:has(.ttStar[aria-pressed="true"]){background:#34471d;color:#fff;border-color:#cbff42;box-shadow:inset 0 0 0 1px #91b739}
 .ttAct:has(.ttStar[aria-pressed="true"]) small,.ttPending:has(.ttStar[aria-pressed="true"]) small,.ttStar[aria-pressed="true"]{color:#d6ff76}
-.artistLink{display:block;border:0;background:transparent;color:inherit;line-height:1.35;font-family:inherit;font-size:14px;font-weight:700;text-align:left;padding:4px 0;cursor:pointer;text-decoration:underline;text-decoration-color:var(--line);text-underline-offset:3px}.artistLink:focus-visible{outline:2px solid var(--pink)}.ttPending>div{flex:1}.artistDialog{color:var(--text,#fff);background:var(--card,#191b20);border:1px solid var(--line);border-radius:18px;width:min(90vw,420px);max-height:85dvh;overflow:auto;padding:20px}.artistDialog::backdrop{background:#000b}.artistDialog form{display:flex;justify-content:flex-end}.artistDialog h2{margin:10px 0;font-size:24px}.artistDialog img{width:min(100%,240px);max-height:280px;object-fit:contain;border-radius:12px}.artistDialog [hidden]{display:none}.artistBio{line-height:1.6}.artistMembers{display:flex;flex-wrap:wrap;gap:6px;margin:12px 0}.artistDialog a{color:var(--pink)}@media(pointer:coarse){
+.artistLink{display:block;border:0;background:transparent;color:inherit;line-height:1.35;font-family:inherit;font-size:14px;font-weight:700;text-align:left;padding:4px 0;cursor:pointer;text-decoration:underline;text-decoration-color:var(--line);text-underline-offset:3px}.artistLink:focus-visible{outline:2px solid var(--pink)}.ttPending>div{flex:1}.artistDialog{color:var(--text,#fff);background:var(--card,#191b20);border:1px solid var(--line);border-radius:18px;width:min(90vw,420px);max-height:85dvh;overflow:auto;padding:20px}.artistDialog::backdrop{background:#000b}.artistDialog form{display:flex;justify-content:flex-end}.artistDialog h2{margin:10px 0;font-size:24px}.artistDialog img{display:block;width:100%;aspect-ratio:4/3;margin:10px 0 2px;object-fit:cover;object-position:center 24%;border:1px solid var(--line);border-radius:14px;background:var(--card2);filter:saturate(.88)}.artistDialog [hidden]{display:none}.artistBio{line-height:1.6}.artistMembers{display:flex;flex-wrap:wrap;gap:6px;margin:12px 0}.artistDialog a{color:var(--pink)}@media(pointer:coarse){
   .ttAct{padding-right:46px}
   .ttStar,.day-chip{min-width:44px;min-height:44px}
   .artistLink{min-height:40px}
@@ -124,8 +124,10 @@ button,input,select,textarea{font:inherit}button{cursor:pointer;color:inherit}bu
 .timeAxis span{position:absolute;top:7px;padding-left:5px;font-size:12px;font-variant-numeric:tabular-nums;color:var(--txt)}
 .stageTrack{padding:6px 0 3px}.stageTrack h4{display:table;position:sticky;left:6px;margin:0 0 5px 5px;padding:4px 10px;border-radius:99px;background:var(--card2);color:var(--txt);font-size:13px}
 .slotLane{position:relative}.slotPlace{position:absolute;padding:0 3px}
-.artistSlot{position:relative;isolation:isolate;display:flex;align-items:flex-end;width:100%;height:103px;overflow:hidden;border:1px solid #ffffff36;border-radius:11px;padding:8px 9px;background:linear-gradient(135deg,#303342,#16202a);color:white;text-align:left}
-.slotArt,.slotArt::after{position:absolute;inset:0;z-index:-1}.slotArt{display:flex}.slotArt img{width:0;flex:1;min-width:0;height:100%;object-fit:cover;object-position:center 32%}.slotArt::after{content:"";z-index:0;background:linear-gradient(0deg,#080b12f5 0%,#080b129a 49%,#14182218 100%)}
+.artistSlot{position:relative;isolation:isolate;container-type:inline-size;display:flex;align-items:flex-end;width:100%;height:103px;overflow:hidden;border:1px solid #ffffff24;border-radius:11px;padding:8px 9px;background:linear-gradient(135deg,#232937,#151b24);color:white;text-align:left}
+.slotArt{position:absolute;inset:0 0 0 auto;width:min(58%,170px);display:flex;z-index:-1;-webkit-mask-image:linear-gradient(90deg,transparent,#000 72%);mask-image:linear-gradient(90deg,transparent,#000 72%)}.slotArt img{width:0;flex:1;min-width:0;height:100%;object-fit:cover;object-position:center 24%;filter:saturate(.7) brightness(.72) contrast(1.05);transition:filter .25s}.slotArt img+img{box-shadow:-1px 0 0 #0b0f1699}
+.artistSlot:hover .slotArt img,.artistSlot:focus-visible .slotArt img,.artistSlot[aria-pressed=true] .slotArt img{filter:saturate(.92) brightness(.86) contrast(1.05)}.hasArt .slotText,.hasArt .slotHeart{text-shadow:0 1px 3px #000c}
+@container (max-width:150px){.slotArt{width:100%;opacity:.32}}
 .slotText{min-width:0;display:block;width:100%;line-height:1.14}.slotText strong{display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden;overflow-wrap:anywhere;font-size:14px}.slotText small{display:block;color:#f0f2f6;font-size:12px;line-height:1.4;font-variant-numeric:tabular-nums;margin:3px 18px 0 0}.slotHeart{position:absolute;bottom:7px;right:6px;font-size:17px;line-height:1}
 .artistSlot[aria-pressed=true]{border-color:var(--pink);box-shadow:inset 0 0 0 1px var(--pink)}.artistSlot[aria-pressed=true] .slotHeart{color:var(--pink)}.artistSlot:focus-visible{outline-offset:-4px}
 .untimedSlots{display:grid;grid-template-columns:repeat(auto-fill,minmax(145px,1fr));gap:6px}
@@ -313,6 +315,6 @@ button,input,select,textarea{font:inherit}button{cursor:pointer;color:inherit}bu
     <div class="artistMembers"></div>
     <a hidden target="_blank" rel="noopener noreferrer"></a>
   </dialog>
-  <script type="module" src="app.js?v=festivalgids-4"></script>
+  <script type="module" src="app.js?v=festivalgids-5"></script>
 
 
