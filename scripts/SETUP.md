@@ -40,3 +40,13 @@ De workflow schrijft server-side met de serviceaccount. De browser krijgt geen s
 ## Planning en kosten
 
 De workflow start wekelijks op dinsdag om 08:15 UTC (09:15 Nederlandse wintertijd of 10:15 zomertijd). Handmatig starten kan via **Actions → Import festival timetable → Run workflow**. De repository is openbaar, waardoor standaard GitHub Actions-runners gratis zijn. Firebase Spark biedt gratis Firestore-quota; laat billing uitgeschakeld. Als een gratis quota wordt bereikt, beperken we het gebruik in plaats van over te stappen op een betaald plan.
+
+## Artiestenfoto's automatisch aanvullen
+
+Na elke import draait `collect-photos.js`. Het zoekt in de geïmporteerde line-ups naar artiesten zonder foto waarvan de festivalsite wel een afbeelding toont. Die afbeelding wordt bijgesneden tot een portret, omgezet naar zwart-wit en aan de randen donkerder gemaakt, zodat hij past bij de andere foto's. Het resultaat komt in `images/acts/auto/` en `auto-photos.js` en wordt automatisch gecommit.
+
+- Handgekozen foto's in `timetable-photos.js` gaan altijd voor. Een artiest die daar al staat, ook onder een showtitel zoals "D-STURB UNIVERSE", wordt overgeslagen.
+- Sets met meerdere artiesten (vs, b2b, &) worden overgeslagen.
+- Is een automatische afbeelding niet geschikt, zet de artiestennaam dan in `scripts/photo-skip.json` en verwijder het bestand uit `images/acts/auto/` en de regel uit `auto-photos.js`.
+- Per run komen er maximaal 40 nieuwe foto's bij. Dit kost niets: het draait op dezelfde gratis GitHub Actions-runner.
+

@@ -3,10 +3,12 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "import": "node import-festivals.js"
+    "import": "node import-festivals.js",
+    "photos": "node collect-photos.js"
   },
   "dependencies": {
     "firebase-admin": "^13.0.0",
-    "playwright": "^1.56.0"
+    "playwright": "^1.56.0",
+    "sharp": "^0.34.0"
   }
 }
