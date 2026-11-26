@@ -1,0 +1,6 @@
+{
+  "root": true,
+  "env": { "browser": true, "serviceworker": true, "es2022": true },
+  "parserOptions": { "ecmaVersion": 2022, "sourceType": "module" },
+  "rules": { "no-undef": "error", "no-redeclare": "error", "no-dupe-keys": "error", "no-unreachable": "error" }
+}
