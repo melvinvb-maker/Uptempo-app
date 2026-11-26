@@ -2,6 +2,7 @@ import { confusedEditions } from './confused-editions.mjs';
 import {setupGuide} from './festival-guide.js?v=4';
 import { artistBios } from './artist-bios.js';
 import { artistPortraits, rebirthSets } from './timetable-photos.js';
+import { autoPortraits } from './auto-photos.js';
 import { firebaseEnabled, firebaseConfig } from './firebase-config.js';
 
 const STAGE_PHOTO = "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?auto=format&fit=crop&w=1200&q=80";
@@ -2811,12 +2812,13 @@ const officialActPhotos = {
 };
 const artistKey = value => normalizeFestivalName(String(value).replace(/ø/gi, 'o'));
 const artistRecords = new Map(artistBios.map(([name,bio,url]) => [artistKey(name), {name,bio,url}]));
-const profilePhotos = new Map(Object.entries({...officialActPhotos, ...artistPortraits}).map(([name,url]) => [artistKey(name),url]));
+// Hand-picked photos win over automatically collected ones (auto-photos.js).
+const profilePhotos = new Map(Object.entries({...autoPortraits, ...officialActPhotos, ...artistPortraits}).map(([name,url]) => [artistKey(name),url]));
 for (const [name,url] of Object.entries(artistPortraits)) {
   const alias = artistKey(name.replace(/\s+pres\.?\s+/i,' '));
   if (!profilePhotos.has(alias)) profilePhotos.set(alias,url);
 }
-const photoNames = Object.keys({...officialActPhotos, ...artistPortraits}).sort((a,b) => b.length-a.length);
+const photoNames = Object.keys({...autoPortraits, ...officialActPhotos, ...artistPortraits}).sort((a,b) => b.length-a.length);
 
 // Strips billing extras such as "(host)", "pres. ..." and "LIVE" so the press photo of the artist is found.
 function cleanCredit(name) {

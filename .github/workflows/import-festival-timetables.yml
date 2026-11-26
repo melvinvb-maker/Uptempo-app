@@ -13,7 +13,7 @@ on:
       - "confused-editions.mjs"
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
   group: uptempo-festival-import
@@ -52,3 +52,20 @@ jobs:
       - name: Import new festival timetable posts
         working-directory: scripts
         run: npm run import
+
+      - name: Collect photos for artists without one
+        working-directory: scripts
+        continue-on-error: true
+        run: npm run photos
+
+      - name: Save new artist photos
+        run: |
+          git add images/acts/auto auto-photos.js
+          if git diff --cached --quiet; then
+            echo "No new artist photos."
+          else
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git commit -m "Add automatically collected artist photos"
+            git push
+          fi
