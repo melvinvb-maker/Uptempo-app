@@ -19,6 +19,223 @@ let unsubscribeFriends = null;
 let unsubscribeFestivalLineups = null;
 let festivalLineupUpdates = [
 {
+  "festival": "Supremacy 2027 – Return to the Classics",
+  "date": "2027-01-16",
+  "dateEnd": "2027-01-16",
+  "location": "Jaarbeurs Utrecht, Utrecht",
+  "imageUrl": "https://www.artofdance.nl/wp-content/uploads/2026/01/SUP27CL_Banner-1638x1024.jpg",
+  "catalogKey": "supremacy20270116",
+  "officialCatalog": true,
+  "lineupEditionYear": 2027,
+  "lineupSource": "https://www.artofdance.nl/events/supremacy-2027-return-to-the-classics/",
+  "lineup": [
+    {
+      "artist": "Act of Rage: THE FOUNDATION",
+      "stage": "Mainstage",
+      "day": "Saturday",
+      "start": "",
+      "end": ""
+    },
+    {
+      "artist": "Angerfist: THE DEADFACED DIMENSION",
+      "stage": "Mainstage",
+      "day": "Saturday",
+      "start": "",
+      "end": ""
+    },
+    {
+      "artist": "B-Freqz",
+      "stage": "Mainstage",
+      "day": "Saturday",
+      "start": "",
+      "end": ""
+    },
+    {
+      "artist": "Crypsis: TURNTABLE SET",
+      "stage": "Mainstage",
+      "day": "Saturday",
+      "start": "",
+      "end": ""
+    },
+    {
+      "artist": "D-Sturb: LEGACY",
+      "stage": "Mainstage",
+      "day": "Saturday",
+      "start": "",
+      "end": ""
+    },
+    {
+      "artist": "Public Enemies",
+      "stage": "Mainstage",
+      "day": "Saturday",
+      "start": "",
+      "end": ""
+    },
+    {
+      "artist": "Radical Redemption: THE LEGACY",
+      "stage": "Mainstage",
+      "day": "Saturday",
+      "start": "",
+      "end": ""
+    },
+    {
+      "artist": "Rebelion: THE FIRST DOSE",
+      "stage": "Mainstage",
+      "day": "Saturday",
+      "start": "",
+      "end": ""
+    },
+    {
+      "artist": "Regain: THIS IS REGAIN",
+      "stage": "Mainstage",
+      "day": "Saturday",
+      "start": "",
+      "end": ""
+    },
+    {
+      "artist": "Rejecta: RISE OF REJECTA",
+      "stage": "Mainstage",
+      "day": "Saturday",
+      "start": "",
+      "end": ""
+    },
+    {
+      "artist": "Sub Sonik",
+      "stage": "Mainstage",
+      "day": "Saturday",
+      "start": "",
+      "end": ""
+    },
+    {
+      "artist": "Unresolved: ACT OF GOD",
+      "stage": "Mainstage",
+      "day": "Saturday",
+      "start": "",
+      "end": ""
+    },
+    {
+      "artist": "Warface: OUT OF THE ARCHIVES",
+      "stage": "Mainstage",
+      "day": "Saturday",
+      "start": "",
+      "end": ""
+    },
+    {
+      "artist": "Nolz",
+      "stage": "Mainstage",
+      "day": "Saturday",
+      "start": "",
+      "end": ""
+    }
+  ]
+},
+{
+  "festival": "A Nightmare in Rotterdam 2027 – Hall of Legends",
+  "date": "2027-02-13",
+  "dateEnd": "2027-02-13",
+  "location": "Onderzeebootloods, Rotterdam",
+  "imageUrl": "https://www.b2s.nl/126800/1794913062-anir27_artwork_1x1.png?auto=compress&dpr=2&fit=max&w=1200",
+  "catalogKey": "anightmareinrotterdam20270213",
+  "officialCatalog": true,
+  "lineupEditionYear": 2027,
+  "lineupSource": "https://www.b2s.nl/en/events/a-nightmare-in-rotterdam",
+  "lineup": [
+    {
+      "artist": "DISTORTION & MC RAW",
+      "stage": "Mainstage",
+      "day": "Saturday",
+      "start": "",
+      "end": ""
+    },
+    {
+      "artist": "EVIL ACTIVITIES",
+      "stage": "Mainstage",
+      "day": "Saturday",
+      "start": "",
+      "end": ""
+    },
+    {
+      "artist": "LARS",
+      "stage": "Mainstage",
+      "day": "Saturday",
+      "start": "",
+      "end": ""
+    },
+    {
+      "artist": "NEOPHYTE VS PANIC",
+      "stage": "Mainstage",
+      "day": "Saturday",
+      "start": "",
+      "end": ""
+    },
+    {
+      "artist": "NOSFERATU",
+      "stage": "Mainstage",
+      "day": "Saturday",
+      "start": "",
+      "end": ""
+    },
+    {
+      "artist": "PARTYRAISER",
+      "stage": "Mainstage",
+      "day": "Saturday",
+      "start": "",
+      "end": ""
+    },
+    {
+      "artist": "PAUL ELSTAK",
+      "stage": "Mainstage",
+      "day": "Saturday",
+      "start": "",
+      "end": ""
+    },
+    {
+      "artist": "RUFFNECK",
+      "stage": "Mainstage",
+      "day": "Saturday",
+      "start": "",
+      "end": ""
+    },
+    {
+      "artist": "THE VIPER",
+      "stage": "Mainstage",
+      "day": "Saturday",
+      "start": "",
+      "end": ""
+    },
+    {
+      "artist": "ALEE",
+      "stage": "Mainstage",
+      "day": "Saturday",
+      "start": "",
+      "end": ""
+    }
+  ]
+},
+{
+  "festival": "Avondje Outsiders 2027 – Het Slechtste Idee van Nederland",
+  "date": "2027-03-13",
+  "dateEnd": "2027-03-14",
+  "location": "Rotterdam Ahoy, Rotterdam",
+  "imageUrl": "https://www.b2s.nl/126800/1792151959-ao27_artwork_1x1.jpg?auto=compress&dpr=2&fit=max&w=1200",
+  "catalogKey": "avondjeoutsiders20270313",
+  "officialCatalog": true,
+  "lineupEditionYear": 2027,
+  "lineupSource": "https://www.b2s.nl/en/events/avondje-outsiders",
+  "lineup": []
+},
+{
+  "festival": "Supersized Kingsday Festival 2027",
+  "date": "2027-04-27",
+  "dateEnd": "2027-04-27",
+  "location": "Aquabest, Eindhoven",
+  "catalogKey": "supersizedkingsday20270427",
+  "officialCatalog": true,
+  "lineupEditionYear": 2027,
+  "lineupSource": "https://www.supersizedkingsday.nl/",
+  "lineup": []
+},
+{
   "festival": "Dimitri K – Sacrifice Day",
   "date": "2026-11-28",
   "dateEnd": "2026-11-28",
