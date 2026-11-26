@@ -1980,6 +1980,7 @@ document.addEventListener('click', event => {
         if (heart) heart.textContent = saved ? '♥' : '♡';
         else star.textContent = saved ? '★' : '☆';
       }
+      refreshPlanPanel();
       return;
     }
   }
@@ -2964,6 +2965,121 @@ function timedSets(rows) {
     }).sort((a,b) => a.start-b.start);
 }
 
+// ---- Festival-day planning: real clock times, "now & next", overlaps and calendar export ----
+const WEEKDAYS = {sunday:0, monday:1, tuesday:2, wednesday:3, thursday:4, friday:5, saturday:6};
+const isoDay = date => date.getFullYear()+'-'+String(date.getMonth()+1).padStart(2,'0')+'-'+String(date.getDate()).padStart(2,'0');
+const clock = date => String(date.getHours()).padStart(2,'0')+':'+String(date.getMinutes()).padStart(2,'0');
+
+// Calendar date of a lineup day ("Saturday", an ISO date or empty) within the festival's dates.
+function lineupDayDate(festival, day) {
+  if (/^\d{4}-\d{2}-\d{2}$/.test(day || '')) return day;
+  const weekday = WEEKDAYS[String(day || '').toLowerCase()];
+  if (weekday === undefined || !festival.date) return festival.date;
+  const date = new Date(festival.date+'T12:00');
+  const last = new Date((festival.dateEnd || festival.date)+'T12:00');
+  for (; date <= last; date.setDate(date.getDate()+1)) if (date.getDay() === weekday) return isoDay(date);
+  return festival.date;
+}
+
+// Every set with a known start time, as real Date objects. A set without an end time is counted as one hour.
+function scheduledSets(festival) {
+  if (!festival?.date) return [];
+  const rows = (festival.lineup || []).filter(item => clockMinute(item.start) !== null);
+  return [...new Set(rows.map(item => item.day || ''))].flatMap(day => {
+    const base = new Date(lineupDayDate(festival, day)+'T00:00');
+    return timedSets(rows.filter(item => (item.day || '') === day)).map(({item,start,end}) => ({
+      item, key: setKey(festival,item), stage: String(item.stage || '').trim() || 'Programma',
+      start: new Date(base.getTime() + start*60000),
+      end: new Date(base.getTime() + (item.end ? end : start+60)*60000)
+    }));
+  }).sort((a,b) => a.start-b.start);
+}
+
+function nowNextHtml(sets, now) {
+  if (!sets.length) return '';
+  const first = sets[0].start, last = sets.reduce((max,set) => set.end > max ? set.end : max, sets[0].end);
+  if (now < first - 3*3600000 || now > last) return '';
+  const stages = [...new Set(sets.map(set => set.stage))];
+  const rows = stages.map(stage => {
+    const own = sets.filter(set => set.stage === stage);
+    const current = own.find(set => set.start <= now && now < set.end);
+    const next = own.find(set => set.start > now);
+    if (!current && !next) return '';
+    const fav = set => favoriteSets.includes(set.key) ? '<span class="nnFav" aria-label="favoriet">♥</span> ' : '';
+    return '<div class="nnRow"><b>'+esc(stage)+'</b><div>'
+      +(current ? '<span class="nnNow">Nu</span> '+fav(current)+esc(current.item.artist)+' <small>tot '+clock(current.end)+'</small>' : '<span class="muted">Even pauze</span>')
+      +(next ? '<br><span class="nnNext">'+clock(next.start)+'</span> '+fav(next)+esc(next.item.artist) : '')
+      +'</div></div>';
+  }).join('');
+  const title = now < first ? 'Vandaag · begint om '+clock(first) : 'Nu & straks';
+  return rows ? '<section class="planCard"><h3>'+title+'</h3>'+rows+'</section>' : '';
+}
+
+function overlapHtml(favorites) {
+  const pairs = [];
+  favorites.forEach((a,i) => favorites.slice(i+1).forEach(b => {
+    const minutes = Math.round((Math.min(a.end,b.end) - Math.max(a.start,b.start)) / 60000);
+    if (minutes > 0 && a.stage !== b.stage) pairs.push({a,b,minutes});
+  }));
+  if (!pairs.length) return '';
+  const set = s => '<b>'+esc(s.item.artist)+'</b> <small>'+esc(s.stage)+' · '+clock(s.start)+'–'+clock(s.end)+'</small>';
+  return '<section class="planCard planWarn"><h3>Overlap in je favorieten</h3>'+pairs.map(({a,b,minutes}) =>
+    '<p>'+set(a)+'<br>'+set(b)+'<br><span class="muted">'+minutes+' minuten tegelijk</span></p>').join('')+'</section>';
+}
+
+function planPanel(festival) {
+  const sets = scheduledSets(festival);
+  const favorites = sets.filter(set => favoriteSets.includes(set.key));
+  const untimed = (festival.lineup || []).filter(item => clockMinute(item.start) === null && favoriteSets.includes(setKey(festival,item))).length;
+  const agenda = favorites.length ? '<button class="btn2 planAgenda" data-export-agenda>Favorieten in mijn agenda ('+favorites.length+')</button>'
+    + (untimed ? '<p class="muted">'+untimed+' favoriet'+(untimed > 1 ? 'en hebben' : ' heeft')+' nog geen speeltijd en '+(untimed > 1 ? 'komen' : 'komt')+' er later bij.</p>' : '') : '';
+  return nowNextHtml(sets, new Date()) + overlapHtml(favorites) + agenda;
+}
+
+function refreshPlanPanel() {
+  const panel = document.getElementById('planPanel');
+  const festival = panel && getSelectedLineup();
+  if (festival) panel.innerHTML = planPanel(festival);
+}
+setInterval(() => { if (!document.hidden) refreshPlanPanel(); }, 60000);
+
+const icsText = value => String(value || '').replace(/\\/g,'\\\\').replace(/;/g,'\;').replace(/,/g,'\\,').replace(/\r?\n/g,'\\n');
+const icsTime = date => date.toISOString().replace(/[-:]/g,'').replace(/\.\d{3}/,'');
+// Lines longer than 75 characters are folded, as the calendar format requires.
+const icsFold = line => line.length <= 74 ? line : line.match(/.{1,74}/g).join('\r\n ');
+
+function exportAgenda(festival) {
+  const favorites = scheduledSets(festival).filter(set => favoriteSets.includes(set.key));
+  if (!favorites.length) return toast('Markeer eerst sets met een hartje.');
+  const stamp = icsTime(new Date());
+  const events = favorites.map(set => [
+    'BEGIN:VEVENT',
+    'UID:'+normalizeFestivalName(festival.name)+'-'+icsTime(set.start)+'-'+normalizeFestivalName(set.item.artist+set.stage)+'@uptempo',
+    'DTSTAMP:'+stamp, 'DTSTART:'+icsTime(set.start), 'DTEND:'+icsTime(set.end),
+    'SUMMARY:'+icsText(set.item.artist+' · '+set.stage),
+    'LOCATION:'+icsText([festival.name, festival.location].filter(Boolean).join(', ')),
+    'DESCRIPTION:'+icsText('Favoriete set in je UPTEMPO-planning.'),
+    'BEGIN:VALARM', 'TRIGGER:-PT15M', 'ACTION:DISPLAY', 'DESCRIPTION:'+icsText(set.item.artist+' begint over 15 minuten op '+set.stage), 'END:VALARM',
+    'END:VEVENT'
+  ]).flat();
+  const lines = ['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//UPTEMPO//Festival planner//NL','CALSCALE:GREGORIAN','METHOD:PUBLISH',...events,'END:VCALENDAR'];
+  const blob = new Blob([lines.map(icsFold).join('\r\n')+'\r\n'], {type:'text/calendar;charset=utf-8'});
+  const link = document.createElement('a');
+  link.href = URL.createObjectURL(blob);
+  link.download = (festival.name || 'festival').replace(/[^\w\- ]+/g,'').trim().replace(/\s+/g,'-')+'-favorieten.ics';
+  document.body.append(link);
+  link.click();
+  link.remove();
+  setTimeout(() => URL.revokeObjectURL(link.href), 10000);
+  toast(favorites.length+' set'+(favorites.length > 1 ? 's' : '')+' klaar voor je agenda');
+}
+
+document.addEventListener('click', event => {
+  if (!event.target.closest('[data-export-agenda]')) return;
+  const festival = getSelectedLineup();
+  if (festival) exportAgenda(festival);
+});
+
 // Each stage uses the same time scale so simultaneous sets line up vertically.
 function horizontalSchedule(items, festival) {
   const card = item => {
@@ -3113,6 +3229,7 @@ function renderLineup() {
       ${['',...stages].map(stage => `<button class="day-chip ${selectedStage === stage ? 'active' : ''}" data-stage-filter="${esc(stage)}" aria-pressed="${selectedStage === stage}">${esc(stage || 'Alle podia')}</button>`).join('')}
     </div></fieldset>` : ''}
     ${lineup.length ? `<button class="day-chip ${onlyFavoriteSets ? "active" : ""}" data-favorites-only aria-pressed="${onlyFavoriteSets}">Mijn favoriete acts</button>` : ""}
+    ${lineup.length ? '<div id="planPanel">'+planPanel(selected)+'</div>' : ''}
     ${visible.length ? horizontalSchedule(visible,selected) : '<div class="card empty-state">'+(lineup.length ? 'Geen acts met deze filters.' : 'De timetable is nog niet bekend.')+'</div>'}
     ${visible.length ? '<details class="profileList"><summary>Artiestenprofielen</summary>'+[...new Set(visible.map(a => a.artist))].map(artist => artistLink({artist})).join('')+'</details>' : ''}
     <div style="padding:2px 4px">${mapLink(selected)}${source}</div>
