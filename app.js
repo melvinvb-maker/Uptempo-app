@@ -7,10 +7,20 @@ import { firebaseEnabled, firebaseConfig } from './firebase-config.js';
 const STAGE_PHOTO = "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?auto=format&fit=crop&w=1200&q=80";
 const $ = s => document.querySelector(s);
 
-let festivals = JSON.parse(localStorage.festivals || '[]');
-let friends = JSON.parse(localStorage.friends || '[]');
-let profile = JSON.parse(localStorage.profile || '{"name":""}');
-let groupId = localStorage.groupId || "";
+// Reads saved JSON safely: damaged or blocked storage falls back instead of stopping the whole app.
+function stored(key, fallback) {
+  try {
+    const value = JSON.parse(localStorage.getItem(key));
+    return value !== null && typeof value === typeof fallback && Array.isArray(value) === Array.isArray(fallback) ? value : fallback;
+  } catch {
+    return fallback;
+  }
+}
+
+let festivals = stored('festivals', []);
+let friends = stored('friends', []);
+let profile = stored('profile', {name:''});
+let groupId = (() => { try { return localStorage.groupId || ""; } catch { return ""; } })();
 let calendarDate = new Date();
 
 let db = null;
@@ -1898,7 +1908,7 @@ let festivalLineupUpdates = [
     "lineupSource": "https://www.013.nl/programma/160973/up-close-with-d-block-s-te-fan"
   }
 ];
-let savedKeys = JSON.parse(localStorage.uptempoSavedEditions || '[]');
+let savedKeys = stored('uptempoSavedEditions', []);
 function editionKey(f) {
   return normalizeFestivalName(f.festival) + '-' + (f.date || f.lineupEditionYear || 'open');
 }
@@ -1932,7 +1942,7 @@ document.addEventListener('click', event => {
 });
 let selectedLineupKey = '';
 let selectedLineupDay = 'all';
-let favoriteSets = JSON.parse(localStorage.uptempoFavoriteSets || '[]');
+let favoriteSets = stored('uptempoFavoriteSets', []);
 let onlyFavoriteSets = false;
 function setKey(festival, item) {
   return JSON.stringify([festival.key, festival.date, item.day || '', item.artist, item.stage || '']);
@@ -1961,10 +1971,14 @@ document.addEventListener('click', event => {
 });
 
 function save() {
-  localStorage.festivals = JSON.stringify(festivals);
-  localStorage.friends = JSON.stringify(friends);
-  localStorage.profile = JSON.stringify(profile);
-  localStorage.groupId = groupId;
+  try {
+    localStorage.festivals = JSON.stringify(festivals);
+    localStorage.friends = JSON.stringify(friends);
+    localStorage.profile = JSON.stringify(profile);
+    localStorage.groupId = groupId;
+  } catch {
+    // Storage full or blocked (private mode): the app keeps working for this visit.
+  }
 }
 
 function launchConfetti() {
@@ -2045,10 +2059,24 @@ function updateFirebaseNotice() {
     : '🟡 Maak of join eerst een groep.';
 }
 
+// 8 random characters from a set without look-alikes (0/O, 1/I/L): about a trillion possible codes.
+function newGroupCode() {
+  const alphabet = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
+  const bytes = crypto.getRandomValues(new Uint8Array(8));
+  const chars = [...bytes].map(byte => alphabet[byte % alphabet.length]).join('');
+  return 'UPT-' + chars.slice(0,4) + '-' + chars.slice(4);
+}
+
 async function createGroup() {
   if (!db || !uid) return alert('Firebase is nog niet actief.');
 
-  groupId = 'UPT-' + Math.floor(1000 + Math.random() * 9000);
+  let code = '';
+  for (let attempt = 0; attempt < 5 && !code; attempt++) {
+    const candidate = newGroupCode();
+    if (!(await window.fb.getDoc(window.fb.doc(db, 'groups', candidate))).exists()) code = candidate;
+  }
+  if (!code) return alert('Er kon geen groepscode worden gemaakt. Probeer het opnieuw.');
+  groupId = code;
   save();
 
   await window.fb.setDoc(window.fb.doc(db, 'groups', groupId), {
@@ -2435,7 +2463,7 @@ function compactFestival(update, archived = false) {
   const key = editionKey(update);
   const saved = savedKeys.includes(key);
   const subtitle = [archived ? 'Archief' : '', festivalDateLabel(update), update.location].filter(Boolean).join(' · ');
-  const art = update.imageUrl ? '<img loading="lazy" decoding="async" alt="" src="'+esc(update.imageUrl)+'">' : '<span class="rowInitial">'+esc(name.slice(0,1))+'</span>';
+  const art = update.imageUrl ? '<img loading="lazy" decoding="async" alt="" data-initial="'+esc(name.slice(0,1))+'" src="'+esc(update.imageUrl)+'">' : '<span class="rowInitial">'+esc(name.slice(0,1))+'</span>';
   return '<article class="festivalRow"><button type="button" class="festivalOpen" data-edition="'+esc(normalizeFestivalName(name))+'">'+art+'<span><strong>'+esc(name)+'</strong><small>'+esc(subtitle)+'</small></span></button>'+
     (update.date ? '<button class="rowSave" data-save-edition="'+esc(key)+'" aria-label="'+esc((saved?'Verwijder uit planning: ':'Bewaar festival: ')+name)+'" aria-pressed="'+saved+'"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 3h12v18l-6-4-6 4z"/></svg></button>' : '')+'</article>';
 }
@@ -2654,7 +2682,7 @@ function renderGroupBox() {
     <b>Groep</b>
     <div class="muted">${groupId ? `Jouw groepscode: <b>${groupId}</b>` : 'Maak een groep of join met een code.'}</div>
     <button class="btn" id="createGroupBtn">Groep aanmaken</button>
-    <input id="joinGroupCode" placeholder="Groepscode, bijvoorbeeld UPT-4829">
+    <input id="joinGroupCode" placeholder="Groepscode, bijvoorbeeld UPT-K7Q9-X2MF">
     <button class="btn2" id="joinGroupBtn">Groep joinen</button>
     ${groupId ? '<button class="btn2" id="leaveGroupBtn">Groep verlaten</button>' : ''}
   `;
@@ -2774,7 +2802,14 @@ function setPhotos(item) {
 
 document.addEventListener('error', event => {
   const image = event.target;
-  if (!(image instanceof HTMLImageElement) || !image.closest('.slotArt')) return;
+  if (!(image instanceof HTMLImageElement)) return;
+  if (image.dataset.initial !== undefined) {
+    const initial = document.createElement('span');
+    initial.className = 'rowInitial';
+    initial.textContent = image.dataset.initial;
+    return image.replaceWith(initial);
+  }
+  if (!image.closest('.slotArt')) return;
   const art = image.parentElement;
   image.remove();
   if (!art.querySelector('img')) art.closest('.artistSlot')?.classList.remove('hasArt');
@@ -2801,7 +2836,7 @@ function resolveArtist(name, showTitle) {
     name.toLowerCase().startsWith(entry.name.toLowerCase()+' ')
   ));
 }
-const followed = new Map(JSON.parse(localStorage.getItem('uptempoFollowedArtists') || '[]'));
+const followed = new Map(stored('uptempoFollowedArtists', []));
 function renderFollowed() {
   const section = $('#followedArtists');
   section.hidden = !followed.size;
@@ -3077,7 +3112,7 @@ function renderLineup() {
   const copyKey = JSON.stringify([selected.key,selected.date]);
   if (download) {
     try {
-      if (JSON.parse(localStorage.uptempoOfflineSchedules || '{}')[copyKey]) download.textContent = 'Offline versie bijwerken';
+      if (stored('uptempoOfflineSchedules', {})[copyKey]) download.textContent = 'Offline versie bijwerken';
     } catch {}
   }
   if (download) download.onclick = () => {
@@ -3111,7 +3146,7 @@ header{border-top:3px solid var(--lime);padding:12px 0 16px}header small,footer{
     const html = '<!doctype html><html lang="nl"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>'+esc(selected.name)+'</title><style>'+css+'</style><header><small>UPTEMPO · Timetable</small><h1>'+esc(selected.name)+'</h1><p>'+esc(meta)+'</p></header>'+board.innerHTML+'<footer>Opgeslagen op '+new Date().toLocaleString('nl-NL')+'</footer></html>';
     const status = container.querySelector('[data-download-status]');
     try {
-      const copies = JSON.parse(localStorage.uptempoOfflineSchedules || '{}');
+      const copies = stored('uptempoOfflineSchedules', {});
       copies[copyKey] = {name:selected.name,meta,html,lineupRevision:selected.lineupRevision};
       localStorage.uptempoOfflineSchedules = JSON.stringify(copies);
       download.textContent = 'Offline versie bijwerken';

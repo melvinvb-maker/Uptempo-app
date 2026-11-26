@@ -18,7 +18,7 @@ main button{font:inherit;text-align:left;display:grid;grid-template-columns:1fr 
 <script>
 const main=document.querySelector('main');
 const list=document.querySelector('#list'),reader=document.querySelector('#reader'),back=document.querySelector('#back');
-const savedCopies=JSON.parse(localStorage.uptempoOfflineSchedules || '{}');
+let savedCopies={};try{savedCopies=JSON.parse(localStorage.uptempoOfflineSchedules)||{};}catch{}
 const clubKey=JSON.stringify(['catalog:gezelligeclubtempo','2026-12-12']);
 const clubCopy=savedCopies[clubKey];
 if (clubCopy && !clubCopy.lineupRevision) {
