@@ -1970,6 +1970,7 @@ document.addEventListener('click', event => {
   else {
     const key = button.dataset.setKey;
     favoriteSets = favoriteSets.includes(key) ? favoriteSets.filter(value => value !== key) : [...favoriteSets,key];
+    shareFavorites();
     localStorage.uptempoFavoriteSets = JSON.stringify(favoriteSets);
     if (!onlyFavoriteSets) {
       const saved = favoriteSets.includes(key);
@@ -2254,6 +2255,30 @@ function normalizeFestivalName(value) {
     .replace(/[^a-z0-9]/g, '');
 }
 
+// Favourite sets are shared with the group, so friends can see who is going to which set.
+// Debounced: a burst of taps costs one write instead of one per tap.
+let shareTimer;
+function shareFavorites() {
+  clearTimeout(shareTimer);
+  shareTimer = setTimeout(() => {
+    if (!db || !uid || !groupId) return;
+    window.fb.setDoc(window.fb.doc(db, 'groups', groupId, 'friends', uid), {favorites: favoriteSets.slice(-400)}, {merge: true}).catch(() => {});
+  }, 2000);
+}
+
+// Group members (not yourself) who marked this set as a favourite.
+function friendsAtSet(key) {
+  return friends.filter(friend => friend.id !== uid && Array.isArray(friend.favorites) && friend.favorites.includes(key));
+}
+
+function friendBadges(key) {
+  const going = friendsAtSet(key);
+  if (!going.length) return '';
+  const names = going.map(friend => friend.name || 'Vriend');
+  const dots = going.slice(0,3).map(friend => '<i>'+esc((friend.name || '?').trim().slice(0,1).toUpperCase())+'</i>').join('');
+  return '<span class="slotFriends" title="'+esc(names.join(', '))+'">'+dots+(going.length > 3 ? '<i>+'+(going.length-3)+'</i>' : '')+'</span>';
+}
+
 async function saveProfileLive() {
   if (!db || !uid || !groupId) return;
 
@@ -2263,7 +2288,8 @@ async function saveProfileLive() {
       name: profile.name || 'Naamloos',
       uid,
       activeAt: document.hidden ? 0 : Date.now(),
-      lastSeen: window.fb.serverTimestamp()
+      lastSeen: window.fb.serverTimestamp(),
+      favorites: favoriteSets.slice(-400)
     },
     { merge: true }
   );
@@ -3006,9 +3032,10 @@ function nowNextHtml(sets, now) {
     const next = own.find(set => set.start > now);
     if (!current && !next) return '';
     const fav = set => favoriteSets.includes(set.key) ? '<span class="nnFav" aria-label="favoriet">♥</span> ' : '';
+    const with_ = set => { const names = friendsAtSet(set.key).map(friend => friend.name || 'Vriend'); return names.length ? ' <small class="nnWith">· '+esc(names.slice(0,3).join(', '))+(names.length > 3 ? ' +'+(names.length-3) : '')+'</small>' : ''; };
     return '<div class="nnRow"><b>'+esc(stage)+'</b><div>'
-      +(current ? '<span class="nnNow">Nu</span> '+fav(current)+esc(current.item.artist)+' <small>tot '+clock(current.end)+'</small>' : '<span class="muted">Even pauze</span>')
-      +(next ? '<br><span class="nnNext">'+clock(next.start)+'</span> '+fav(next)+esc(next.item.artist) : '')
+      +(current ? '<span class="nnNow">Nu</span> '+fav(current)+esc(current.item.artist)+' <small>tot '+clock(current.end)+'</small>'+with_(current) : '<span class="muted">Even pauze</span>')
+      +(next ? '<br><span class="nnNext">'+clock(next.start)+'</span> '+fav(next)+esc(next.item.artist)+with_(next) : '')
       +'</div></div>';
   }).join('');
   const title = now < first ? 'Vandaag · begint om '+clock(first) : 'Nu & straks';
@@ -3088,7 +3115,8 @@ function horizontalSchedule(items, festival) {
     const photos = setPhotos(item);
     const art = photos.map(url => '<img loading="lazy" decoding="async" alt="" src="'+esc(url)+'">').join('');
     const time = item.start ? [item.start,item.end].filter(Boolean).join('–') : 'Tijd volgt';
-    return '<button type="button" class="artistSlot'+(photos.length ? ' hasArt' : '')+'" data-set-key="'+esc(key)+'" aria-pressed="'+saved+'" aria-label="'+esc(item.artist+' · '+time+' · Favoriet')+'"><span class="slotArt" aria-hidden="true">'+art+'</span><span class="slotText"><strong>'+esc(item.artist)+'</strong><small>'+esc(time)+'</small></span><span class="slotHeart" aria-hidden="true">'+(saved?'♥':'♡')+'</span></button>';
+    const going = friendsAtSet(key).map(friend => friend.name || 'Vriend');
+    return '<button type="button" class="artistSlot'+(photos.length ? ' hasArt' : '')+'" data-set-key="'+esc(key)+'" aria-pressed="'+saved+'" aria-label="'+esc(item.artist+' · '+time+(going.length ? ' · ook '+going.join(', ') : '')+' · Favoriet')+'"><span class="slotArt" aria-hidden="true">'+art+'</span>'+friendBadges(key)+'<span class="slotText"><strong>'+esc(item.artist)+'</strong><small>'+esc(time)+'</small></span><span class="slotHeart" aria-hidden="true">'+(saved?'♥':'♡')+'</span></button>';
   };
   const days = [...new Set(items.map(item => item.day || ''))];
   return days.map(day => {
