@@ -35,7 +35,7 @@ function renderSeason() {
   const years = [...new Set(editions.filter(f => !festivalHasPassed(f)).map(f => f.date.slice(0,4)))];
   $('#seasonAgenda').innerHTML = years.map(year => '<h3 class="seasonYear">'+year+'</h3>'+editions.filter(f => !festivalHasPassed(f) && f.date.startsWith(year)).map(seasonRow).join('')).join('') || 'Festivaldata worden opgehaald.';
   const saved = editions.filter(f => savedKeys.includes(editionKey(f)));
-  $('#savedEditions').innerHTML = saved.map(seasonRow).join('') || '<button class="btn2" data-go="festivals">Kies een festival om te bewaren</button>';
+  $('#savedEditions').innerHTML = saved.map(seasonRow).join('') || '<p>Nog niets bewaard. <button class="linkButton" data-go="festivals">Festivals bekijken</button></p>';
   const season = editions.filter(f => f.date.startsWith('2027'));
   $('#seasonStats').innerHTML = '<b>'+season.length+' bevestigde edities</b>'+season.map(seasonRow).join('');
 }
@@ -153,7 +153,7 @@ async function initFirebase() {
       }
     });
   } catch (e) {
-    if ($('#firebaseNotice')) $('#firebaseNotice').textContent = 'Firebase kon niet starten.';
+    if ($('#firebaseNotice')) { $('#firebaseNotice').textContent = 'Groepssynchronisatie is nu niet beschikbaar.'; $('#firebaseNotice').hidden = false; }
     console.error(e);
   }
 }
@@ -164,8 +164,8 @@ function groupPath(type) {
 
 function updateFirebaseNotice() {
   if (!$('#firebaseNotice')) return;
-  $('#firebaseNotice').textContent = groupId ? '● Live gesynchroniseerd met je groep' : '';
-  $('#firebaseNotice').hidden = !groupId;
+  // Only shown when something is wrong (see initFirebase); a working sync needs no message.
+  $('#firebaseNotice').hidden = true;
 }
 
 // 8 random characters from a set without look-alikes (0/O, 1/I/L): about a trillion possible codes.
@@ -752,7 +752,7 @@ function renderFriends() {
         <div class="grow"><b>${esc(friend.name || 'Vriend')}</b><div class="muted" data-friend-status></div></div>
         ${favorites ? `<span class="friendFavs">♥ ${favorites}</span>` : ''}
       </div>`;
-  }).join('') || `<p class="muted">${groupId ? 'Nog niemand anders in je groep. Deel de code hierboven.' : 'Je vrienden verschijnen hier zodra je in een groep zit.'}</p>`;
+  }).join('') || (groupId ? '<p class="empty">Nog niemand anders in je groep. Deel de code.</p>' : '');
   refreshFriendStatus();
 }
 
@@ -790,15 +790,11 @@ function renderGroupBox() {
   const slot = $('#groupSlot');
   if (!slot) return;
   slot.innerHTML = groupId ? `
-    <div class="groupCard">
-      <div class="groupCode"><div><small>Groepscode</small><b>${esc(groupId)}</b></div><button class="btn2" id="shareGroupBtn">Deel code</button></div>
-      <button class="groupLeave" id="leaveGroupBtn">Groep verlaten</button>
-    </div>` : `
-    <div class="groupCard">
-      <p class="muted" style="margin:0 0 10px">Maak een groep en deel de code, of vul de code van een vriend in.</p>
+    <div class="groupCode"><div><small class="muted">Code</small><br><b>${esc(groupId)}</b></div>
+      <div class="groupActions"><button class="linkButton" id="shareGroupBtn">Deel</button><button class="linkButton quiet" id="leaveGroupBtn">Verlaat</button></div></div>` : `
+    <div class="groupStart"><p>Maak een groep en deel de code, of vul de code van een vriend in.</p>
       <button class="btn" id="createGroupBtn">Groep aanmaken</button>
-      <div class="groupJoin"><input id="joinGroupCode" placeholder="Groepscode, bijv. UPT-K7Q9" aria-label="Groepscode" autocapitalize="characters"><button class="btn2" id="joinGroupBtn">Join</button></div>
-    </div>`;
+      <div class="groupJoin"><input id="joinGroupCode" placeholder="Groepscode" aria-label="Groepscode" autocapitalize="characters"><button class="btn2" id="joinGroupBtn">Join</button></div></div>`;
   if ($('#createGroupBtn')) $('#createGroupBtn').onclick = createGroup;
   if ($('#joinGroupBtn')) $('#joinGroupBtn').onclick = joinGroup;
   if ($('#leaveGroupBtn')) $('#leaveGroupBtn').onclick = leaveGroup;
@@ -1257,16 +1253,16 @@ function renderLineup() {
       }
     }
     const meta = [selected.date && fmt(selected.date),selected.location].filter(Boolean).join(' · ');
-    const css = `:root{color-scheme:dark;--lime:#c2f66b;--line:#33393c}
+    const css = `:root{color-scheme:dark;--accent:#b69cff;--line:#33393c}
 *{box-sizing:border-box}body{font:15px/1.45 system-ui,sans-serif;background:#101214;color:#f7f8f5;max-width:76rem;margin:auto;padding:clamp(14px,3vw,32px)}
 h1{font-size:clamp(24px,5vw,38px);letter-spacing:-.045em;line-height:1.1;margin:10px 0 4px}h3{margin:22px 0 8px}p{color:#bbc2c1;margin:4px 0}
-header{border-top:3px solid var(--lime);padding:12px 0 16px}header small,footer{color:#a9b3ad;font-size:12px}footer{margin:16px 0}
+header{border-top:3px solid var(--accent);padding:12px 0 16px}header small,footer{color:#a9b3ad;font-size:12px}footer{margin:16px 0}
 .ttScroll{overflow:auto;max-height:76vh;border:1px solid var(--line);border-radius:12px;background:#131618;margin:10px 0}.ttBoard{display:grid;position:relative;isolation:isolate}
 .ttHead,.ttTick{position:sticky;background:#23282a}.ttHead{top:0;padding:10px 6px;border-bottom:1px solid var(--line);font-size:13px;text-align:center;z-index:3}
 .ttTick,.ttClock{grid-column:1;left:0}.ttClock{grid-row:1;z-index:4}.ttTick{font:600 11px/1.4 system-ui;font-variant-numeric:tabular-nums;padding:4px;z-index:2;color:#c7cfcb}
 .ttRule{grid-column:2/-1;border-top:1px solid var(--line)}.ttAct{z-index:1;min-width:0;border-left:3px solid #788b79;border-radius:6px;background:#292f31;margin:2px;padding:5px 8px;overflow-wrap:anywhere;line-height:1.22}
 .ttAct small,.ttPending small{display:block;color:#bcc7c0;font-size:11px;font-variant-numeric:tabular-nums}.ttAct strong,.ttPending strong{font-size:14px;display:block;margin:3px 0}.ttPending{padding:9px 12px;border-bottom:1px solid var(--line)}
-.savedSet{background:#263521;border-left:3px solid var(--lime)}.setMark{font-size:11px;color:var(--lime)}`;
+.savedSet{background:#2a2440;border-left:3px solid var(--accent)}.setMark{font-size:11px;color:var(--accent)}`;
     const html = '<!doctype html><html lang="nl"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>'+esc(selected.name)+'</title><style>'+css+'</style><header><small>UPTEMPO · Timetable</small><h1>'+esc(selected.name)+'</h1><p>'+esc(meta)+'</p></header>'+board.innerHTML+'<footer>Opgeslagen op '+new Date().toLocaleString('nl-NL')+'</footer></html>';
     const status = container.querySelector('[data-download-status]');
     try {
@@ -1274,7 +1270,8 @@ header{border-top:3px solid var(--lime);padding:12px 0 16px}header small,footer{
       copies[copyKey] = {name:selected.name,meta,html,lineupRevision:selected.lineupRevision};
       localStorage.uptempoOfflineSchedules = JSON.stringify(copies);
       download.textContent = 'Offline versie bijwerken';
-      status.textContent = 'Bewaard op dit toestel · Bekijk in Mijn timetables.';
+      renderOfflineList();
+      status.textContent = 'Bewaard op dit toestel · Je vindt het onder Meer.';
     } catch { status.textContent = 'Opslaan is niet gelukt. Controleer de vrije opslag op je toestel en probeer opnieuw.'; }
   };
   container.querySelectorAll('[data-stage-filter]').forEach(button => {
@@ -1346,7 +1343,18 @@ function switchTab(tab) {
   renderAll();
 }
 
+// Timetables saved with "Bewaar offline", listed on the Meer page; each opens in offline.html.
+function renderOfflineList() {
+  const list = $('#offlineList');
+  if (!list) return;
+  const copies = Object.entries(stored('uptempoOfflineSchedules', {}));
+  list.innerHTML = copies.length
+    ? copies.map(([key, copy]) => '<a href="./offline.html#'+encodeURIComponent(key)+'"><span><b>'+esc(copy.name)+'</b><small>'+esc(copy.meta || '')+'</small></span></a>').join('')
+    : '<p>Nog niets bewaard. Open een festival en tik op “Bewaar offline”; het programma staat dan hier, ook zonder internet.</p>';
+}
+
 function renderAll() {
+  renderOfflineList();
   render();
   renderCal();
   renderStats();
@@ -1413,10 +1421,21 @@ if ($('#saveFestival')) {
 if ($('#search')) $('#search').oninput = () => { render(); renderOfficialFestivalCatalog(); };
 if ($('#lineupSearch')) $('#lineupSearch').oninput = renderLineup;
 
+if ($('#editName')) {
+  $('#editName').onclick = () => {
+    const panel = $('#nameEdit');
+    panel.hidden = !panel.hidden;
+    $('#editName').setAttribute('aria-expanded', String(!panel.hidden));
+    if (!panel.hidden) $('#myName').focus();
+  };
+}
+
 if ($('#saveProfile')) {
   $('#saveProfile').onclick = async () => {
     profile.name = $('#myName').value.trim();
     save();
+    $('#nameEdit').hidden = true;
+    $('#editName').setAttribute('aria-expanded', 'false');
 
     if (db && groupId) await saveProfileLive();
 
