@@ -21,7 +21,8 @@ const normalize = (value) => String(value || "").normalize("NFD").replace(/[̀-�
 const artistKey = (value) => normalize(String(value).replace(/ø/gi, "o"));
 const profileName = (label) => label.split(":")[0].replace(/\s*\[[^\]]*\]/g, "").replace(/\s+live$/i, "").trim() || label;
 const cleanCredit = (name) => String(name).replace(/\s*\([^)]*\)/g, "").replace(/\s+(?:pres\.?|presents)\s.*$/i, "").replace(/\s+live$/i, "").trim();
-const isCombined = (label) => /\s(?:vs\.?|b2b|&|x)\s/i.test(profileName(label));
+// Also catches "BOUNSTER VSTOB-E": some imported line-ups lose the space after VS.
+const isCombined = (label) => /\s(?:vs\.?|b2b|&|x)\s|\sVS\.?(?=[A-Z0-9])/i.test(profileName(label));
 
 async function readLineups() {
   const input = process.argv.indexOf("--input");
@@ -71,7 +72,11 @@ async function toPortrait(buffer) {
   const cropHeight = Math.min(height, Math.round(cropWidth / 0.8));
   const left = Math.round((width - cropWidth) / 2);
   const top = Math.round((height - cropHeight) * 0.15);
-  return image.extract({ left, top, width: cropWidth, height: cropHeight })
+  const crop = image.clone().extract({ left, top, width: cropWidth, height: cropHeight });
+  // Silhouettes and "to be revealed" artwork are mostly black: no use as a photo.
+  const { channels } = await crop.clone().grayscale().stats();
+  if (channels[0].mean < 45) throw new Error("image is mostly dark");
+  return crop
     .resize(288, 360)
     .grayscale()
     .linear(1.05, -4)
