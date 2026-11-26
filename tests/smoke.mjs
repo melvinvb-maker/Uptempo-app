@@ -74,7 +74,7 @@ try {
   console.log('Tabs');
   await page.goto(url);
   await page.waitForSelector('.tab');
-  for (const tab of ['Home', 'Festivals', 'Timetable', 'Agenda', 'Meer']) {
+  for (const tab of ['Home', 'Festivals', 'Agenda', 'Meer']) {
     await page.click(`.tab:has-text("${tab}")`);
     await page.waitForTimeout(300);
     check(await page.$eval('.screen.active', el => el.innerText.trim().length > 0), `${tab} shows content`);
@@ -82,8 +82,11 @@ try {
 
   // --- 5. Timetable on the festival day ---
   console.log('Timetable');
-  await page.click('.tab:has-text("Timetable")');
+  // The line-up has no tab of its own: it opens from the festival list.
+  await page.click('.tab:has-text("Festivals")');
+  await page.locator('.screen.active .festivalOpen', { hasText: festival.festival }).first().click();
   await page.waitForSelector('#planPanel');
+  check(await page.$eval('.tab.active', tab => tab.textContent.trim()) === 'Festivals', 'Festivals tab stays highlighted on the line-up');
   check((await page.textContent('#planPanel')).includes('Nu & straks'), '"Nu & straks" appears on the festival day');
 
   const [a, b] = (() => {
@@ -127,11 +130,11 @@ try {
   await page.evaluate(() => { localStorage.festivals = '{broken'; localStorage.uptempoFavoriteSets = 'nope'; });
   await page.reload();
   await page.waitForSelector('.tab');
-  check(await page.$$eval('.tab', tabs => tabs.length) === 5, 'app starts with damaged storage');
+  check(await page.$$eval('.tab', tabs => tabs.length) === 4, 'app starts with damaged storage');
   await context.setOffline(true);
   await page.reload();
   await page.waitForSelector('.tab', { timeout: 10000 }).catch(() => {});
-  check(await page.$$eval('.tab', tabs => tabs.length) === 5, 'app starts without a connection');
+  check(await page.$$eval('.tab', tabs => tabs.length) === 4, 'app starts without a connection');
 
   check(errors.length === 0, 'no JavaScript errors' + (errors.length ? ': ' + errors.join(' | ') : ''));
 } finally {

@@ -1326,7 +1326,8 @@ function switchTab(tab) {
   document.querySelectorAll('.tab,.screen').forEach(x => x.classList.remove('active'));
 
   const mainTab = document.querySelector(`.tab[data-tab="${tab}"]`);
-  (mainTab || $('.tab[data-tab="more"]'))?.classList.add('active');
+  // The line-up opens from a festival, so the Festivals tab stays highlighted there.
+  (mainTab || $(tab === 'lineup' ? '.tab[data-tab="festivals"]' : '.tab[data-tab="more"]'))?.classList.add('active');
 
   const screen = $('#' + tab);
   if (screen) screen.classList.add('active');

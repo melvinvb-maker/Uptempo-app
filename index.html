@@ -48,7 +48,7 @@ button,input,select,textarea{font:inherit}button{cursor:pointer;color:inherit}bu
 .btn2{border:1px solid rgba(255,255,255,.13);border-radius:13px;padding:10px 13px;color:var(--txt);font-weight:750;background:rgba(255,255,255,.055)}
 .btn2:hover,.menuTile:hover{border-color:rgba(214,255,66,.45);background:rgba(214,255,66,.08)}
 .fab{position:fixed;right:max(24px,calc((100vw - 1100px)/2 + 22px));bottom:calc(88px + env(safe-area-inset-bottom));width:56px;height:56px;border:0;border-radius:19px;color:#10140b;font-size:31px;font-weight:500;background:var(--pink);box-shadow:0 10px 30px rgba(214,255,66,.24);z-index:4}
-.tabs{position:fixed;left:50%;transform:translateX(-50%);bottom:0;width:100%;max-width:760px;display:grid;grid-template-columns:repeat(5,1fr);padding:7px 9px calc(7px + env(safe-area-inset-bottom));border:1px solid rgba(255,255,255,.09);border-bottom:0;border-radius:22px 22px 0 0;background:rgba(11,15,21,.94);backdrop-filter:blur(20px);z-index:4}
+.tabs{position:fixed;left:50%;transform:translateX(-50%);bottom:0;width:100%;max-width:760px;display:grid;grid-template-columns:repeat(4,1fr);padding:7px 9px calc(7px + env(safe-area-inset-bottom));border:1px solid rgba(255,255,255,.09);border-bottom:0;border-radius:22px 22px 0 0;background:rgba(11,15,21,.94);backdrop-filter:blur(20px);z-index:4}
 .tab{border:0;border-radius:14px;background:none;color:var(--muted);font-size:10px;font-weight:750;padding:6px 2px}.tab b{display:block;font-size:20px;margin-bottom:2px}.tab.active{color:var(--pink);background:rgba(214,255,66,.09)}
 .form{display:grid;gap:10px}.form input,.form select,.form textarea{width:100%;border:1px solid var(--line);border-radius:13px;padding:13px;background:rgba(255,255,255,.055);color:var(--txt)}.form select option{background:#121821;color:white}.form textarea{min-height:90px}.form label{font-size:12px;color:var(--muted)}
 .modal{position:fixed;inset:0;display:none;align-items:flex-end;justify-content:center;background:rgba(0,0,0,.72);z-index:8}.modal.active{display:flex}.sheet{width:100%;max-width:560px;max-height:92vh;overflow:auto;padding:20px 18px calc(22px + env(safe-area-inset-bottom));border:1px solid var(--line);border-radius:26px 26px 0 0;background:#111720}
@@ -311,7 +311,6 @@ button,input,select,textarea{font:inherit}button{cursor:pointer;color:inherit}bu
   <nav class="tabs" aria-label="Hoofdnavigatie">
     <button class="tab active" data-tab="dashboard"><svg class="navIcon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11 12 3l9 8v9h-6v-6H9v6H3z"/></svg>Home</button>
     <button class="tab" data-tab="festivals"><svg class="navIcon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7h18v3a2 2 0 0 0 0 4v3H3v-3a2 2 0 0 0 0-4z M15 8v2m0 2v2m0 2v1"/></svg>Festivals</button>
-    <button class="tab" data-tab="lineup"><svg class="navIcon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4v16m5-15h11v4H9zm0 8h7v5H9z"/></svg>Timetable</button>
     <button class="tab" data-tab="calendar"><svg class="navIcon" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16v15H4z M4 10h16M8 3v5m8-5v5"/></svg>Agenda</button>
     <button class="tab" data-tab="more"><svg class="navIcon" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h1m5 0h1m5 0h1"/></svg>Meer</button>
   </nav>
@@ -352,6 +351,6 @@ button,input,select,textarea{font:inherit}button{cursor:pointer;color:inherit}bu
     <div class="artistMembers"></div>
     <a hidden target="_blank" rel="noopener noreferrer"></a>
   </dialog>
-  <script type="module" src="app.js?v=festivalgids-13"></script>
+  <script type="module" src="app.js?v=festivalgids-14"></script>
 
 
