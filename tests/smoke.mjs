@@ -103,7 +103,7 @@ try {
     return [sets[0], sets.find(set => set.stage !== sets[0].stage)];
   })();
   const overlap = a.start < b.end && b.start < a.end;
-  check((await page.textContent('.lineup-hero h2')).trim() === festival.festival, `timetable opens on ${festival.festival}`);
+  check((await page.textContent('#lineupHead h1')).trim() === festival.festival, `timetable opens on ${festival.festival}`);
   for (const set of [a, b]) {
     const key = setKey(festival, set.item);
     await page.locator('.artistSlot').filter({ has: page.locator('strong', { hasText: set.item.artist }) })
@@ -134,6 +134,12 @@ try {
   await page.goBack();
   await page.waitForSelector('.tab');
   await page.locator('.tab', { hasText: 'Festivals' }).click();
+  await page.locator('.screen.active .festivalOpen', { hasText: festival.festival }).first().click();
+  await page.waitForSelector('#planPanel');
+
+  // "Terug" returns to the list the line-up was opened from, and the line-up opens again.
+  await page.click('#lineupBack');
+  check(await page.$('#festivals.active') !== null, '"Terug" returns to the festival list');
   await page.locator('.screen.active .festivalOpen', { hasText: festival.festival }).first().click();
   await page.waitForSelector('#planPanel');
 

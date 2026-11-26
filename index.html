@@ -181,6 +181,12 @@ button,input,select,textarea{font:inherit}button{cursor:pointer;color:inherit}bu
 .accountFold{margin-top:22px;border:1px solid var(--line);border-radius:16px;background:var(--card)}.accountFold summary{border-top:0;color:var(--txt);font-weight:650}.profileAccountBody{padding:0 16px 16px}
 .quietList{border:1px solid var(--line);border-radius:16px;background:var(--card);overflow:hidden}.quietList .seasonRow{width:100%;padding:12px 16px;border:0;background:none;color:var(--txt);text-align:left}.quietList .seasonRow+.seasonRow{border-top:1px solid var(--line)}.quietList p{margin:0;padding:10px 16px;color:var(--muted);font-size:13px}
 .moreLabel{margin:24px 2px 8px;color:var(--muted)}.offlineList{border:1px solid var(--line);border-radius:16px;background:var(--card);overflow:hidden}.offlineList a{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:13px 16px;color:var(--txt);text-decoration:none}.offlineList a+a{border-top:1px solid var(--line)}.offlineList small{display:block;margin-top:2px;color:var(--muted);font-size:12px}.offlineList a:after{content:"›";color:var(--muted);font-size:20px}.offlineList p{margin:0;padding:14px 16px;color:var(--muted);font-size:13px}
+.backLink{background:none;border:0;color:var(--muted);font-size:14px;font-weight:650;padding:6px 0;margin:0 0 4px}
+#lineupHead h1{margin:0;font-size:28px;letter-spacing:-.03em;line-height:1.15}.lineupMeta{margin:4px 0 14px;color:var(--muted);font-size:13px}
+#lineup .lineup-search{margin:0 0 10px;padding:11px 14px;border-radius:12px;font-size:14px}
+.filterRow{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;margin:0 -16px 10px;padding:0 16px}.filterRow::-webkit-scrollbar{display:none}.filterRow .day-chip{flex:none;min-height:36px;padding:7px 13px;font-size:12px}
+.lineupLinks{margin:18px 0 4px;border:1px solid var(--line);border-radius:16px;background:var(--card);overflow:hidden}.lineupLinks>*{display:block;width:100%;margin:0;padding:13px 16px;border:0;background:none;color:var(--txt);font-size:14px;font-weight:600;text-align:left;text-decoration:none}.lineupLinks>*+*{border-top:1px solid var(--line)}.lineupLinks small{display:block;color:var(--muted);font-weight:500;font-size:12px;margin-top:2px}.lineupLinks [data-download-status]:empty{display:none}.lineupLinks [data-download-status]{padding-top:0;color:var(--muted);font-size:12px;font-weight:500}
+.lineupLinks .profileList{margin:0;padding:0;border-block:0;border-top:1px solid var(--line)}.lineupLinks .profileList summary{padding:13px 16px;font-weight:600}.lineupLinks .profileList .artistLink{padding:8px 16px;width:100%;text-decoration:none}
 </style>
 </head>
 
@@ -270,7 +276,8 @@ button,input,select,textarea{font:inherit}button{cursor:pointer;color:inherit}bu
 </main>
 
     <main id="lineup" class="screen">
-      <div class="lineup-heading"><h1>Timetable</h1><a class="schedule-library" href="./offline.html">Mijn timetables</a></div>
+      <button class="backLink" id="lineupBack">‹ Terug</button>
+      <div id="lineupHead"></div>
       <input id="lineupSearch" class="lineup-search" type="search" placeholder="Zoek artiest of podium" aria-label="Zoek artiest of podium">
       <div id="lineupList"></div>
       <details class="card lineup-manual" id="lineupManual">
@@ -352,6 +359,6 @@ button,input,select,textarea{font:inherit}button{cursor:pointer;color:inherit}bu
     <div class="artistMembers"></div>
     <a hidden target="_blank" rel="noopener noreferrer"></a>
   </dialog>
-  <script type="module" src="app.js?v=festivalgids-17"></script>
+  <script type="module" src="app.js?v=festivalgids-18"></script>
 
 

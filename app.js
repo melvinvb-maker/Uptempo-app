@@ -896,7 +896,7 @@ function mapLink(festival) {
     else if (/brabanthallen/i.test(festival.location)) url = 'https://www.brabanthallen.nl/wp-content/uploads/2026/01/Plattegrond-Brabanthallen-s-Hertogenbosch-JAN2026.pdf';
     else return '';
   }
-  return '<p><a class="btn2" target="_blank" rel="noopener noreferrer" href="'+esc(url)+'">'+label+'</a></p>';
+  return '<a target="_blank" rel="noopener noreferrer" href="'+esc(url)+'">'+label+'</a>';
 }
 function showArtist(label, chosen) {
   const festival = getSelectedLineup();
@@ -1167,6 +1167,7 @@ function renderLineup() {
   const manual = $('#lineupManual');
   if (manual) manual.hidden = !selected || selected.isImportedCatalog;
   if (!selected) {
+    if ($('#lineupHead')) $('#lineupHead').innerHTML = '';
     container.innerHTML = '<div class="card empty-state">Voeg een festival toe of kies een festival uit Ontdek.</div>';
     return;
   }
@@ -1187,38 +1188,26 @@ function renderLineup() {
   const stageLineup = selectedStage ? dayLineup.filter(item => stageName(item) === selectedStage) : dayLineup;
   const searchText = ($('#lineupSearch')?.value || '').trim().toLowerCase();
   const visible = stageLineup.filter(item => !onlyFavoriteSets || favoriteSets.includes(setKey(selected,item))).filter(item => `${item.artist || ''} ${item.stage || ''}`.toLowerCase().includes(searchText));
-  const image = selected.imageUrl || '';
   const source = selected.lineupSource
-    ? `<a class="source-link" href="${esc(selected.lineupSource)}" target="_blank" rel="noopener noreferrer">Bekijk bron</a>`
+    ? `<a href="${esc(selected.lineupSource)}" target="_blank" rel="noopener noreferrer">Bron van de line-up</a>`
     : '';
+  if ($('#lineupHead')) $('#lineupHead').innerHTML = '<h1>'+esc(selected.name)+'</h1><p class="lineupMeta">'
+    + esc([selected.date ? fmt(selected.date) : '', selected.location, lineup.length ? lineup.length + ' acts' : 'Programma volgt', selected.host ? 'Host: ' + selected.host : ''].filter(Boolean).join(' · ')) + '</p>';
+  const chip = (attrs, label, active) => '<button class="day-chip '+(active ? 'active' : '')+'" '+attrs+' aria-pressed="'+active+'">'+esc(label)+'</button>';
 
   container.innerHTML = `
-    <div class="card" style="padding:10px">
-      <div class="lineup-hero" style="background-image:linear-gradient(0deg,rgba(5,8,12,.95),rgba(5,8,12,.08)),url('${esc(image)}')">
-        <div><div class="eyebrow">${selected.isImportedCatalog ? 'Festivaleditie' : 'Jouw festival'}</div>
-          <h2>${esc(selected.name)}</h2>
-          <p>${esc([selected.date ? fmt(selected.date) : '', selected.location].filter(Boolean).join(' · '))}</p>
-        </div>
-      </div>
-      ${selected.host ? `<p class="muted">Host · ${esc(selected.host)}</p>` : ''}
-      <div class="row" style="justify-content:space-between;padding:13px 5px 2px">
-        <b>${lineup.length ? lineup.length + ' sets / acts' : 'Timetable'}</b>
-        <span class="muted">${lineup.length ? selected.isImportedCatalog ? 'Festivalupdate' : 'Persoonlijke timetable' : 'Nog geen tijden bekend'}</span>
-      </div>
-    </div>
-    ${lineup.length ? '<button class="btn2" data-download-timetable>Bewaar offline</button><div role="status" data-download-status></div>' : ''}
-    ${days.length > 1 ? `<div class="lineup-days">
-      <button class="day-chip ${selectedLineupDay === 'all' ? 'active' : ''}" data-lineup-day="all">Alle dagen</button>
-      ${days.map(day => `<button class="day-chip ${selectedLineupDay === day ? 'active' : ''}" data-lineup-day="${esc(day)}">${esc(dayName(day))}</button>`).join('')}
-    </div>` : ''}
-    ${stages.length > 1 ? `<fieldset style="border:0;margin:8px 0 16px;padding:0"><legend style="margin-bottom:8px;font-weight:750">Podium</legend><div style="display:flex;flex-wrap:wrap;gap:6px">
-      ${['',...stages].map(stage => `<button class="day-chip ${selectedStage === stage ? 'active' : ''}" data-stage-filter="${esc(stage)}" aria-pressed="${selectedStage === stage}">${esc(stage || 'Alle podia')}</button>`).join('')}
-    </div></fieldset>` : ''}
-    ${lineup.length ? `<button class="day-chip ${onlyFavoriteSets ? "active" : ""}" data-favorites-only aria-pressed="${onlyFavoriteSets}">Mijn favoriete acts</button>` : ""}
+    ${days.length > 1 ? '<div class="filterRow" role="group" aria-label="Dag">'+chip('data-lineup-day="all"','Alle dagen',selectedLineupDay === 'all')
+      + days.map(day => chip('data-lineup-day="'+esc(day)+'"', dayName(day), selectedLineupDay === day)).join('')+'</div>' : ''}
+    ${lineup.length ? '<div class="filterRow" role="group" aria-label="Podium en favorieten">'
+      + (stages.length > 1 ? ['',...stages].map(stage => chip('data-stage-filter="'+esc(stage)+'"', stage || 'Alle podia', selectedStage === stage)).join('') : '')
+      + chip('data-favorites-only', '♥ Favorieten', onlyFavoriteSets)+'</div>' : ''}
     ${lineup.length ? '<div id="planPanel">'+planPanel(selected)+'</div>' : ''}
     ${visible.length ? horizontalSchedule(visible,selected) : '<div class="card empty-state">'+(lineup.length ? 'Geen acts met deze filters.' : 'De timetable is nog niet bekend.')+'</div>'}
-    ${visible.length ? '<details class="profileList"><summary>Artiestenprofielen</summary>'+[...new Set(visible.map(a => a.artist))].map(artist => artistLink({artist})).join('')+'</details>' : ''}
-    <div style="padding:2px 4px">${mapLink(selected)}${source}</div>
+    <div class="lineupLinks">
+      ${lineup.length ? '<button data-download-timetable>Bewaar offline<small>Ook zonder internet te bekijken onder Meer</small></button><div role="status" data-download-status></div>' : ''}
+      ${visible.length ? '<details class="profileList"><summary>Artiestenprofielen</summary>'+[...new Set(visible.map(a => a.artist))].map(artist => artistLink({artist})).join('')+'</details>' : ''}
+      ${mapLink(selected)}${source}
+    </div>
     ${selected.date === '2027-03-27' && /masters of hardcore/i.test(selected.name) ? `<section class="card masters-gallery">
       <h3>Sfeerbeelden · Masters of Hardcore 2026</h3>
       <div>
@@ -1232,7 +1221,7 @@ function renderLineup() {
   const copyKey = JSON.stringify([selected.key,selected.date]);
   if (download) {
     try {
-      if (stored('uptempoOfflineSchedules', {})[copyKey]) download.textContent = 'Offline versie bijwerken';
+      if (stored('uptempoOfflineSchedules', {})[copyKey]) download.firstChild.textContent = 'Offline versie bijwerken';
     } catch {}
   }
   if (download) download.onclick = () => {
@@ -1269,7 +1258,7 @@ header{border-top:3px solid var(--accent);padding:12px 0 16px}header small,foote
       const copies = stored('uptempoOfflineSchedules', {});
       copies[copyKey] = {name:selected.name,meta,html,lineupRevision:selected.lineupRevision};
       localStorage.uptempoOfflineSchedules = JSON.stringify(copies);
-      download.textContent = 'Offline versie bijwerken';
+      download.firstChild.textContent = 'Offline versie bijwerken';
       renderOfflineList();
       status.textContent = 'Bewaard op dit toestel · Je vindt het onder Meer.';
     } catch { status.textContent = 'Opslaan is niet gelukt. Controleer de vrije opslag op je toestel en probeer opnieuw.'; }
@@ -1327,7 +1316,11 @@ function countdown() {
   if ($('#cdS')) $('#cdS').textContent = String(s).padStart(2, '0');
 }
 
+// The line-up opens from Home, Festivals or the calendar; "Terug" returns there.
+let lineupOrigin = 'festivals';
 function switchTab(tab) {
+  const current = document.querySelector('.screen.active')?.id;
+  if (tab === 'lineup' && current && current !== 'lineup') lineupOrigin = current;
   document.querySelectorAll('.tab,.screen').forEach(x => x.classList.remove('active'));
 
   const mainTab = document.querySelector(`.tab[data-tab="${tab}"]`);
@@ -1420,6 +1413,7 @@ if ($('#saveFestival')) {
 
 if ($('#search')) $('#search').oninput = () => { render(); renderOfficialFestivalCatalog(); };
 if ($('#lineupSearch')) $('#lineupSearch').oninput = renderLineup;
+if ($('#lineupBack')) $('#lineupBack').onclick = () => switchTab(lineupOrigin);
 
 if ($('#editName')) {
   $('#editName').onclick = () => {
