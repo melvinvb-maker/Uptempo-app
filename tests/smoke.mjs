@@ -80,6 +80,13 @@ try {
     check(await page.$eval('.screen.active', el => el.innerText.trim().length > 0), `${tab} shows content`);
   }
 
+  console.log('Profile');
+  await page.click('.tab:has-text("Meer")');
+  await page.click('.menuTile[data-tab="profile"]');
+  await page.waitForSelector('#profile.active');
+  check(await page.$('#profile.active #groupSlot #createGroupBtn') !== null, 'profile page shows the group options');
+  check(await page.$('#profile.active #accountForm') !== null, 'profile page keeps the account form');
+
   // --- 5. Timetable on the festival day ---
   console.log('Timetable');
   // The line-up has no tab of its own: it opens from the festival list.
