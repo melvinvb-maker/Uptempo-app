@@ -169,6 +169,13 @@ button,input,select,textarea{font:inherit}button{cursor:pointer;color:inherit}bu
 .calendarFestival{display:block;width:100%;margin-top:3px;padding:2px 4px;border:0;border-radius:5px;background:rgba(214,255,66,.12);color:var(--pink);font-size:9px;font-weight:700;text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .nnWith{color:var(--muted)}.slotFriends{position:absolute;top:7px;left:8px;display:flex;z-index:1}.slotFriends i{display:grid;place-items:center;width:19px;height:19px;margin-right:-4px;border:1.5px solid #000;border-radius:50%;background:#2b313b;color:#d9dee6;font-size:9px;font-style:normal;font-weight:750}
 .planActions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:4px 0 8px}.planActions .btn2{width:100%;padding:11px 8px;font-size:13px}
+.profileHead{display:flex;align-items:center;gap:14px;margin:6px 0 14px}.profileHead .avatar{width:64px;height:64px;font-size:24px;background:var(--card2) center/cover;color:var(--pink);border:1px solid var(--line)}.profileHead h1{margin:0;font-size:26px;letter-spacing:-.02em}
+.profileStats{display:grid;grid-template-columns:repeat(3,1fr);border:1px solid var(--line);border-radius:16px;background:var(--card);margin-bottom:10px}.profileStats div{padding:12px 6px;text-align:center}.profileStats div+div{border-left:1px solid var(--line)}.profileStats b{display:block;font-size:20px}.profileStats span{color:var(--muted);font-size:11px}
+.profileFold{margin:6px 0;border:1px solid var(--line);border-radius:14px;background:var(--card)}.profileFold summary{cursor:pointer;padding:12px 14px;color:var(--muted);font-size:13px;font-weight:700}.profileFold .form{padding:0 12px 12px}
+.groupCard{padding:16px;border:1px solid var(--line);border-radius:16px;background:var(--card)}.groupCode{display:flex;align-items:center;justify-content:space-between;gap:10px}.groupCode b{font-size:22px;letter-spacing:.06em;font-variant-numeric:tabular-nums}.groupCode small{display:block;color:var(--muted);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;margin-bottom:3px}.groupJoin{display:flex;gap:8px;margin-top:10px}.groupJoin input{flex:1;min-width:0;padding:11px 12px;border:1px solid var(--line);border-radius:12px;background:rgba(255,255,255,.04);color:var(--txt)}.groupLeave{margin-top:10px;background:none;border:0;color:var(--muted);font-size:12px;text-decoration:underline;padding:4px 0}
+.profileNotice{margin:8px 2px;font-size:12px}
+#friendsList{display:grid;gap:6px;margin:6px 0}.friendRow{display:flex;align-items:center;gap:12px;padding:10px 12px;border:1px solid var(--line);border-radius:14px;background:var(--card)}.friendRow .avatar{width:38px;height:38px;font-size:14px;background:var(--card2);color:#d9dee6;border:1px solid var(--line)}.friendRow b{font-size:14px}.friendRow .muted{font-size:12px}.friendFavs{color:var(--muted);font-size:12px;white-space:nowrap}.friendRow .online{color:var(--green);font-size:12px}
+.profileAccount h3{margin:0 0 8px}
 </style>
 </head>
 
@@ -208,32 +215,11 @@ button,input,select,textarea{font:inherit}button{cursor:pointer;color:inherit}bu
       <div id="officialFestivalCatalog" class="catalog-list"></div>
     </main>
 
-    <main id="friends" class="screen">
-      <div class="section">Vrienden & groepen</div><button class="btn" data-go="profile">Account, vrienden en berichten</button>
-
-      <div class="notice" id="firebaseNotice">
-        Live database staat klaar.
-      </div>
-
-      <div class="card form">
-        <input id="myName" placeholder="Jouw naam">
-        <button class="btn" id="saveProfile">Profiel opslaan</button>
-      </div>
-
-      <div class="card form">
-        <input id="friendName" placeholder="Naam voor je groepslijst">
-        <button class="btn" id="addFriend">Toevoegen aan groepslijst</button>
-      </div>
-
-      <div id="friendsList"></div>
-    </main>
-
     <main id="guide" class="screen"><h1>Festivalchat</h1><p class="muted">Vind festivals, ontdek waar je favoriete artiest draait of vraag wie er op een bepaald tijdstip speelt.</p><div class="guideQuick"><button class="day-chip" data-guide>Welke festivals zijn er in maart 2027?</button><button class="day-chip" data-guide>Hoe laat draait Missy bij Annihilation?</button><button class="day-chip" data-guide>Mijn favoriete sets</button><button class="day-chip" data-guide>Mijn planning</button></div><div id="guideLog" role="log" aria-live="polite"></div><form id="guideForm"><input name="question" type="text" maxlength="400" required aria-label="Je festivalvraag" placeholder="Stel je vraag…" enterkeyhint="send"><button class="btn" aria-label="Verstuur vraag">Stuur</button></form></main>
     <main id="more" class="screen">
       <div class="section">Meer</div>
       <div class="menuGrid"><button class="menuTile" data-tab="guide"><b>✦</b>Festivalchat</button>
-        <button class="menuTile" data-tab="profile"><b><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="3.5"/><path d="M4.5 20c.8-3.7 3.2-5.6 7.5-5.6s6.7 1.9 7.5 5.6"/></svg></b>Profiel</button>
-        <button class="menuTile" data-tab="friends"><b><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3"/><path d="M3.5 19c.6-3.1 2.4-4.7 5.5-4.7 2.2 0 3.8.8 4.7 2.5"/><path d="M16 5.5a3 3 0 0 1 0 5.8M16 14c2.7.2 4.2 1.8 4.7 5"/></svg></b>Vrienden & groepen</button>
+        <button class="menuTile" data-tab="profile"><b><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="3.5"/><path d="M4.5 20c.8-3.7 3.2-5.6 7.5-5.6s6.7 1.9 7.5 5.6"/></svg></b>Profiel &amp; vrienden</button>
         <button class="menuTile" data-tab="leaderboard"><b><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4h10v4.5a5 5 0 0 1-10 0V4Z"/><path d="M7 6H4v2a4 4 0 0 0 4 4M17 6h3v2a4 4 0 0 1-4 4M12 14v4m-4 2h8"/></svg></b>Groepsranglijst</button>
         
         <button class="menuTile" data-tab="stats"><b><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20V11m5 9V5m5 15v-7m5 7V8"/></svg></b>Statistieken</button>
@@ -241,31 +227,45 @@ button,input,select,textarea{font:inherit}button{cursor:pointer;color:inherit}bu
       </div>
     </main>
 
-    <main id="profile" class="screen"><section class="card"><h2>Mijn account</h2><p id="socialStatus" role="status">Accountverbinding wordt geladen…</p><form id="accountForm" class="form"><label>E-mailadres<input id="accountEmail" type="email" autocomplete="email" required></label><label>Wachtwoord<input id="accountPassword" type="password" autocomplete="current-password" required></label><button class="btn" value="login">Inloggen</button><button class="btn2" value="register">Account aanmaken</button><button type="button" class="btn2" id="resetPassword">Wachtwoord vergeten</button></form><div hidden id="memberTools"><form class="card form" id="editIdentity"><h3>Mijn profiel bewerken</h3><label>Gebruikersnaam<input id="handle" required maxlength="50" autocomplete="nickname"></label><label>Profielfoto<input id="portraitFile" type="file" accept="image/*"></label><label><input type="checkbox" id="removePortrait" style="width:auto;display:inline"> Foto verwijderen</label><button class="btn">Profiel opslaan</button><span id="identityNotice" role="status"></span></form><section id="ownerPanel" class="card form" hidden><h3>Festivalbeheer</h3><label>Editie<select id="adminEdition"></select></label><form class="form" id="catalogEditor"><label>Festivalnaam<input id="adminName" required maxlength="120"></label><label>Begindatum<input type="date" id="adminDate" required></label><label>Einddatum<input type="date" id="adminEnd"></label><label>Locatie<input id="adminPlace"></label><label>Afbeelding (https)<input type="url" id="adminImage"></label><label>Programma · één set per regel: dag | podium | begin | einde | artiest<textarea rows="10" id="adminSets"></textarea></label><label><input type="checkbox" id="adminHide" style="width:auto;display:inline"> Verberg deze editie</label><button class="btn">Wijzigingen publiceren</button></form><p role="status" id="adminNotice"></p></section><button class="btn2" id="logout">Uitloggen</button><h3>Mijn vrienden</h3><div id="chatGate">Privéberichten worden geactiveerd zodra de toegangsregels zijn bevestigd.</div><div id="chatTools" hidden><label>Mijn vriendencode<input readonly id="myFriendCode" onclick="this.select()"></label><form class="form" id="inviteForm"><label>Jouw naam bij een uitnodiging<input id="socialName" maxlength="60" placeholder="Bijnaam"></label><label>Code van je vriend<input id="friendCode" required></label><button class="btn">Verzoek versturen</button></form><div id="connections"></div><section id="conversation" hidden><h3 id="chatTitle"></h3><button class="btn2" id="closeChat">Sluiten</button><div id="messages" role="log"></div><form id="sendMessage" class="form"><input id="messageText" maxlength="2000" placeholder="Bericht" aria-label="Bericht" required><button class="btn">Versturen</button></form></section></div></div></section>
-      <div class="section">Mijn Profiel</div>
-      <div class="card">
-        <div class="row">
-          <div class="avatar" id="profileAvatar">?</div>
-          <div class="grow">
-            <h2 id="profileName">Naamloos</h2>
-            <div class="muted" id="profileGroup">Geen groep actief</div>
-          </div>
+    <main id="profile" class="screen">
+      <section class="profileHead">
+        <div class="avatar" id="profileAvatar">?</div>
+        <div class="grow">
+          <h1 id="profileName">Naamloos</h1>
+          <div class="muted" id="profileGroup">Geen groep actief</div>
         </div>
+      </section>
+      <div class="profileStats">
+        <div><b id="profileFestivalCount">0</b><span>Festivals</span></div>
+        <div><b id="profileGoingCount">0</b><span>Ik ga</span></div>
+        <div><b id="profileFriendCount">0</b><span>Vrienden</span></div>
       </div>
+      <details class="profileFold">
+        <summary>Naam aanpassen</summary>
+        <div class="form"><input id="myName" placeholder="Jouw naam" autocomplete="nickname"><button class="btn2" id="saveProfile">Opslaan</button></div>
+      </details>
 
-      <div class="grid">
-        <div class="stat"><b id="profileFestivalCount">0</b><br><span class="muted">Festivals</span></div>
-        <div class="stat"><b id="profileGoingCount">0</b><br><span class="muted">Ik ga</span></div>
-        <div class="stat"><b id="profileFriendCount">0</b><br><span class="muted">Vrienden</span></div>
-      </div>
-    <button class="btn2" data-go="friends">Profiel bewerken</button><h2 class="section">Mijn bewaarde festivals</h2><div id="savedEditions"></div>
-</main>
+      <h2 class="section">Mijn groep</h2>
+      <div id="groupSlot"></div>
+      <p class="muted profileNotice" id="firebaseNotice">Live database staat klaar.</p>
+      <div id="friendsList"></div>
+      <details class="profileFold">
+        <summary>Iemand zonder app toevoegen</summary>
+        <div class="form"><input id="friendName" placeholder="Naam voor je groepslijst"><button class="btn2" id="addFriend">Toevoegen</button></div>
+      </details>
+
+      <h2 class="section">Mijn bewaarde festivals</h2>
+      <div id="savedEditions"></div>
+
+      <h2 class="section">Account &amp; berichten</h2>
+      <section class="card profileAccount"><h3>Inloggen</h3><p id="socialStatus" role="status">Accountverbinding wordt geladen…</p><form id="accountForm" class="form"><label>E-mailadres<input id="accountEmail" type="email" autocomplete="email" required></label><label>Wachtwoord<input id="accountPassword" type="password" autocomplete="current-password" required></label><button class="btn" value="login">Inloggen</button><button class="btn2" value="register">Account aanmaken</button><button type="button" class="btn2" id="resetPassword">Wachtwoord vergeten</button></form><div hidden id="memberTools"><form class="card form" id="editIdentity"><h3>Mijn profiel bewerken</h3><label>Gebruikersnaam<input id="handle" required maxlength="50" autocomplete="nickname"></label><label>Profielfoto<input id="portraitFile" type="file" accept="image/*"></label><label><input type="checkbox" id="removePortrait" style="width:auto;display:inline"> Foto verwijderen</label><button class="btn">Profiel opslaan</button><span id="identityNotice" role="status"></span></form><section id="ownerPanel" class="card form" hidden><h3>Festivalbeheer</h3><label>Editie<select id="adminEdition"></select></label><form class="form" id="catalogEditor"><label>Festivalnaam<input id="adminName" required maxlength="120"></label><label>Begindatum<input type="date" id="adminDate" required></label><label>Einddatum<input type="date" id="adminEnd"></label><label>Locatie<input id="adminPlace"></label><label>Afbeelding (https)<input type="url" id="adminImage"></label><label>Programma · één set per regel: dag | podium | begin | einde | artiest<textarea rows="10" id="adminSets"></textarea></label><label><input type="checkbox" id="adminHide" style="width:auto;display:inline"> Verberg deze editie</label><button class="btn">Wijzigingen publiceren</button></form><p role="status" id="adminNotice"></p></section><button class="btn2" id="logout">Uitloggen</button><h3>Mijn vrienden</h3><div id="chatGate">Privéberichten worden geactiveerd zodra de toegangsregels zijn bevestigd.</div><div id="chatTools" hidden><label>Mijn vriendencode<input readonly id="myFriendCode" onclick="this.select()"></label><form class="form" id="inviteForm"><label>Jouw naam bij een uitnodiging<input id="socialName" maxlength="60" placeholder="Bijnaam"></label><label>Code van je vriend<input id="friendCode" required></label><button class="btn">Verzoek versturen</button></form><div id="connections"></div><section id="conversation" hidden><h3 id="chatTitle"></h3><button class="btn2" id="closeChat">Sluiten</button><div id="messages" role="log"></div><form id="sendMessage" class="form"><input id="messageText" maxlength="2000" placeholder="Bericht" aria-label="Bericht" required><button class="btn">Versturen</button></form></section></div></div></section>
+    </main>
 
     <main id="leaderboard" class="screen">
       <div class="section">Groepsranglijst</div>
       <div class="notice">Ranking op basis van aantal festivals waar iemand op “Ik ga” staat.</div>
       <div id="leaderboardList"></div>
-    <button class="btn2" data-go="friends">Naar mijn groep</button>
+    <button class="btn2" data-go="profile">Naar mijn groep</button>
 </main>
 
     <main id="lineup" class="screen">
@@ -351,6 +351,6 @@ button,input,select,textarea{font:inherit}button{cursor:pointer;color:inherit}bu
     <div class="artistMembers"></div>
     <a hidden target="_blank" rel="noopener noreferrer"></a>
   </dialog>
-  <script type="module" src="app.js?v=festivalgids-14"></script>
+  <script type="module" src="app.js?v=festivalgids-15"></script>
 
 

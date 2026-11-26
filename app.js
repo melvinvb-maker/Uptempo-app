@@ -164,9 +164,8 @@ function groupPath(type) {
 
 function updateFirebaseNotice() {
   if (!$('#firebaseNotice')) return;
-  $('#firebaseNotice').innerHTML = groupId
-    ? `🟢 Live groep actief: <b>${groupId}</b>`
-    : '🟡 Maak of join eerst een groep.';
+  $('#firebaseNotice').textContent = groupId ? '● Live gesynchroniseerd met je groep' : '';
+  $('#firebaseNotice').hidden = !groupId;
 }
 
 // 8 random characters from a set without look-alikes (0/O, 1/I/L): about a trillion possible codes.
@@ -546,7 +545,7 @@ function render() {
 
   if ($('#totalFest')) $('#totalFest').textContent = activeFestivals.length;
   if ($('#doneFest')) $('#doneFest').textContent = archivedFestivals.length;
-  if ($('#friendCount')) $('#friendCount').textContent = friends.length;
+  if ($('#friendCount')) $('#friendCount').textContent = groupFriends().length;
 
   if ($('#sPlanned')) $('#sPlanned').textContent = activeFestivals.length;
   if ($('#sVisited')) $('#sVisited').textContent = archivedFestivals.length;
@@ -745,29 +744,28 @@ function renderStats() {
 function renderFriends() {
   if ($('#myName')) $('#myName').value = profile.name || '';
   if (!$('#friendsList')) return;
-
-  $('#friendsList').innerHTML =
-    friends.map(fr => `
-      <div class="card friend">
-        <div class="avatar">${esc(fr.name || '?').slice(0, 1)}</div>
-        <div class="grow">
-          <b>${esc(fr.name || 'Vriend')}</b>
-          <div class="muted" data-friend-status></div>
-        </div>
-      </div>
-    `).join('') || '<div class="card muted">Nog geen vrienden.</div>';
+  const list = groupFriends();
+  $('#friendsList').innerHTML = list.map(friend => {
+    const favorites = Array.isArray(friend.favorites) ? friend.favorites.length : 0;
+    return `<div class="friendRow" data-friend-id="${esc(friend.id)}">
+        <div class="avatar">${esc((friend.name || '?').trim().slice(0, 1).toUpperCase())}</div>
+        <div class="grow"><b>${esc(friend.name || 'Vriend')}</b><div class="muted" data-friend-status></div></div>
+        ${favorites ? `<span class="friendFavs">♥ ${favorites}</span>` : ''}
+      </div>`;
+  }).join('') || `<p class="muted">${groupId ? 'Nog niemand anders in je groep. Deel de code hierboven.' : 'Je vrienden verschijnen hier zodra je in een groep zit.'}</p>`;
   refreshFriendStatus();
 }
 
 function refreshFriendStatus() {
   const now = Date.now();
-  document.querySelectorAll('#friendsList [data-friend-status]').forEach((label,index) => {
-    const friend = friends[index];
+  document.querySelectorAll('#friendsList [data-friend-status]').forEach(label => {
+    const id = label.closest('[data-friend-id]')?.dataset.friendId;
+    const friend = friends.find(item => item.id === id);
     const isMember = !!friend?.uid && friend.uid === friend.id;
     const confirmed = friend?.lastSeen?.toMillis?.() || 0;
     const age = now - Math.min(confirmed, Number(friend?.activeAt || 0));
     const active = isMember && navigator.onLine && age >= -5000 && age < 200000;
-    label.textContent = active ? '● Online' : isMember ? 'Offline' : 'Groepslijst';
+    label.textContent = active ? '● Online' : isMember ? 'Offline' : 'Zonder app';
     label.className = active ? 'online' : 'muted';
   });
 }
@@ -789,27 +787,36 @@ window.addEventListener('online', updatePresence);
 window.addEventListener('offline', refreshFriendStatus);
 
 function renderGroupBox() {
-  if (!$('#friends')) return;
-  if ($('#groupBox')) $('#groupBox').remove();
-
-  const box = document.createElement('div');
-  box.id = 'groupBox';
-  box.className = 'card form';
-
-  box.innerHTML = `
-    <b>Groep</b>
-    <div class="muted">${groupId ? `Jouw groepscode: <b>${groupId}</b>` : 'Maak een groep of join met een code.'}</div>
-    <button class="btn" id="createGroupBtn">Groep aanmaken</button>
-    <input id="joinGroupCode" placeholder="Groepscode, bijv. UPT-K7Q9">
-    <button class="btn2" id="joinGroupBtn">Groep joinen</button>
-    ${groupId ? '<button class="btn2" id="leaveGroupBtn">Groep verlaten</button>' : ''}
-  `;
-
-  $('#friends').insertBefore(box, $('#friends').children[2] || null);
-
-  $('#createGroupBtn').onclick = createGroup;
-  $('#joinGroupBtn').onclick = joinGroup;
+  const slot = $('#groupSlot');
+  if (!slot) return;
+  slot.innerHTML = groupId ? `
+    <div class="groupCard">
+      <div class="groupCode"><div><small>Groepscode</small><b>${esc(groupId)}</b></div><button class="btn2" id="shareGroupBtn">Deel code</button></div>
+      <button class="groupLeave" id="leaveGroupBtn">Groep verlaten</button>
+    </div>` : `
+    <div class="groupCard">
+      <p class="muted" style="margin:0 0 10px">Maak een groep en deel de code, of vul de code van een vriend in.</p>
+      <button class="btn" id="createGroupBtn">Groep aanmaken</button>
+      <div class="groupJoin"><input id="joinGroupCode" placeholder="Groepscode, bijv. UPT-K7Q9" aria-label="Groepscode" autocapitalize="characters"><button class="btn2" id="joinGroupBtn">Join</button></div>
+    </div>`;
+  if ($('#createGroupBtn')) $('#createGroupBtn').onclick = createGroup;
+  if ($('#joinGroupBtn')) $('#joinGroupBtn').onclick = joinGroup;
   if ($('#leaveGroupBtn')) $('#leaveGroupBtn').onclick = leaveGroup;
+  if ($('#shareGroupBtn')) $('#shareGroupBtn').onclick = shareGroupCode;
+}
+
+async function shareGroupCode() {
+  const text = 'Kom in mijn UPTEMPO-groep met code ' + groupId;
+  if (navigator.share) {
+    try { await navigator.share({text}); return; } catch (error) { if (error.name === 'AbortError') return; }
+  }
+  try { await navigator.clipboard.writeText(groupId); toast('Groepscode gekopieerd'); }
+  catch { toast('Groepscode: ' + groupId, 8000); }
+}
+
+// Everyone in the group except yourself.
+function groupFriends() {
+  return friends.filter(friend => friend.id !== uid);
 }
 
 function renderProfile() {
@@ -826,10 +833,11 @@ function renderProfile() {
       if (window.accountPortrait) avatar.textContent = '';
     }
   }
-  if ($('#profileGroup')) $('#profileGroup').textContent = groupId ? `Groep: ${groupId}` : 'Geen groep actief';
+  const others = groupFriends().length;
+  if ($('#profileGroup')) $('#profileGroup').textContent = !groupId ? 'Nog geen groep' : others ? others + (others > 1 ? ' vrienden' : ' vriend') + ' in je groep' : 'Alleen jij in je groep';
   if ($('#profileFestivalCount')) $('#profileFestivalCount').textContent = festivals.length;
   if ($('#profileGoingCount')) $('#profileGoingCount').textContent = goingCount;
-  if ($('#profileFriendCount')) $('#profileFriendCount').textContent = friends.length;
+  if ($('#profileFriendCount')) $('#profileFriendCount').textContent = groupFriends().length;
 }
 
 function renderLeaderboard() {
