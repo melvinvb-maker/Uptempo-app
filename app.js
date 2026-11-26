@@ -2592,10 +2592,10 @@ function renderCal() {
   const now = calendarDate;
 
   $('#monthTitle').innerHTML = `
-    <div class="row" style="justify-content:space-between">
-      <button class="btn2" onclick="changeMonth(-1)" aria-label="Vorige maand">Vorige</button>
+    <div class="calHead">
+      <button class="calNav" onclick="changeMonth(-1)" aria-label="Vorige maand">‹</button>
       <span>${now.toLocaleDateString('nl-NL', { month: 'long', year: 'numeric' })}</span>
-      <button class="btn2" onclick="changeMonth(1)" aria-label="Volgende maand">Volgende</button>
+      <button class="calNav" onclick="changeMonth(1)" aria-label="Volgende maand">›</button>
     </div>
   `;
 
@@ -2608,7 +2608,7 @@ function renderCal() {
     const dayFestivals = events.filter(f => f.date && f.date <= date && (f.dateEnd || f.date) >= date).filter((f,i,all) => all.findIndex(x => normalizeFestivalName(x.name) === normalizeFestivalName(f.name)) === i);
 
     html += `
-      <div class="day">
+      <div class="day${date === isoDay(new Date()) ? ' today' : ''}${dayFestivals.length ? ' hasEvent' : ''}">
         <b>${d}</b>
         ${dayFestivals.map(f => `
           <button class="calendarFestival" ${f.festival ? `data-edition="${esc(normalizeFestivalName(f.festival))}"` : `data-personal="${esc(f.id)}"`} title="${esc(f.name)}">${esc(f.name)}</button>
@@ -2967,7 +2967,7 @@ function timedSets(rows) {
 
 // ---- Festival-day planning: real clock times, "now & next", overlaps and calendar export ----
 const WEEKDAYS = {sunday:0, monday:1, tuesday:2, wednesday:3, thursday:4, friday:5, saturday:6};
-const isoDay = date => date.getFullYear()+'-'+String(date.getMonth()+1).padStart(2,'0')+'-'+String(date.getDate()).padStart(2,'0');
+function isoDay(date) { return date.getFullYear()+'-'+String(date.getMonth()+1).padStart(2,'0')+'-'+String(date.getDate()).padStart(2,'0'); }
 const clock = date => String(date.getHours()).padStart(2,'0')+':'+String(date.getMinutes()).padStart(2,'0');
 
 // Calendar date of a lineup day ("Saturday", an ISO date or empty) within the festival's dates.

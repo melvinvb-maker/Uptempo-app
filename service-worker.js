@@ -1,11 +1,11 @@
 // App files: network first so updates arrive straight away, with the cached copy as fallback without signal.
 // Images (also artist photos from other sites): served from the cache and refreshed in the background.
-const CACHE = 'uptempo-app-v10';
+const CACHE = 'uptempo-app-v11';
 const IMAGES = 'uptempo-images-v1';
 const MAX_IMAGES = 400;
 const scope = self.registration.scope;
 const offlinePage = new URL('offline.html', scope).href;
-const shell = ['./', 'index.html', 'offline.html', 'manifest.json', 'app.js?v=festivalgids-8', 'festival-guide.js?v=4',
+const shell = ['./', 'index.html', 'offline.html', 'manifest.json', 'app.js?v=festivalgids-9', 'festival-guide.js?v=4',
   'artist-bios.js', 'timetable-photos.js', 'confused-editions.mjs', 'firebase-config.js',
   'uptempo-192.png', 'uptempo-512.png', 'apple-touch-icon.png'].map(path => new URL(path, scope).href);
 
