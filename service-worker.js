@@ -1,11 +1,13 @@
 // App files: network first so updates arrive straight away, with the cached copy as fallback without signal.
-// Images (also artist photos from other sites): served from the cache and refreshed in the background.
-const CACHE = 'uptempo-app-v15';
-const IMAGES = 'uptempo-images-v1';
+// The app's own images (artist photos, icons): served from the cache and refreshed in the background.
+// Images from other sites are left to the browser: Safari does not reliably show those when a
+// service worker passes them on, which left festival images blank on iPhone.
+const CACHE = 'uptempo-app-v17';
+const IMAGES = 'uptempo-images-v2';
 const MAX_IMAGES = 400;
 const scope = self.registration.scope;
 const offlinePage = new URL('offline.html', scope).href;
-const shell = ['./', 'index.html', 'offline.html', 'manifest.json', 'app.js?v=festivalgids-13', 'utils.js', 'artists.js', 'planning.js', 'festival-data.js', 'festival-guide.js?v=4',
+const shell = ['./', 'index.html', 'offline.html', 'manifest.json', 'app.js?v=festivalgids-14', 'utils.js', 'artists.js', 'planning.js', 'festival-data.js', 'festival-guide.js?v=4',
   'artist-bios.js', 'timetable-photos.js', 'auto-photos.js', 'confused-editions.mjs', 'firebase-config.js',
   'uptempo-192.png', 'uptempo-512.png', 'apple-touch-icon.png'].map(path => new URL(path, scope).href);
 
@@ -45,7 +47,7 @@ async function imageFromCache(event) {
   const cache = await caches.open(IMAGES);
   const cached = await caches.match(event.request);
   const refresh = fetch(event.request).then(response => {
-    if (response.ok || response.type === 'opaque') cache.put(event.request, response.clone()).then(() => trimImages(cache));
+    if (response.ok) cache.put(event.request, response.clone()).then(() => trimImages(cache)).catch(() => {});
     return response;
   });
   if (cached) {
@@ -58,6 +60,6 @@ async function imageFromCache(event) {
 self.addEventListener('fetch', event => {
   const {request} = event;
   if (request.method !== 'GET') return;
-  if (request.destination === 'image') return event.respondWith(imageFromCache(event));
+  if (request.destination === 'image' && request.url.startsWith(scope)) return event.respondWith(imageFromCache(event));
   if (request.url.startsWith(scope)) event.respondWith(networkFirst(request));
 });
