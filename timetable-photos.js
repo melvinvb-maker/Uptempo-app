@@ -3,6 +3,7 @@ export const artistPortraits = {
   // Press photos from The Bassline Agency roster, stored locally.
   "Alpha Twins": "images/acts/alpha-twins.webp",
   "DJ Thera": "images/acts/dj-thera.webp",
+  "Degos & Re-Done": "images/acts/degos-re-done.webp",
   "DV8": "images/acts/dv8.webp",
   "Da Syndrome": "images/acts/da-syndrome.webp",
   "MC Da Syndrome": "images/acts/da-syndrome.webp",
