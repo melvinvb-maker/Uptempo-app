@@ -1,0 +1,13 @@
+{
+  "name": "uptempo-tests",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "lint": "eslint --no-eslintrc -c .eslintrc.json ../app.js ../utils.js ../artists.js ../planning.js ../festival-data.js ../festival-guide.js ../timetable-photos.js ../auto-photos.js ../artist-bios.js ../service-worker.js",
+    "smoke": "node smoke.mjs"
+  },
+  "devDependencies": {
+    "eslint": "8.57.0",
+    "playwright": "1.56.1"
+  }
+}

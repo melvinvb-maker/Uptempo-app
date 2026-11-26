@@ -50,3 +50,7 @@ Na elke import draait `collect-photos.js`. Het zoekt in de geïmporteerde line-u
 - Is een automatische afbeelding niet geschikt, zet de artiestennaam dan in `scripts/photo-skip.json` en verwijder het bestand uit `images/acts/auto/` en de regel uit `auto-photos.js`.
 - Per run komen er maximaal 40 nieuwe foto's bij. Dit kost niets: het draait op dezelfde gratis GitHub Actions-runner.
 
+
+## Automatische test
+
+Bij elke pull request en elke wijziging op `main` draait `.github/workflows/test.yml`. Die controleert de code met ESLint en opent de app in Chromium (`tests/smoke.mjs`): alle tabbladen, Nu & straks, overlap, agenda-export, planningsafbeelding, artiestenvenster, starten met beschadigde opslag en zonder verbinding, en of alle artiestenfoto's bestaan. Lokaal draaien: `cd tests && npm install && npx playwright install chromium && npm run lint && npm run smoke`.

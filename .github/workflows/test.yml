@@ -1,0 +1,38 @@
+name: Test app
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install test tools
+        working-directory: tests
+        run: npm install --no-audit --no-fund
+
+      - name: Install Chromium
+        working-directory: tests
+        run: npx playwright install --with-deps chromium
+
+      - name: Check the code
+        working-directory: tests
+        run: npm run lint
+
+      - name: Run the app in a browser
+        working-directory: tests
+        run: npm run smoke
