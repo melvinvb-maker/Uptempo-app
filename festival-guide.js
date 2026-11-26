@@ -50,7 +50,8 @@ function groupSets(f, sets, dayName) {
     time:a.start ? [a.start,a.end].filter(Boolean).join('–') : '', name:a.artist, detail:a.stage
   }))}));
 }
-export function setupGuide({editions,passed,favorite,planned,dateLabel,dayName,open}) {
+const hhmm = d => String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
+export function setupGuide({editions,passed,favorite,planned,dateLabel,dayName,open,sets,friendsAt}) {
   const form = document.querySelector('#guideForm'), log = document.querySelector('#guideLog');
   let previous = [];
   function reply(question) {
@@ -64,6 +65,41 @@ export function setupGuide({editions,passed,favorite,planned,dateLabel,dayName,o
     if (city && named.length > 1) named = named.filter(f => contains(normalize(f.location),city));
     if (dateMatches && named.length > 1) named = named.filter(dateMatches);
     const list = (items,title,empty) => ({title:items.length ? title : empty, groups:items.map(f => ({festival:f}))});
+    // "Wat speelt er nu?": per stage the current and the next set at every festival running now.
+    if (/\b(nu|straks|op dit moment|now|zo meteen)\b/.test(q) && !/\b(tickets?|kopen)\b/.test(q)) {
+      const now = new Date();
+      const groups = all.map(f => {
+        const timed = sets(f);
+        if (!timed.length) return null;
+        const first = timed[0].start, last = timed.reduce((max,set) => set.end > max ? set.end : max, timed[0].end);
+        if (now < first - 3*3600000 || now > last) return null;
+        const rows = [...new Set(timed.map(set => set.stage))].flatMap(stage => {
+          const own = timed.filter(set => set.stage === stage);
+          const current = own.find(set => set.start <= now && now < set.end);
+          const next = own.find(set => set.start > now);
+          const row = (set, label) => {
+            const names = friendsAt(f, set.item);
+            return {time: label, name: (favorite(f,set.item) ? '♥ ' : '') + set.item.artist, detail: [stage, names.length ? 'met ' + names.join(', ') : ''].filter(Boolean).join(' · ')};
+          };
+          return [current && row(current, 'Nu'), next && row(next, hhmm(next.start))].filter(Boolean);
+        });
+        return rows.length ? {festival:f, rows} : null;
+      }).filter(Boolean);
+      return groups.length ? {title:'Nu & straks', groups, schedules:true}
+        : {title:'Er is op dit moment geen festival bezig.', note:'Vraag bijvoorbeeld “Wat is het eerstvolgende festival?”'};
+    }
+    // Friends: which sets people in your group marked as favourite, optionally for one artist.
+    if (/\b(vrienden|vriend|groep|wie van)\b/.test(q)) {
+      const artist = all.some(f => f.lineup.some(a => matchedArtist(q,a)));
+      const groups = (named.length ? named : upcoming).flatMap(f => {
+        const rows = f.lineup.filter(a => (!artist || matchedArtist(q,a)) && friendsAt(f,a).length)
+          .sort((x,y) => String(x.day || '').localeCompare(String(y.day || '')) || String(x.start || '99').localeCompare(String(y.start || '99')))
+          .map(a => ({time: a.start ? [a.start,a.end].filter(Boolean).join('–') : '', name: a.artist, detail: [dayName(a.day), a.stage, 'met ' + friendsAt(f,a).join(', ')].filter(Boolean).join(' · ')}));
+        return rows.length ? [{festival:f, rows}] : [];
+      });
+      return groups.length ? {title:'Hier gaan je vrienden heen', groups, schedules:true}
+        : {title:'Je vrienden hebben hier nog geen favoriete sets.', note:'Zodra iemand in je groep een set met een hartje markeert, zie je dat hier.'};
+    }
     const schedule = /\b(planning|bewaarde festivals|mijn festivals|welke festivals heb ik|waar ga ik)\b/.test(q);
     if (schedule) return list(upcoming.filter(f => planned(f) && (!dateMatches || dateMatches(f))), 'Jouw festivalplanning','Je hebt hiervoor nog geen festival gepland.');
     const fav = /favoriet/.test(q);
