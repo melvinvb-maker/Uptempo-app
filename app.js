@@ -2740,6 +2740,45 @@ const officialActPhotos = {
 const artistKey = value => normalizeFestivalName(String(value).replace(/ø/gi, 'o'));
 const artistRecords = new Map(artistBios.map(([name,bio,url]) => [artistKey(name), {name,bio,url}]));
 const profilePhotos = new Map(Object.entries({...officialActPhotos, ...artistPortraits}).map(([name,url]) => [artistKey(name),url]));
+for (const [name,url] of Object.entries(artistPortraits)) {
+  const alias = artistKey(name.replace(/\s+pres\.?\s+/i,' '));
+  if (!profilePhotos.has(alias)) profilePhotos.set(alias,url);
+}
+const photoNames = Object.keys({...officialActPhotos, ...artistPortraits}).sort((a,b) => b.length-a.length);
+
+// Strips billing extras such as "(host)", "pres. ..." and "LIVE" so the press photo of the artist is found.
+function cleanCredit(name) {
+  return String(name).replace(/\s*\([^)]*\)/g,'').replace(/\s+(?:pres\.?|presents)\s.*$/i,'').replace(/\s+live$/i,'').trim();
+}
+
+// Curated press photo for one artist (or a fixed group); show titles such as "D-STURB UNIVERSE" fall back to the artist.
+// A combined set only matches a photo that shows that same combination, never one of its members alone.
+function photoFor(name, combined = false) {
+  const clean = cleanCredit(name);
+  const direct = profilePhotos.get(artistKey(name)) || profilePhotos.get(artistKey(clean));
+  if (direct) return direct;
+  const lower = clean.toLowerCase();
+  const hit = photoNames.find(entry => lower.startsWith(entry.toLowerCase()+' ') && (performers(entry).length > 1) === combined);
+  return hit ? profilePhotos.get(artistKey(hit)) : '';
+}
+
+// Clean press photos come first; a festival's promo banner is only used when no press photo is known.
+function setPhotos(item) {
+  const members = performers(item.artist);
+  const whole = photoFor(profileName(item.artist), members.length > 1);
+  if (whole) return [whole];
+  if (members.length < 2) return item.portrait ? [item.portrait] : [];
+  if (item.portrait) return [item.portrait];
+  return [...new Set(members.map(photoFor).filter(Boolean))].slice(0,3);
+}
+
+document.addEventListener('error', event => {
+  const image = event.target;
+  if (!(image instanceof HTMLImageElement) || !image.closest('.slotArt')) return;
+  const art = image.parentElement;
+  image.remove();
+  if (!art.querySelector('img')) art.closest('.artistSlot')?.classList.remove('hasArt');
+}, true);
 
 function profileName(label) {
   return label.split(':')[0].replace(/\s*\[[^\]]*\]/g,'').replace(/\s+live$/i,'').trim() || label;
@@ -2814,7 +2853,7 @@ function showArtist(label, chosen) {
     if (!group && act.stage) bio += ' Bij '+festival.name+' staat deze act op '+act.stage+'.';
   }
   const catalogPhoto = appearances.flatMap(edition => edition.lineup).find(item => artistKey(profileName(item.artist)) === id && item.portrait?.startsWith('https://'))?.portrait;
-  const photo = (record && profilePhotos.get(artistKey(record.name))) || profilePhotos.get(id) || catalogPhoto || (!chosen && act.portrait?.startsWith('https://') ? act.portrait : '');
+  const photo = (record && photoFor(record.name)) || photoFor(name) || catalogPhoto || (!chosen && act.portrait?.startsWith('https://') ? act.portrait : '');
   const dialog = document.getElementById('artistDialog');
   dialog.querySelector('h2').textContent = record?.name || name;
   dialog.querySelector('.artistBio').textContent = bio;
@@ -2878,13 +2917,10 @@ function horizontalSchedule(items, festival) {
   const card = item => {
     const key = setKey(festival,item);
     const saved = favoriteSets.includes(key);
-    const name = profileName(item.artist);
-    const groupPhoto = item.portrait || profilePhotos.get(artistKey(name));
-    const photos = groupPhoto ? [groupPhoto] : performers(item.artist)
-      .map(member => profilePhotos.get(artistKey(member))).filter(Boolean).slice(0,3);
+    const photos = setPhotos(item);
     const art = photos.map(url => '<img loading="lazy" decoding="async" alt="" src="'+esc(url)+'">').join('');
     const time = item.start ? [item.start,item.end].filter(Boolean).join('–') : 'Tijd volgt';
-    return '<button type="button" class="artistSlot" data-set-key="'+esc(key)+'" aria-pressed="'+saved+'" aria-label="'+esc(item.artist+' · '+time+' · Favoriet')+'"><span class="slotArt" aria-hidden="true">'+art+'</span><span class="slotText"><strong>'+esc(item.artist)+'</strong><small>'+esc(time)+'</small></span><span class="slotHeart" aria-hidden="true">'+(saved?'♥':'♡')+'</span></button>';
+    return '<button type="button" class="artistSlot'+(photos.length ? ' hasArt' : '')+'" data-set-key="'+esc(key)+'" aria-pressed="'+saved+'" aria-label="'+esc(item.artist+' · '+time+' · Favoriet')+'"><span class="slotArt" aria-hidden="true">'+art+'</span><span class="slotText"><strong>'+esc(item.artist)+'</strong><small>'+esc(time)+'</small></span><span class="slotHeart" aria-hidden="true">'+(saved?'♥':'♡')+'</span></button>';
   };
   const days = [...new Set(items.map(item => item.day || ''))];
   return days.map(day => {
