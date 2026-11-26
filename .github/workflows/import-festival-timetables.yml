@@ -10,6 +10,7 @@ on:
     paths:
       - ".github/workflows/import-festival-timetables.yml"
       - "scripts/**"
+      - "confused-editions.mjs"
 
 permissions:
   contents: read

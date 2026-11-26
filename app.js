@@ -1,4 +1,5 @@
-import {setupGuide} from './festival-guide.js';
+import { confusedEditions } from './confused-editions.mjs';
+import {setupGuide} from './festival-guide.js?v=4';
 import { artistBios } from './artist-bios.js';
 import { artistPortraits, rebirthSets } from './timetable-photos.js';
 import { firebaseEnabled, firebaseConfig } from './firebase-config.js';
@@ -18,6 +19,7 @@ let unsubscribeFestivals = null;
 let unsubscribeFriends = null;
 let unsubscribeFestivalLineups = null;
 let festivalLineupUpdates = [
+...confusedEditions,
 {
   "festival": "Supremacy 2027 – Return to the Classics",
   "date": "2027-01-16",
@@ -226,6 +228,9 @@ let festivalLineupUpdates = [
 },
 {
   "festival": "Supersized Kingsday Festival 2027",
+  "hours": "12:00–23:00",
+  "address": "Aquabest, Ekkersweijer 1, Best",
+  "imageUrl": "https://www.datocms-assets.com/126800/1784288150-supersized-kingsday-festival-hero-logo.jpg?auto=compress&fit=max&w=1000",
   "date": "2027-04-27",
   "dateEnd": "2027-04-27",
   "location": "Aquabest, Eindhoven",
@@ -1409,6 +1414,9 @@ let festivalLineupUpdates = [
   },
   {
     "festival": "Gezellige Clubtempo",
+    "host": "MC Barricade",
+    "hours": "14:00–23:00",
+    "lineupRevision": 1,
     "date": "2026-12-12",
     "dateEnd": "2026-12-12",
     "location": "013 Poppodium, Tilburg",
@@ -1500,69 +1508,6 @@ let festivalLineupUpdates = [
     "day": "Saturday",
     "start": "22:30",
     "end": "23:00"
-  },
-  {
-    "artist": "MC Barricade (host)",
-    "stage": "Main",
-    "day": "Saturday",
-    "start": "",
-    "end": ""
-  },
-  {
-    "artist": "Aurøra",
-    "stage": "Next",
-    "day": "Saturday",
-    "start": "",
-    "end": ""
-  },
-  {
-    "artist": "Bössels vs Rosbeek vs Complex",
-    "stage": "Next",
-    "day": "Saturday",
-    "start": "",
-    "end": ""
-  },
-  {
-    "artist": "DJ Content",
-    "stage": "Next",
-    "day": "Saturday",
-    "start": "",
-    "end": ""
-  },
-  {
-    "artist": "Dr. Z",
-    "stage": "Next",
-    "day": "Saturday",
-    "start": "",
-    "end": ""
-  },
-  {
-    "artist": "Ketanoise vs Recharge",
-    "stage": "Next",
-    "day": "Saturday",
-    "start": "",
-    "end": ""
-  },
-  {
-    "artist": "Missy vs Breezy",
-    "stage": "Next",
-    "day": "Saturday",
-    "start": "",
-    "end": ""
-  },
-  {
-    "artist": "Slechtpicknick vs Jorrit Gevaarlijk",
-    "stage": "Next",
-    "day": "Saturday",
-    "start": "",
-    "end": ""
-  },
-  {
-    "artist": "Spiady",
-    "stage": "Next",
-    "day": "Saturday",
-    "start": "",
-    "end": ""
   }
 ]
   },
@@ -2005,7 +1950,9 @@ document.addEventListener('click', event => {
       for (const star of document.querySelectorAll('[data-set-key]')) {
         if (star.dataset.setKey !== key) continue;
         star.setAttribute('aria-pressed', String(saved));
-        star.textContent = saved ? '★' : '☆';
+        const heart = star.querySelector('.slotHeart');
+        if (heart) heart.textContent = saved ? '♥' : '♡';
+        else star.textContent = saved ? '★' : '☆';
       }
       return;
     }
@@ -2194,7 +2141,17 @@ function watchFestivalLineups() {
   unsubscribeFestivalLineups = window.fb.onSnapshot(
     window.fb.collection(db, 'festivalLineups'),
     snap => {
-      const synced = snap.docs.map(d => ({...d.data(), catalogKey:d.id}));
+      const synced = snap.docs.map(doc => {
+        const entry = {...doc.data(), catalogKey:doc.id};
+        const seed = bundledEditions.find(item => item.date === entry.date &&
+          normalizeFestivalName(item.festival) === normalizeFestivalName(entry.festival));
+        for (const field of ['hours','age','address']) if (seed?.[field] && !entry[field]) entry[field] = seed[field];
+        if (seed?.imageUrl && !entry.imageUrl) entry.imageUrl = seed.imageUrl;
+        if (seed?.lineupRevision > (entry.lineupRevision || 0)) {
+          Object.assign(entry, {lineup:seed.lineup, lineupRevision:seed.lineupRevision, host:seed.host, lineupSource:seed.lineupSource});
+        }
+        return entry;
+      });
       rawEditions = [...synced, ...bundledEditions.filter(seed => !synced.some(entry =>
         normalizeFestivalName(entry.festival) === normalizeFestivalName(seed.festival) && entry.date === seed.date
       ))];
@@ -2229,12 +2186,14 @@ function applyFestivalLineupUpdates() {
 
     const importedSources = new Set(['instagram', 'official_website']);
     const manualItems = (festival.lineup || [])
-      .filter(item => !importedSources.has(item.source));
-    const importedItems = update.lineup || [];
+      .filter(item => !importedSources.has(item.source) && (item.id || !update.lineupRevision));
+    const importedItems = (update.lineup || []).map(item => item.source ? item : {...item, source:'official_website'});
 
     return {
       ...festival,
       lineup: [...manualItems, ...importedItems],
+      host: update.host || festival.host || '',
+      hours:update.hours || festival.hours || '', age:update.age || festival.age || '', address:update.address || festival.address || '',
       lineupSource: update.lineupSource || '',
       lineupUpdatedAt: update.lineupUpdatedAt || null,
       imageUrl: update.imageUrl || festival.imageUrl || ''
@@ -2499,7 +2458,7 @@ function lineupOptions() {
   const personal = festivals.map(f => ({
     key: 'personal:' + f.id, id: f.id, name: f.name, date: f.date || '', dateEnd: f.dateEnd || '',
     location: f.location || '', imageUrl: f.imageUrl || '', lineup: f.lineup || [],
-    lineupSource: f.lineupSource || '', isImportedCatalog: false
+    hours:f.hours, age:f.age, address:f.address, lineupRevision:f.lineupRevision, host: f.host, floorplanUrl: f.floorplanUrl, lineupSource: f.lineupSource || '', isImportedCatalog: false
   }));
   const catalog = festivalLineupUpdates
     .filter(update => update.officialCatalog || (Array.isArray(update.lineup) && update.lineup.length))
@@ -2516,7 +2475,7 @@ function lineupOptions() {
       name: update.festival || 'Festival', date: update.date || '', dateEnd: update.dateEnd || '',
       location: update.location || (update.lineupEditionYear ? 'Editie ' + update.lineupEditionYear : ''),
       lineup: update.lineup || [], imageUrl: update.imageUrl || '',
-      lineupSource: update.lineupSource || '', isImportedCatalog: true
+      hours:update.hours, age:update.age, address:update.address, lineupRevision:update.lineupRevision, host: update.host, floorplanUrl: update.floorplanUrl, lineupSource: update.lineupSource || '', isImportedCatalog: true
     }));
   return [...personal, ...catalog].sort((a,b) => (a.date || '9999').localeCompare(b.date || '9999'));
 }
@@ -2531,7 +2490,6 @@ function dayName(value) {
 }
 
 window.openOfficialLineup = slug => {
-  if ($('#timetableYear')) $('#timetableYear').value = '';
   $('#lineupSearch').value = '';
   onlyFavoriteSets = false;
   const update = festivalLineupUpdates.find(item => normalizeFestivalName(item.festival) === slug);
@@ -2547,7 +2505,6 @@ window.openOfficialLineup = slug => {
 };
 
 window.openFestivalLineup = id => {
-  if ($('#timetableYear')) $('#timetableYear').value = '';
   $('#lineupSearch').value = '';
   onlyFavoriteSets = false;
   selectedLineupKey = 'personal:' + id;
@@ -2591,9 +2548,9 @@ function renderCal() {
 
   $('#monthTitle').innerHTML = `
     <div class="row" style="justify-content:space-between">
-      <button class="btn2" onclick="changeMonth(-1)">‹</button>
+      <button class="btn2" onclick="changeMonth(-1)" aria-label="Vorige maand">Vorige</button>
       <span>${now.toLocaleDateString('nl-NL', { month: 'long', year: 'numeric' })}</span>
-      <button class="btn2" onclick="changeMonth(1)">›</button>
+      <button class="btn2" onclick="changeMonth(1)" aria-label="Volgende maand">Volgende</button>
     </div>
   `;
 
@@ -2835,7 +2792,7 @@ function mapLink(festival) {
     else if (/brabanthallen/i.test(festival.location)) url = 'https://www.brabanthallen.nl/wp-content/uploads/2026/01/Plattegrond-Brabanthallen-s-Hertogenbosch-JAN2026.pdf';
     else return '';
   }
-  return '<p><a class="btn2" target="_blank" rel="noopener noreferrer" href="'+esc(url)+'">'+label+' ↗</a></p>';
+  return '<p><a class="btn2" target="_blank" rel="noopener noreferrer" href="'+esc(url)+'">'+label+'</a></p>';
 }
 function showArtist(label, chosen) {
   const festival = getSelectedLineup();
@@ -2904,6 +2861,64 @@ document.addEventListener('click', event => {
   const link = event.target.closest('[data-artist-info]');
   if (link) showArtist(link.dataset.artistInfo);
 });
+function timedSets(rows) {
+    const overnight = rows.some(item => clockMinute(item.start) >= 1080) &&
+      !rows.some(item => clockMinute(item.start) >= 360 && clockMinute(item.start) < 600);
+    return rows.map(item => {
+      let start = clockMinute(item.start);
+      if (overnight && start < 360) start += 1440;
+      let end = clockMinute(item.end);
+      if (end !== null && end < start) end += 1440;
+      return {item,start,end: end !== null && end > start ? end : start + 1};
+    }).sort((a,b) => a.start-b.start);
+}
+
+// Each stage uses the same time scale so simultaneous sets line up vertically.
+function horizontalSchedule(items, festival) {
+  const card = item => {
+    const key = setKey(festival,item);
+    const saved = favoriteSets.includes(key);
+    const name = profileName(item.artist);
+    const groupPhoto = item.portrait || profilePhotos.get(artistKey(name));
+    const photos = groupPhoto ? [groupPhoto] : performers(item.artist)
+      .map(member => profilePhotos.get(artistKey(member))).filter(Boolean).slice(0,3);
+    const art = photos.map(url => '<img loading="lazy" decoding="async" alt="" src="'+esc(url)+'">').join('');
+    const time = item.start ? [item.start,item.end].filter(Boolean).join('–') : 'Tijd volgt';
+    return '<button type="button" class="artistSlot" data-set-key="'+esc(key)+'" aria-pressed="'+saved+'" aria-label="'+esc(item.artist+' · '+time+' · Favoriet')+'"><span class="slotArt" aria-hidden="true">'+art+'</span><span class="slotText"><strong>'+esc(item.artist)+'</strong><small>'+esc(time)+'</small></span><span class="slotHeart" aria-hidden="true">'+(saved?'♥':'♡')+'</span></button>';
+  };
+  const days = [...new Set(items.map(item => item.day || ''))];
+  return days.map(day => {
+    const entries = items.filter(item => (item.day || '') === day);
+    const timed = timedSets(entries.filter(item => clockMinute(item.start) !== null));
+    const pending = entries.filter(item => clockMinute(item.start) === null);
+    let timeline = '';
+    if (timed.length) {
+      const first = Math.floor(timed[0].start / 60) * 60;
+      const until = Math.ceil(Math.max(...timed.map(set => set.end)) / 60) * 60;
+      const shortest = Math.min(...timed.filter(set => set.item.end).map(set => set.end-set.start));
+      const scale = Math.max(4,Math.min(10,100/shortest));
+      const offset = t => (t-first)*scale;
+      const ticks = [];
+      for (let t=first; t<until; t+=60) ticks.push('<span style="left:'+offset(t)+'px">'+String(Math.floor(t/60)%24).padStart(2,'0')+':00</span>');
+      const stages = [...new Set(timed.map(set => set.item.stage || 'Programma'))];
+      const tracks = stages.map(stage => {
+        const ends = [];
+        const slots = timed.filter(set => (set.item.stage || 'Programma')===stage).map(set => {
+          const width = Math.max(52,(set.end-set.start)*scale);
+          const left = offset(set.start);
+          let lane = ends.findIndex(end => end <= left);
+          if (lane < 0) lane = ends.length;
+          ends[lane] = left + width;
+          return '<div class="slotPlace" style="left:'+left+'px;width:'+width+'px;top:'+lane*108+'px">'+card(set.item)+'</div>';
+        });
+        return '<section class="stageTrack"><h4>'+esc(stage)+'</h4><div class="slotLane" style="height:'+ends.length*108+'px">'+slots.join('')+'</div></section>';
+      }).join('');
+      timeline = '<div class="ttScroll horizontalScroll" tabindex="0" aria-label="Tijdlijn, veeg horizontaal voor latere sets"><div class="timeCanvas" style="width:'+Math.max(offset(until),...timed.map(set=>offset(set.start)+52))+'px;--hour:'+scale*60+'px"><div class="timeAxis">'+ticks.join('')+'</div>'+tracks+'</div></div>';
+    }
+    const unknown = pending.length ? '<h4>Speeltijd volgt</h4><div class="untimedSlots">'+pending.map(card).join('')+'</div>' : '';
+    return (day ? '<h3 class="slotDay">'+esc(dayName(day))+'</h3>' : '') + timeline + unknown;
+  }).join('');
+}
 function stageSchedule(items, selected) {
   const timed = items.filter(item => clockMinute(item.start) !== null);
   const untimed = items.filter(item => clockMinute(item.start) === null);
@@ -2915,15 +2930,7 @@ function stageSchedule(items, selected) {
   const groups = [...new Set(timed.map(item => item.day || ''))];
   const boards = groups.map(day => {
     const rows = timed.filter(item => (item.day || '') === day);
-    const overnight = rows.some(item => clockMinute(item.start) >= 1080) &&
-      !rows.some(item => clockMinute(item.start) >= 360 && clockMinute(item.start) < 600);
-    const sets = rows.map(item => {
-      let start = clockMinute(item.start);
-      if (overnight && start < 360) start += 1440;
-      let end = clockMinute(item.end);
-      if (end !== null && end < start) end += 1440;
-      return {item,start,end: end !== null && end > start ? end : start + 1};
-    }).sort((a,b) => a.start-b.start);
+    const sets = timedSets(rows);
     const stages = [...new Set(sets.map(set => set.item.stage || 'Programma'))];
     let column = 2;
     const headers = stages.map(stage => {
@@ -2960,32 +2967,13 @@ let stageFestivalKey = '';
 let selectedStage = '';
 
 function renderLineup() {
-  const picker = $('#lineupFestival');
   const container = $('#lineupList');
-  if (!picker || !container) return;
-
-  let seasonPicker = $('#timetableYear');
-  if (!seasonPicker) {
-    seasonPicker = document.createElement('select');
-    seasonPicker.id = 'timetableYear';
-    seasonPicker.setAttribute('aria-label','Filter timetable op jaar');
-    seasonPicker.style.marginBottom = '8px';
-    picker.before(seasonPicker);
-  }
-  const allOptions = lineupOptions().filter(f => f.key === selectedLineupKey || (f.date && !festivalHasPassed(f)));
-  const years = [...new Set(allOptions.map(f => f.date.slice(0,4)).filter(Boolean))].sort();
-  const previousYear = seasonPicker.value;
-  seasonPicker.innerHTML = '<option value="">Alle jaren</option>' + years.map(year => '<option>'+esc(year)+'</option>').join('');
-  seasonPicker.value = years.includes(previousYear) ? previousYear : '';
-  seasonPicker.onchange = () => { selectedLineupKey = ''; selectedLineupDay = 'all'; renderLineup(); };
-  const options = allOptions.filter(f => !seasonPicker.value || f.date.startsWith(seasonPicker.value));
-  if (!options.some(f => f.key === selectedLineupKey)) selectedLineupKey = options[0]?.key || '';
-  picker.innerHTML = options.map(f => `<option value="${esc(f.key)}">${esc(f.name)}${f.date ? ' · ' + esc(fmt(f.date)) : ''}</option>`).join('')
-    || '<option value="">Geen festivals beschikbaar</option>';
-  picker.value = selectedLineupKey;
-  picker.onchange = () => { onlyFavoriteSets = false; selectedLineupKey = picker.value; selectedLineupDay = 'all'; renderLineup(); };
-
-  const selected = getSelectedLineup();
+  if (!container) return;
+  const options = lineupOptions();
+  const selected = options.find(f => f.key === selectedLineupKey) ||
+    options.find(f => f.date && !festivalHasPassed(f) && f.lineup.some(set => set.start)) ||
+    options.find(f => f.date && !festivalHasPassed(f));
+  selectedLineupKey = selected?.key || '';
   const manual = $('#lineupManual');
   if (manual) manual.hidden = !selected || selected.isImportedCatalog;
   if (!selected) {
@@ -3011,7 +2999,7 @@ function renderLineup() {
   const visible = stageLineup.filter(item => !onlyFavoriteSets || favoriteSets.includes(setKey(selected,item))).filter(item => `${item.artist || ''} ${item.stage || ''}`.toLowerCase().includes(searchText));
   const image = selected.imageUrl || '';
   const source = selected.lineupSource
-    ? `<a class="source-link" href="${esc(selected.lineupSource)}" target="_blank" rel="noopener noreferrer">Bekijk bron ↗</a>`
+    ? `<a class="source-link" href="${esc(selected.lineupSource)}" target="_blank" rel="noopener noreferrer">Bekijk bron</a>`
     : '';
 
   container.innerHTML = `
@@ -3022,21 +3010,23 @@ function renderLineup() {
           <p>${esc([selected.date ? fmt(selected.date) : '', selected.location].filter(Boolean).join(' · '))}</p>
         </div>
       </div>
+      ${selected.host ? `<p class="muted">Host · ${esc(selected.host)}</p>` : ''}
       <div class="row" style="justify-content:space-between;padding:13px 5px 2px">
         <b>${lineup.length ? lineup.length + ' sets / acts' : 'Timetable'}</b>
         <span class="muted">${lineup.length ? selected.isImportedCatalog ? 'Festivalupdate' : 'Persoonlijke timetable' : 'Nog geen tijden bekend'}</span>
       </div>
     </div>
     ${lineup.length ? '<button class="btn2" data-download-timetable>Bewaar offline</button><div role="status" data-download-status></div>' : ''}
-    ${days.length ? `<div class="lineup-days">
+    ${days.length > 1 ? `<div class="lineup-days">
       <button class="day-chip ${selectedLineupDay === 'all' ? 'active' : ''}" data-lineup-day="all">Alle dagen</button>
       ${days.map(day => `<button class="day-chip ${selectedLineupDay === day ? 'active' : ''}" data-lineup-day="${esc(day)}">${esc(dayName(day))}</button>`).join('')}
     </div>` : ''}
-    ${stages.length ? `<fieldset style="border:0;margin:8px 0 16px;padding:0"><legend style="margin-bottom:8px;font-weight:750">Podium</legend><div style="display:flex;flex-wrap:wrap;gap:6px">
+    ${stages.length > 1 ? `<fieldset style="border:0;margin:8px 0 16px;padding:0"><legend style="margin-bottom:8px;font-weight:750">Podium</legend><div style="display:flex;flex-wrap:wrap;gap:6px">
       ${['',...stages].map(stage => `<button class="day-chip ${selectedStage === stage ? 'active' : ''}" data-stage-filter="${esc(stage)}" aria-pressed="${selectedStage === stage}">${esc(stage || 'Alle podia')}</button>`).join('')}
     </div></fieldset>` : ''}
     ${lineup.length ? `<button class="day-chip ${onlyFavoriteSets ? "active" : ""}" data-favorites-only aria-pressed="${onlyFavoriteSets}">Mijn favoriete acts</button>` : ""}
-    ${visible.length ? stageSchedule(visible,selected) : '<div class="card empty-state">'+(lineup.length ? 'Geen acts met deze filters.' : 'De timetable is nog niet bekend.')+'</div>'}
+    ${visible.length ? horizontalSchedule(visible,selected) : '<div class="card empty-state">'+(lineup.length ? 'Geen acts met deze filters.' : 'De timetable is nog niet bekend.')+'</div>'}
+    ${visible.length ? '<details class="profileList"><summary>Artiestenprofielen</summary>'+[...new Set(visible.map(a => a.artist))].map(artist => artistLink({artist})).join('')+'</details>' : ''}
     <div style="padding:2px 4px">${mapLink(selected)}${source}</div>
     ${selected.date === '2027-03-27' && /masters of hardcore/i.test(selected.name) ? `<section class="card masters-gallery">
       <h3>Sfeerbeelden · Masters of Hardcore 2026</h3>
@@ -3086,7 +3076,7 @@ header{border-top:3px solid var(--lime);padding:12px 0 16px}header small,footer{
     const status = container.querySelector('[data-download-status]');
     try {
       const copies = JSON.parse(localStorage.uptempoOfflineSchedules || '{}');
-      copies[copyKey] = {name:selected.name,meta,html};
+      copies[copyKey] = {name:selected.name,meta,html,lineupRevision:selected.lineupRevision};
       localStorage.uptempoOfflineSchedules = JSON.stringify(copies);
       download.textContent = 'Offline versie bijwerken';
       status.textContent = 'Bewaard op dit toestel · Bekijk in Mijn timetables.';
@@ -3178,9 +3168,9 @@ function renderAll() {
   renderLeaderboard();
   if ($('#lineup.active')) {
     const positions = Array.from(document.querySelectorAll('.ttScroll'), board => [board.scrollLeft, board.scrollTop]);
-    const edition = $('#lineupFestival')?.value;
+    const edition = stageFestivalKey;
     renderLineup();
-    if (edition === $('#lineupFestival')?.value) {
+    if (edition === selectedLineupKey) {
       document.querySelectorAll('.ttScroll').forEach((board, i) => {
         if (positions[i]) board.scrollTo(...positions[i]);
       });
@@ -3201,7 +3191,6 @@ if ($('.tabs')) {
   $('.tabs').onclick = e => {
     const b = e.target.closest('.tab');
     if (!b) return;
-    if (b.dataset.tab === 'lineup') selectedLineupKey = '';
     switchTab(b.dataset.tab);
   };
 }
@@ -3275,6 +3264,7 @@ initFirebase();
 
 
 setupGuide({editions:lineupOptions,passed:festivalHasPassed,dateLabel:festivalDateLabel,dayName,
+  planned:f=>!f.isImportedCatalog || savedKeys.includes(editionKey({festival:f.name,date:f.date})),
   favorite:(f,a)=>favoriteSets.includes(setKey(f,a)),
   open:f=>f.isImportedCatalog ? window.openOfficialLineup(normalizeFestivalName(f.name)) : window.openFestivalLineup(f.id)
 });

@@ -1,7 +1,14 @@
+import { confusedEditions } from '../confused-editions.mjs';
 import { chromium } from "playwright";
 import { FieldValue } from "firebase-admin/firestore";
 
 export const OFFICIAL_SOURCES = [
+...confusedEditions.map(edition => ({
+  festival: edition.festival, catalogId: edition.catalogKey, aliases: [],
+  date: edition.date, dateEnd: edition.dateEnd, editionYear: edition.lineupEditionYear,
+  location: edition.location, imageUrl: edition.imageUrl,
+  url: edition.lineupSource, staticLineup: edition.lineup
+})),
 {
   "festival": "Supremacy 2027 – Return to the Classics",
   "date": "2027-01-16",
@@ -213,6 +220,7 @@ export const OFFICIAL_SOURCES = [
 },
 {
   "festival": "Supersized Kingsday Festival 2027",
+  "imageUrl": "https://www.datocms-assets.com/126800/1784288150-supersized-kingsday-festival-hero-logo.jpg?auto=compress&fit=max&w=1000",
   "date": "2027-04-27",
   "dateEnd": "2027-04-27",
   "location": "Aquabest, Eindhoven",
@@ -1710,7 +1718,92 @@ export const OFFICIAL_SOURCES = [
   { festival: "Tmo Bday Bash", aliases: ["T.M.O. B-Day Bash", "TMO Bday Bash"], url: "https://www.willem-twee.nl/alle-activiteiten/tmo-b-day-bash" },
   { imageUrl: "https://www.titaniumfestival.com/wp-content/uploads/2026/02/foto_titanium-1024x683.webp", festival: "Titanium", aliases: ["TITANIUM Festival"], url: "https://www.titaniumfestival.com/", editionYear: 2027, date: "2027-09-25", dateEnd: "2027-09-25", location: "Plas Middelwaard, Vianen" },
   { festival: "Decibel", aliases: ["Decibel Outdoor"], url: "https://www.decibeloutdoor.com/", editionYear: 2027, date: "2027-08-27", dateEnd: "2027-08-29", location: "Beekse Bergen, Hilvarenbeek", imageUrl: "https://d2oiyt60aney7e.cloudfront.net/2ck28wkq03nm/1q0ZoXBCZyt5QssHLRRsDV/41913f8ca4ba5570663f03b6a6b86501/DB25_CAMPAGNE-26_16x9.jpg" },
-  { staticLineup: [{"artist":"Misfits vs RMPAGE (contest winners)","stage":"Main","day":"Saturday","start":"14:00","end":"15:00"},{"artist":"Bössels vs Complex","stage":"Main","day":"Saturday","start":"15:00","end":"16:00"},{"artist":"EZG LIVE","stage":"Main","day":"Saturday","start":"16:00","end":"16:30"},{"artist":"Gezellige Uptempo","stage":"Main","day":"Saturday","start":"16:30","end":"17:00"},{"artist":"T.M.O.: Brabantse Gezelligheid","stage":"Main","day":"Saturday","start":"17:00","end":"17:45"},{"artist":"Gezellige Uptempo & Koffiepauze: Koffiepauze met Roze Koeken","stage":"Main","day":"Saturday","start":"17:45","end":"18:30"},{"artist":"Akimbo: Game Over","stage":"Main","day":"Saturday","start":"18:30","end":"19:00"},{"artist":"Gezellige Uptempo: The Final Sh!t Happens XXL","stage":"Main","day":"Saturday","start":"19:00","end":"19:45"},{"artist":"The Dark Horror vs Kemal vs Revealer: 1,5 hour XXL set","stage":"Main","day":"Saturday","start":"19:45","end":"21:15"},{"artist":"Kili","stage":"Main","day":"Saturday","start":"21:15","end":"21:45"},{"artist":"Satirized: Neon Funfair LIVE","stage":"Main","day":"Saturday","start":"21:45","end":"22:30"},{"artist":"Missy & Dimma: Slopen de 013 LIVE","stage":"Main","day":"Saturday","start":"22:30","end":"23:00"},{"artist":"MC Barricade (host)","stage":"Main","day":"Saturday","start":"","end":""},{"artist":"Aurøra","stage":"Next","day":"Saturday","start":"","end":""},{"artist":"Bössels vs Rosbeek vs Complex","stage":"Next","day":"Saturday","start":"","end":""},{"artist":"DJ Content","stage":"Next","day":"Saturday","start":"","end":""},{"artist":"Dr. Z","stage":"Next","day":"Saturday","start":"","end":""},{"artist":"Ketanoise vs Recharge","stage":"Next","day":"Saturday","start":"","end":""},{"artist":"Missy vs Breezy","stage":"Next","day":"Saturday","start":"","end":""},{"artist":"Slechtpicknick vs Jorrit Gevaarlijk","stage":"Next","day":"Saturday","start":"","end":""},{"artist":"Spiady","stage":"Next","day":"Saturday","start":"","end":""}], sourcePost: "https://melvinvb-maker.github.io/Uptempo-app/images/festivals/clubtempo-2026-main-timetable.jpg", festival: "Gezellige Clubtempo", aliases: ["Gezellige Clubtempo XXL"], url: "https://www.013.nl/programma/160082/gezellige-clubtempo-xxl-2026", editionYear: 2026, date: "2026-12-12", location: "013 Poppodium, Tilburg", imageUrl: "https://013.ams3.cdn.digitaloceanspaces.com/resized/main/events/_1250x680_crop_center-center_none/Gezellige-Clubtempo-Banner-01.jpg" },
+  { lineupRevision: 1, host: "MC Barricade", staticLineup: [
+  {
+    "artist": "Misfits vs RMPAGE (contest winners)",
+    "stage": "Main",
+    "day": "Saturday",
+    "start": "14:00",
+    "end": "15:00"
+  },
+  {
+    "artist": "Bössels vs Complex",
+    "stage": "Main",
+    "day": "Saturday",
+    "start": "15:00",
+    "end": "16:00"
+  },
+  {
+    "artist": "EZG LIVE",
+    "stage": "Main",
+    "day": "Saturday",
+    "start": "16:00",
+    "end": "16:30"
+  },
+  {
+    "artist": "Gezellige Uptempo",
+    "stage": "Main",
+    "day": "Saturday",
+    "start": "16:30",
+    "end": "17:00"
+  },
+  {
+    "artist": "T.M.O.: Brabantse Gezelligheid",
+    "stage": "Main",
+    "day": "Saturday",
+    "start": "17:00",
+    "end": "17:45"
+  },
+  {
+    "artist": "Gezellige Uptempo & Koffiepauze: Koffiepauze met Roze Koeken",
+    "stage": "Main",
+    "day": "Saturday",
+    "start": "17:45",
+    "end": "18:30"
+  },
+  {
+    "artist": "Akimbo: Game Over",
+    "stage": "Main",
+    "day": "Saturday",
+    "start": "18:30",
+    "end": "19:00"
+  },
+  {
+    "artist": "Gezellige Uptempo: The Final Sh!t Happens XXL",
+    "stage": "Main",
+    "day": "Saturday",
+    "start": "19:00",
+    "end": "19:45"
+  },
+  {
+    "artist": "The Dark Horror vs Kemal vs Revealer: 1,5 hour XXL set",
+    "stage": "Main",
+    "day": "Saturday",
+    "start": "19:45",
+    "end": "21:15"
+  },
+  {
+    "artist": "Kili",
+    "stage": "Main",
+    "day": "Saturday",
+    "start": "21:15",
+    "end": "21:45"
+  },
+  {
+    "artist": "Satirized: Neon Funfair LIVE",
+    "stage": "Main",
+    "day": "Saturday",
+    "start": "21:45",
+    "end": "22:30"
+  },
+  {
+    "artist": "Missy & Dimma: Slopen de 013 LIVE",
+    "stage": "Main",
+    "day": "Saturday",
+    "start": "22:30",
+    "end": "23:00"
+  }
+], sourcePost: "https://melvinvb-maker.github.io/Uptempo-app/images/festivals/clubtempo-2026-main-timetable.jpg", festival: "Gezellige Clubtempo", aliases: ["Gezellige Clubtempo XXL"], url: "https://www.013.nl/programma/160082/gezellige-clubtempo-xxl-2026", editionYear: 2026, date: "2026-12-12", location: "013 Poppodium, Tilburg", imageUrl: "https://013.ams3.cdn.digitaloceanspaces.com/resized/main/events/_1250x680_crop_center-center_none/Gezellige-Clubtempo-Banner-01.jpg" },
 ];
 
 function htmlToText(html) {
@@ -2016,7 +2109,7 @@ export async function importOfficialSites({ db, normalizeName, itemId, parseTime
       const snapshot = await ref.get();
       const oldItems = snapshot.exists ? snapshot.data().lineup || [] : [];
       const byId = new Map(oldItems
-        .filter((item) => !lineup.length || !(item.source && item.sourceUrl === source.url))
+        .filter((item) => !source.lineupRevision && (!lineup.length || !(item.source && item.sourceUrl === source.url)))
         .map((item) => [item.id, item]));
 
       for (const item of lineup) {
@@ -2039,6 +2132,7 @@ export async function importOfficialSites({ db, normalizeName, itemId, parseTime
         lineupSource: source.sourcePost || source.url,
         lineupEditionYear: editionYear || source.editionYear || null,
         officialCatalog: true,
+        ...(source.lineupRevision ? { lineupRevision: source.lineupRevision, host: source.host } : {}),
         imageUrl: source.imageUrl || imageUrl || snapshot.data()?.imageUrl || "",
         ...(date || source.date ? { date: date || source.date } : {}),
         ...(dateEnd || source.dateEnd ? { dateEnd: dateEnd || source.dateEnd } : {}),
@@ -2061,7 +2155,7 @@ export async function importOfficialSites({ db, normalizeName, itemId, parseTime
 
           const existing = Array.isArray(festival.lineup) ? festival.lineup : [];
           const retained = existing.filter((item) =>
-            !lineup.length || !item.source || item.sourceUrl !== source.url
+            source.lineupRevision ? !item.source && !!item.id : !lineup.length || !item.source || item.sourceUrl !== source.url
           );
           const importedById = new Map(retained.map((item) => [item.id, item]));
 

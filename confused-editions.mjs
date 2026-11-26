@@ -1,0 +1,80 @@
+export const confusedEditions = [
+  {
+    "festival": "CONFUSED Eindhoven",
+    "catalogKey": "confusedeindhoven20270109",
+    "date": "2027-01-09",
+    "dateEnd": "2027-01-10",
+    "location": "Vibes, Eindhoven",
+    "hours": "15:00–00:00",
+    "address": "Lardinoisstraat 8, Eindhoven",
+    "age": "18+",
+    "imageUrl": "https://confusedevents.com/assets/img/flyer-eindhoven.webp",
+    "lineupSource": "https://confusedevents.com/eindhoven/",
+    "acts": [
+      "Yoshiko b2b The Straikerz",
+      "The Dark Horror b2b Kemal",
+      "Noxiouz",
+      "Gezellige Uptempo",
+      "Kili b2b Revealer",
+      "Missy b2b Dimma",
+      "Invaderz",
+      "Denova",
+      "Flinke Herrie",
+      "Roekeloos"
+    ]
+  },
+  {
+    "festival": "CONFUSED Rotterdam",
+    "catalogKey": "confusedrotterdam20270220",
+    "date": "2027-02-20",
+    "dateEnd": "2027-02-20",
+    "location": "Maassilo, Rotterdam",
+    "hours": "15:00–23:00",
+    "address": "Maashaven Zuidzijde 1-2, Rotterdam",
+    "age": "18+",
+    "imageUrl": "https://confusedevents.com/assets/img/flyer-rotterdam.jpg",
+    "lineupSource": "https://confusedevents.com/rotterdam/",
+    "acts": [
+      "The Dark Horror",
+      "Yoshiko b2b Lekkerfaces",
+      "Bössels",
+      "Missy",
+      "Kili",
+      "Revealer",
+      "Noxiouz",
+      "Akimbo",
+      "Invaderz",
+      "Rmpage",
+      "Complex",
+      "Recombined b2b Acullite",
+      "Tomsku",
+      "IJgenweis",
+      "Tob-E",
+      "Albino",
+      "Roekeloos",
+      "MT",
+      "Flinke Herrie",
+      "D-Stroy",
+      "Bounster",
+      "Samynator"
+    ]
+  },
+  {
+    "festival": "CONFUSED presents Wreck Room – The Night Shift",
+    "catalogKey": "wreckroom20270327",
+    "date": "2027-03-27",
+    "dateEnd": "2027-03-28",
+    "location": "Now & Wow, Rotterdam",
+    "hours": "23:30–06:30",
+    "address": "Maashaven Zuidzijde 1-2, Rotterdam",
+    "age": "18+",
+    "imageUrl": "https://confusedevents.com/assets/img/flyer-wreckroom.jpg",
+    "lineupSource": "https://confusedevents.com/wreckroom/",
+    "acts": []
+  }
+].map(({ acts, ...edition }) => ({
+  ...edition,
+  officialCatalog: true,
+  lineupEditionYear: Number(edition.date.slice(0, 4)),
+  lineup: acts.map(artist => ({ artist, day: "Saturday", stage: "", start: "", end: "" }))
+}));
