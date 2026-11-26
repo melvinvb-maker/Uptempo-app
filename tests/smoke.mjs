@@ -123,6 +123,20 @@ try {
   const png = await readFile(await image.path());
   check(png.readUInt32BE(16) === 1080 && png.readUInt32BE(20) === 1920, 'plan image is 1080x1920');
 
+  // Saving offline puts the timetable on the Meer page, and the link opens it.
+  await page.click('[data-download-timetable]');
+  await page.click('.tab:has-text("Meer")');
+  const saved = page.locator('#offlineList a', { hasText: festival.festival });
+  check(await saved.count() === 1, 'saved timetable is listed on the Meer page');
+  await saved.click();
+  await page.waitForSelector('#reader:not([hidden]) iframe', { timeout: 5000 }).catch(() => {});
+  check(await page.$('#reader:not([hidden]) iframe') !== null, 'the link opens the saved timetable');
+  await page.goBack();
+  await page.waitForSelector('.tab');
+  await page.locator('.tab', { hasText: 'Festivals' }).click();
+  await page.locator('.screen.active .festivalOpen', { hasText: festival.festival }).first().click();
+  await page.waitForSelector('#planPanel');
+
   // --- 6. Artist dialog ---
   console.log('Artist dialog');
   await page.click('.profileList summary');

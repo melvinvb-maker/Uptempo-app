@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="nl"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Offline timetables · UPTEMPO</title>
-<style>:root{color-scheme:dark;--lime:#c2f66b;--line:#33393c}
+<style>:root{color-scheme:dark;--lime:#b69cff;--line:#33393c}
 *{box-sizing:border-box}body{font:15px/1.45 system-ui,sans-serif;background:#101214;color:#f7f8f5;max-width:76rem;margin:auto;padding:clamp(14px,3vw,32px)}
 h1{font-size:clamp(24px,5vw,38px);letter-spacing:-.045em;line-height:1.1;margin:10px 0 4px}h3{margin:22px 0 8px}p{color:#bbc2c1;margin:4px 0}
 header{border-top:3px solid var(--lime);padding:12px 0 16px}header small,footer{color:#a9b3ad;font-size:12px}footer{margin:16px 0}
@@ -11,7 +11,7 @@ header{border-top:3px solid var(--lime);padding:12px 0 16px}header small,footer{
 .ttAct small,.ttPending small{display:block;color:#bcc7c0;font-size:11px;font-variant-numeric:tabular-nums}.ttAct strong,.ttPending strong{font-size:14px;display:block;margin:3px 0}.ttPending{padding:9px 12px;border-bottom:1px solid var(--line)}
 .savedSet{background:#263521;border-left:3px solid var(--lime)}.setMark{font-size:11px;color:var(--lime)}
 main button{font:inherit;text-align:left;display:grid;grid-template-columns:1fr auto;gap:2px 10px;width:100%;padding:14px;background:#202526;color:inherit;border:1px solid var(--line);border-radius:10px;margin:6px 0}main small{color:#b1bbb5;grid-column:1}button,a{touch-action:manipulation}a,#back{background:none;border:0;color:var(--lime);font:inherit;padding:10px 0;display:inline-block}iframe{width:100%;height:84vh;height:84dvh;border:0} [hidden]{display:none!important}
-#shot{float:right;padding:10px 14px;border:1px solid var(--line);border-radius:10px;background:#253022;color:#d6f3a1;font:inherit}#poster{position:fixed;inset:0;width:100%;height:100%;z-index:5;border:0;background:#0D1011;padding:env(safe-area-inset-top,0px) 4px env(safe-area-inset-bottom,0px);display:grid;grid-template: minmax(0,1fr) / minmax(0,1fr);place-items:center}#poster img{width:100%;height:100%;min-height:0;object-fit:contain}
+#shot{float:right;padding:10px 14px;border:1px solid var(--line);border-radius:10px;background:#253022;color:#d9ccff;font:inherit}#poster{position:fixed;inset:0;width:100%;height:100%;z-index:5;border:0;background:#0D1011;padding:env(safe-area-inset-top,0px) 4px env(safe-area-inset-bottom,0px);display:grid;grid-template: minmax(0,1fr) / minmax(0,1fr);place-items:center}#poster img{width:100%;height:100%;min-height:0;object-fit:contain}
 </style><section id="list"><header><small>UPTEMPO</small><h1>Mijn timetables</h1></header><main></main><a href="./">Home</a></section>
 <section id="reader" hidden><button id="back">Mijn timetables</button><button id="shot">Screenshotweergave</button></section>
 <button id="poster" hidden aria-label="Sluit screenshotweergave"><img alt="Volledige offline timetable"></button>
@@ -34,10 +34,10 @@ if (clubCopy && !clubCopy.lineupRevision) {
   clubCopy.lineupRevision=1;
   try {localStorage.uptempoOfflineSchedules=JSON.stringify(savedCopies);} catch {}
 }
-const copies=Object.values(savedCopies);
+const copies=Object.entries(savedCopies);
 let opened;
 if (!copies.length) main.textContent='Open online een festival en tik op Bewaar offline. Je vindt het programma daarna hier.';
-for (const copy of copies) {
+for (const [,copy] of copies) {
   const button=document.createElement('button'),name=document.createElement('strong'),meta=document.createElement('small');
   name.textContent=copy.name;meta.textContent=copy.meta;button.append(name,meta);main.append(button);
   button.onclick=()=>{
@@ -103,7 +103,7 @@ function drawPoster(copy) {
     if (line) lines.push(line);
     return lines;
   };
-  const palette = ['#C6F477','#79DAD6','#C8ADFA','#FFAD89','#8CBFFF'];
+  const palette = ['#b69cff','#79DAD6','#C8ADFA','#FFAD89','#8CBFFF'];
   const sections = [...groups].map(([label,sets],index)=>{
     const timed = sets.some(set=>set.time);
     const inset = timed ? 96 : 16;
@@ -169,8 +169,8 @@ function drawPoster(copy) {
     const x=W-24-n*18;
     shape('path',{d:'M'+x+' 0h8l-38 46h-8z',fill:'#29382D'});
   }
-  shape('path',{d:'M20 16h5l-2 10h6l2-10h5l-3 15H17z',fill:'#C6F477'});
-  text('UPTEMPO',42,29,13,800,'#C6F477',{'letter-spacing':2});
+  shape('path',{d:'M20 16h5l-2 10h6l2-10h5l-3 15H17z',fill:'#b69cff'});
+  text('UPTEMPO',42,29,13,800,'#b69cff',{'letter-spacing':2});
   let y=46;
   for(const line of best.title){y+=37;text(line,20,y,32,800,'#F6F9F2',{'letter-spacing':-.7});}
   for(const line of best.meta){y+=19;text(line,21,y,14,550,'#C1CBC3');}
@@ -193,10 +193,10 @@ function drawPoster(copy) {
         const rowHeight=set.height+extra;
         const baseline=y+extra/2;
         rect(x+8,y,trackWidth-24,1,'#374041');
-        if(set.favorite){rect(x+2,y+1,trackWidth-12,rowHeight-2,'#2B3826',4);rect(x+3,y+4,3,rowHeight-8,'#C6F477',1);}
+        if(set.favorite){rect(x+2,y+1,trackWidth-12,rowHeight-2,'#2B3826',4);rect(x+3,y+4,3,rowHeight-8,'#b69cff',1);}
         set.times.forEach((line,j)=>text(line,x+12,baseline+20+j*16,12,650,'#CBD3D1',{'font-variant-numeric':'tabular-nums'}));
         set.names.forEach((line,j)=>text(line,x+s.inset,baseline+21+j*20,16,650,set.favorite?'#D7F9AD':'#F3F5F3'));
-        if(set.favorite)text('★',x+trackWidth-24,baseline+20,12,700,'#C6F477');
+        if(set.favorite)text('★',x+trackWidth-24,baseline+20,12,700,'#b69cff');
         y+=rowHeight;
       }
       y+=10;
@@ -223,4 +223,7 @@ shot.onclick=()=>{
   poster.focus();
 };
 
+// The Meer page links straight to one timetable: offline.html#<key>.
+const wanted=decodeURIComponent(location.hash.slice(1));
+if (wanted) main.querySelectorAll('button')[copies.findIndex(([key])=>key===wanted)]?.click();
 </script></html>

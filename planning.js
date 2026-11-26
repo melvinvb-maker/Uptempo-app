@@ -77,7 +77,7 @@ export function planImage(festival, sets) {
   ctx.fillStyle = glow; ctx.fillRect(0,0,W,H);
 
   let y = 170;
-  ctx.fillStyle = '#d6ff42'; ctx.font = '800 30px '+font;
+  ctx.fillStyle = '#b69cff'; ctx.font = '800 30px '+font;
   ctx.fillText('M I J N   P L A N N I N G', X, y);
   y += 90;
   ctx.fillStyle = '#f6f8fa'; ctx.font = '900 84px '+font;
@@ -99,7 +99,7 @@ export function planImage(festival, sets) {
       ctx.fillStyle = '#9ba8b7'; ctx.font = '800 30px '+font;
       ctx.fillText(String(dayName(day)).toUpperCase(), X, y); y += 60; lastDay = day;
     }
-    ctx.fillStyle = '#d6ff42'; ctx.font = '800 38px '+font;
+    ctx.fillStyle = '#b69cff'; ctx.font = '800 38px '+font;
     ctx.fillText(clock(set.start)+' – '+clock(set.end), X, y+38);
     ctx.fillStyle = '#f6f8fa'; ctx.font = '800 44px '+font;
     ctx.fillText(wrapText(ctx, set.item.artist, W-2*X-300)[0], X+300, y+38);
