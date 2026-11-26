@@ -187,6 +187,13 @@ button,input,select,textarea{font:inherit}button{cursor:pointer;color:inherit}bu
 .filterRow{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;margin:0 -16px 10px;padding:0 16px}.filterRow::-webkit-scrollbar{display:none}.filterRow .day-chip{flex:none;min-height:36px;padding:7px 13px;font-size:12px}
 .lineupLinks{margin:18px 0 4px;border:1px solid var(--line);border-radius:16px;background:var(--card);overflow:hidden}.lineupLinks>*{display:block;width:100%;margin:0;padding:13px 16px;border:0;background:none;color:var(--txt);font-size:14px;font-weight:600;text-align:left;text-decoration:none}.lineupLinks>*+*{border-top:1px solid var(--line)}.lineupLinks small{display:block;color:var(--muted);font-weight:500;font-size:12px;margin-top:2px}.lineupLinks [data-download-status]:empty{display:none}.lineupLinks [data-download-status]{padding-top:0;color:var(--muted);font-size:12px;font-weight:500}
 .lineupLinks .profileList{margin:0;padding:0;border-block:0;border-top:1px solid var(--line)}.lineupLinks .profileList summary{padding:13px 16px;font-weight:600}.lineupLinks .profileList .artistLink{padding:8px 16px;width:100%;text-decoration:none}
+.guideQuick{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;margin:0 -16px;padding:2px 16px}.guideQuick::-webkit-scrollbar{display:none}.guideQuick button{flex:none;white-space:nowrap;min-height:36px;padding:7px 13px;font-size:12px}
+.guideUser{background:rgba(182,156,255,.16);color:var(--txt)}
+.statsTitle{margin:6px 0 14px;font-size:26px;letter-spacing:-.03em}.statsCounters{display:grid;grid-template-columns:repeat(3,1fr);border:1px solid var(--line);border-radius:16px;background:var(--card)}.statsCounters div{padding:14px 6px;text-align:center}.statsCounters div+div{border-left:1px solid var(--line)}.statsCounters b{display:block;font-size:22px}.statsCounters span{color:var(--muted);font-size:11px}
+#stats .label{margin:22px 2px 8px;color:var(--muted)}.statsPanel{border:1px solid var(--line);border-radius:16px;background:var(--card);padding:14px 16px}.statsPanel>p{margin:0;color:var(--muted);font-size:13px}
+.monthBars{display:grid;grid-template-columns:repeat(12,1fr);gap:5px;align-items:end;height:110px}.monthBars div{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;gap:5px}.monthBars i{display:block;width:100%;min-height:3px;border-radius:5px 5px 2px 2px;background:var(--card2)}.monthBars i.on{background:linear-gradient(#cdbdff,#8d6cf0)}.monthBars small{color:var(--muted);font-size:9px}
+.topArtist{display:flex;align-items:center;gap:12px;padding:8px 0}.topArtist+.topArtist{border-top:1px solid var(--line)}.topArtist span{width:18px;color:var(--muted);font-size:12px;font-variant-numeric:tabular-nums}.topArtist b{flex:1;font-size:14px;font-weight:650}.topArtist small{color:var(--muted);font-size:12px}
+#calendar .seasonYear{margin:20px 2px 8px;color:var(--muted);font-size:10px}#calendar .quietList .seasonRow small,.quietList .seasonRow small{display:block;margin-top:2px;color:var(--muted);font-size:12px}.quietList .seasonRow b{font-size:14px;font-weight:650}
 </style>
 </head>
 
@@ -226,7 +233,7 @@ button,input,select,textarea{font:inherit}button{cursor:pointer;color:inherit}bu
       <div id="officialFestivalCatalog" class="catalog-list"></div>
     </main>
 
-    <main id="guide" class="screen"><h1>Festivalchat</h1><p class="muted">Vind festivals, ontdek waar je favoriete artiest draait of vraag wie er op een bepaald tijdstip speelt.</p><div class="guideQuick"><button class="day-chip" data-guide>Welke festivals zijn er in maart 2027?</button><button class="day-chip" data-guide>Hoe laat draait Missy bij Annihilation?</button><button class="day-chip" data-guide>Mijn favoriete sets</button><button class="day-chip" data-guide>Mijn planning</button></div><div id="guideLog" role="log" aria-live="polite"></div><form id="guideForm"><input name="question" type="text" maxlength="400" required aria-label="Je festivalvraag" placeholder="Stel je vraag…" enterkeyhint="send"><button class="btn" aria-label="Verstuur vraag">Stuur</button></form></main>
+    <main id="guide" class="screen"><h1>Festivalchat</h1><p class="muted">Vind festivals, ontdek waar je favoriete artiest draait of vraag wie er op een bepaald tijdstip speelt.</p><div class="guideQuick"><button class="day-chip" data-guide>Welke festivals zijn er in maart 2027?</button><button class="day-chip" data-guide>Wat speelt er nu?</button><button class="day-chip" data-guide>Waar gaan mijn vrienden heen?</button><button class="day-chip" data-guide>Hoe laat draait Missy bij Annihilation?</button><button class="day-chip" data-guide>Mijn favoriete sets</button><button class="day-chip" data-guide>Mijn planning</button></div><div id="guideLog" role="log" aria-live="polite"></div><form id="guideForm"><input name="question" type="text" maxlength="400" required aria-label="Je festivalvraag" placeholder="Stel je vraag…" enterkeyhint="send"><button class="btn" aria-label="Verstuur vraag">Stuur</button></form></main>
     <main id="more" class="screen">
       <div class="section">Meer</div>
       <div class="menuGrid"><button class="menuTile" data-tab="guide"><b>✦</b>Festivalchat</button>
@@ -293,25 +300,17 @@ button,input,select,textarea{font:inherit}button{cursor:pointer;color:inherit}bu
     </main>
 
     <main id="stats" class="screen">
-      <div class="section">Statistieken</div>
-
-      <div class="grid">
-        <div class="stat"><b id="sPlanned">0</b><br><span class="muted">Gepland</span></div>
-        <div class="stat"><b id="sVisited">0</b><br><span class="muted">Bezocht</span></div>
-        <div class="stat"><b id="sCities">0</b><br><span class="muted">Locaties</span></div>
+      <h1 class="statsTitle">Jouw seizoen</h1>
+      <div class="profileStats statsCounters">
+        <div><b id="sSaved">0</b><span>Bewaard</span></div>
+        <div><b id="sFavorites">0</b><span>Favoriete sets</span></div>
+        <div><b id="sFollowed">0</b><span>Artiesten</span></div>
       </div>
-
-      <div class="card">
-        <b>Festivals per maand</b>
-        <div class="bar" id="bars"></div>
-      </div>
-
-      <div class="card">
-        <b>Genres</b>
-        <div id="genreStats"></div>
-      </div>
-    <h2 class="section">Festivalseizoen 2027</h2><div id="seasonStats" class="card"></div>
-</main>
+      <p class="label">Jouw maanden</p>
+      <div class="statsPanel" id="monthStats"></div>
+      <p class="label">Meest in je favorieten</p>
+      <div class="statsPanel" id="topArtists"></div>
+    </main>
   </div>
 
   <button class="fab" hidden id="openAdd" aria-label="Festival toevoegen" title="Festival toevoegen">+</button>
@@ -359,6 +358,6 @@ button,input,select,textarea{font:inherit}button{cursor:pointer;color:inherit}bu
     <div class="artistMembers"></div>
     <a hidden target="_blank" rel="noopener noreferrer"></a>
   </dialog>
-  <script type="module" src="app.js?v=festivalgids-18"></script>
+  <script type="module" src="app.js?v=festivalgids-19"></script>
 
 

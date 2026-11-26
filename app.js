@@ -1,4 +1,4 @@
-import {setupGuide} from './festival-guide.js?v=4';
+import {setupGuide} from './festival-guide.js?v=5';
 import { bundledLineups } from './festival-data.js';
 import { firebaseEnabled, firebaseConfig } from './firebase-config.js';
 import { toast, stored, normalizeFestivalName, dayName, clockMinute, isoDay, clock, fmt, esc, startOfToday, downloadFile, fileName } from './utils.js';
@@ -30,14 +30,13 @@ function seasonRow(f) {
   return '<button class="seasonRow seasonOpen" data-edition="'+normalizeFestivalName(f.festival)+'"><span><b>'+esc(f.festival)+'</b><small>'+esc(festivalDateLabel(f))+' · '+esc(f.location)+'</small></span></button>';
 }
 function renderSeason() {
-  if (!$('#seasonAgenda') || !$('#seasonStats') || !$('#savedEditions')) return;
+  if (!$('#seasonAgenda') || !$('#savedEditions')) return;
   const editions = datedEditions();
   const years = [...new Set(editions.filter(f => !festivalHasPassed(f)).map(f => f.date.slice(0,4)))];
-  $('#seasonAgenda').innerHTML = years.map(year => '<h3 class="seasonYear">'+year+'</h3>'+editions.filter(f => !festivalHasPassed(f) && f.date.startsWith(year)).map(seasonRow).join('')).join('') || 'Festivaldata worden opgehaald.';
+  $('#seasonAgenda').innerHTML = years.map(year => '<p class="label seasonYear">'+year+'</p><div class="quietList">'+editions.filter(f => !festivalHasPassed(f) && f.date.startsWith(year)).map(seasonRow).join('')+'</div>').join('') || '<p class="muted">Festivaldata worden opgehaald.</p>';
   const saved = editions.filter(f => savedKeys.includes(editionKey(f)));
   $('#savedEditions').innerHTML = saved.map(seasonRow).join('') || '<p>Nog niets bewaard. <button class="linkButton" data-go="festivals">Festivals bekijken</button></p>';
   const season = editions.filter(f => f.date.startsWith('2027'));
-  $('#seasonStats').innerHTML = '<b>'+season.length+' bevestigde edities</b>'+season.map(seasonRow).join('');
 }
 document.addEventListener('click', event => {
   const personal = event.target.closest('[data-personal]');
@@ -547,9 +546,6 @@ function render() {
   if ($('#doneFest')) $('#doneFest').textContent = archivedFestivals.length;
   if ($('#friendCount')) $('#friendCount').textContent = groupFriends().length;
 
-  if ($('#sPlanned')) $('#sPlanned').textContent = activeFestivals.length;
-  if ($('#sVisited')) $('#sVisited').textContent = archivedFestivals.length;
-  if ($('#sCities')) $('#sCities').textContent = new Set(festivals.map(f => f.location).filter(Boolean)).size;
 
   const upcoming = activeFestivals
     .slice()
@@ -719,26 +715,36 @@ function renderCal() {
   $('#calendarGrid').innerHTML = html;
 }
 
+// "Jouw seizoen": built from what you do in the app (saved festivals, favourite sets, followed artists).
 function renderStats() {
-  if (!$('#bars') || !$('#genreStats')) return;
+  if (!$('#monthStats') || !$('#topArtists')) return;
+  const saved = datedEditions().filter(f => savedKeys.includes(editionKey(f)));
+  const dates = [...saved.map(f => f.date), ...festivals.map(f => f.date)].filter(Boolean);
+  $('#sSaved').textContent = dates.length;
+  $('#sFavorites').textContent = favoriteSets.length;
+  $('#sFollowed').textContent = followed.size;
 
   const months = Array(12).fill(0);
-
-  festivals.forEach(f => {
-    const d = new Date(f.date);
-    if (!isNaN(d)) months[d.getMonth()]++;
-  });
-
+  for (const date of dates) months[new Date(date + 'T12:00').getMonth()]++;
   const max = Math.max(1, ...months);
+  const names = 'jfmamjjasond';
+  $('#monthStats').innerHTML = dates.length
+    ? '<div class="monthBars">' + months.map((count, i) => '<div title="' + count + ' festival' + (count === 1 ? '' : 's') + '"><i class="' + (count ? 'on' : '') + '" style="height:' + (count ? 12 + count / max * 78 : 3) + 'px"></i><small>' + names[i].toUpperCase() + '</small></div>').join('') + '</div>'
+    : '<p>Bewaar festivals met het bladwijzertje; je ziet hier dan in welke maanden je gaat.</p>';
 
-  $('#bars').innerHTML = months.map(m => `<div style="height:${8 + (m / max) * 88}px"></div>`).join('');
-
-  const genres = {};
-  festivals.forEach(f => genres[f.genre || 'Uptempo'] = (genres[f.genre || 'Uptempo'] || 0) + 1);
-
-  $('#genreStats').innerHTML =
-    Object.entries(genres).map(([g, c]) => `<p>${g}: <b>${c}</b></p>`).join('') ||
-    '<p class="muted">Nog geen data.</p>';
+  const counts = new Map();
+  for (const key of favoriteSets) {
+    try {
+      const artist = JSON.parse(key)[3];
+      // "A vs B" and "A b2b B" are separate artists; "Degos & Re-Done" is one act.
+      const names = /\s(?:vs\.?|b2b)\s/i.test(artist) ? performers(artist) : [profileName(artist)];
+      for (const name of names) counts.set(name, (counts.get(name) || 0) + 1);
+    } catch { /* an old or damaged key: skip it */ }
+  }
+  const top = [...counts].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0])).slice(0, 5);
+  $('#topArtists').innerHTML = top.length
+    ? top.map(([name, count], i) => '<div class="topArtist"><span>' + (i + 1) + '</span><b>' + esc(name) + '</b><small>' + count + (count === 1 ? ' set' : ' sets') + '</small></div>').join('')
+    : '<p>Markeer sets met een hartje in de timetable; je meest gekozen artiesten verschijnen dan hier.</p>';
 }
 
 function renderFriends() {
@@ -1478,6 +1484,8 @@ initFirebase();
 setupGuide({editions:lineupOptions,passed:festivalHasPassed,dateLabel:festivalDateLabel,dayName,
   planned:f=>!f.isImportedCatalog || savedKeys.includes(editionKey({festival:f.name,date:f.date})),
   favorite:(f,a)=>favoriteSets.includes(setKey(f,a)),
-  open:f=>f.isImportedCatalog ? window.openOfficialLineup(normalizeFestivalName(f.name)) : window.openFestivalLineup(f.id)
+  open:f=>f.isImportedCatalog ? window.openOfficialLineup(normalizeFestivalName(f.name)) : window.openFestivalLineup(f.id),
+  sets:scheduledSets,
+  friendsAt:(f,a)=>friendsAtSet(setKey(f,a)).map(friend => friend.name || 'Vriend')
 });
 $('#guideLaunch').onclick=()=>switchTab('guide');

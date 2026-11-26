@@ -151,6 +151,15 @@ try {
   check((await page.textContent('#artistDialog h2')).trim().length > 0, 'artist dialog opens with a name');
   await page.keyboard.press('Escape');
 
+  console.log('Chat and season');
+  await page.click('#guideLaunch');
+  await page.fill('#guideForm input', 'Wat speelt er nu?');
+  await page.press('#guideForm input', 'Enter');
+  check((await page.textContent('#guideLog')).includes('Nu & straks'), 'chat answers "Wat speelt er nu?" on the festival day');
+  await page.click('.tab:has-text("Meer")');
+  await page.click('.menuTile[data-tab="stats"]');
+  check((await page.textContent('#sFavorites')).trim() === '2', 'season page counts the two favourite sets');
+
   // --- 7. Damaged storage and no connection ---
   console.log('Resilience');
   await page.evaluate(() => navigator.serviceWorker.ready);
