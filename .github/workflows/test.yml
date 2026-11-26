@@ -36,3 +36,7 @@ jobs:
       - name: Run the app in a browser
         working-directory: tests
         run: npm run smoke
+
+      - name: Check the Firestore security rules
+        working-directory: tests
+        run: npm run rules

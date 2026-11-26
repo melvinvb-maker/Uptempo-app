@@ -193,9 +193,7 @@ async function createGroup() {
     createdAt: window.fb.serverTimestamp()
   });
 
-  if (profile.name) await saveProfileLive();
-
-  liveSync();
+  await liveSync();
   renderAll();
   toast('Groep aangemaakt: ' + groupId + ' · deel deze code met je vrienden', 8000);
 }
@@ -213,9 +211,7 @@ async function joinGroup() {
   friends = [];
   save();
 
-  if (profile.name) await saveProfileLive();
-
-  liveSync();
+  await liveSync();
   renderAll();
 }
 
@@ -232,26 +228,28 @@ function leaveGroup() {
   renderAll();
 }
 
-function liveSync() {
+// The security rules only let members read a group, and you are a member once your own
+// document exists in groups/{code}/friends. Write it first, then start listening.
+async function liveSync() {
   if (!db || !groupId) return;
 
   if (unsubscribeFestivals) unsubscribeFestivals();
   if (unsubscribeFriends) unsubscribeFriends();
+  await saveProfileLive().catch(() => {});
+  const syncError = () => toast('Je groep kon niet geladen worden. Controleer de groepscode.');
 
   unsubscribeFestivals = window.fb.onSnapshot(groupPath('festivals'), snap => {
     festivals = snap.docs.map(d => ({ id: d.id, ...d.data() }));
     applyFestivalLineupUpdates();
     save();
     renderAll();
-  });
+  }, syncError);
 
   unsubscribeFriends = window.fb.onSnapshot(groupPath('friends'), snap => {
     friends = snap.docs.map(d => ({ id: d.id, ...d.data() }));
     save();
     renderAll();
-  });
-
-  if (profile.name) saveProfileLive();
+  }, () => {});
 }
 
 const bundledEditions = festivalLineupUpdates;
