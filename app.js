@@ -3049,16 +3049,18 @@ function overlapHtml(favorites) {
     if (minutes > 0 && a.stage !== b.stage) pairs.push({a,b,minutes});
   }));
   if (!pairs.length) return '';
-  const set = s => '<b>'+esc(s.item.artist)+'</b> <small>'+esc(s.stage)+' · '+clock(s.start)+'–'+clock(s.end)+'</small>';
-  return '<section class="planCard planWarn"><h3>Overlap in je favorieten</h3>'+pairs.map(({a,b,minutes}) =>
-    '<p>'+set(a)+'<br>'+set(b)+'<br><span class="muted">'+minutes+' minuten tegelijk</span></p>').join('')+'</section>';
+  pairs.sort((x,y) => y.minutes-x.minutes);
+  const rows = pairs.slice(0,3).map(({a,b,minutes}) =>
+    '<p><b>'+esc(a.item.artist)+'</b> <span class="muted">en</span> <b>'+esc(b.item.artist)+'</b> <small>· '+minutes+' min</small></p>').join('');
+  const more = pairs.length > 3 ? '<p class="muted">+ '+(pairs.length-3)+' andere overlap'+(pairs.length > 4 ? 'pen' : '')+'</p>' : '';
+  return '<section class="planCard planWarn"><h3>Overlap in je favorieten</h3>'+rows+more+'</section>';
 }
 
 function planPanel(festival) {
   const sets = scheduledSets(festival);
   const favorites = sets.filter(set => favoriteSets.includes(set.key));
   const untimed = (festival.lineup || []).filter(item => clockMinute(item.start) === null && favoriteSets.includes(setKey(festival,item))).length;
-  const agenda = favorites.length ? '<button class="btn2 planAgenda" data-export-agenda>Favorieten in mijn agenda ('+favorites.length+')</button>'
+  const agenda = favorites.length ? '<div class="planActions"><button class="btn2" data-export-agenda>In mijn agenda ('+favorites.length+')</button><button class="btn2" data-share-plan>Deel mijn planning</button></div>'
     + (untimed ? '<p class="muted">'+untimed+' favoriet'+(untimed > 1 ? 'en hebben' : ' heeft')+' nog geen speeltijd en '+(untimed > 1 ? 'komen' : 'komt')+' er later bij.</p>' : '') : '';
   return nowNextHtml(sets, new Date()) + overlapHtml(favorites) + agenda;
 }
@@ -3105,6 +3107,97 @@ document.addEventListener('click', event => {
   if (!event.target.closest('[data-export-agenda]')) return;
   const festival = getSelectedLineup();
   if (festival) exportAgenda(festival);
+});
+
+// ---- Share your plan as a story-sized image (drawn locally, nothing is uploaded) ----
+function wrapText(ctx, text, maxWidth) {
+  const words = String(text).split(/\s+/);
+  const lines = [];
+  let line = '';
+  for (const word of words) {
+    const test = line ? line+' '+word : word;
+    if (ctx.measureText(test).width > maxWidth && line) { lines.push(line); line = word; }
+    else line = test;
+  }
+  if (line) lines.push(line);
+  return lines;
+}
+
+function planImage(festival, sets) {
+  const W = 1080, H = 1920, X = 96, font = '-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif';
+  const canvas = document.createElement('canvas');
+  canvas.width = W; canvas.height = H;
+  const ctx = canvas.getContext('2d');
+  ctx.fillStyle = '#090c12'; ctx.fillRect(0,0,W,H);
+  const glow = ctx.createRadialGradient(W*.85,0,0,W*.85,0,900);
+  glow.addColorStop(0,'rgba(166,140,255,.14)'); glow.addColorStop(1,'rgba(166,140,255,0)');
+  ctx.fillStyle = glow; ctx.fillRect(0,0,W,H);
+
+  let y = 170;
+  ctx.fillStyle = '#d6ff42'; ctx.font = '800 30px '+font;
+  ctx.fillText('M I J N   P L A N N I N G', X, y);
+  y += 90;
+  ctx.fillStyle = '#f6f8fa'; ctx.font = '900 84px '+font;
+  for (const line of wrapText(ctx, festival.name, W-2*X).slice(0,3)) { ctx.fillText(line, X, y); y += 96; }
+  ctx.fillStyle = '#9ba8b7'; ctx.font = '600 36px '+font;
+  ctx.fillText([festival.date ? fmt(festival.date) : '', festival.location].filter(Boolean).join(' · ').slice(0,52), X, y+4);
+  y += 80;
+  ctx.fillStyle = 'rgba(215,226,240,.14)'; ctx.fillRect(X,y,W-2*X,2);
+  y += 70;
+
+  const multiDay = new Set(sets.map(set => isoDay(set.start))).size > 1 && new Set(sets.map(set => set.item.day || '')).size > 1;
+  const rowHeight = 132, bottom = H-210;
+  let lastDay = '', shown = 0;
+  for (const set of sets) {
+    const day = set.item.day || '';
+    const need = rowHeight + (multiDay && day !== lastDay ? 80 : 0);
+    if (y + need > bottom) break;
+    if (multiDay && day !== lastDay) {
+      ctx.fillStyle = '#9ba8b7'; ctx.font = '800 30px '+font;
+      ctx.fillText(String(dayName(day)).toUpperCase(), X, y); y += 60; lastDay = day;
+    }
+    ctx.fillStyle = '#d6ff42'; ctx.font = '800 38px '+font;
+    ctx.fillText(clock(set.start)+' – '+clock(set.end), X, y+38);
+    ctx.fillStyle = '#f6f8fa'; ctx.font = '800 44px '+font;
+    ctx.fillText(wrapText(ctx, set.item.artist, W-2*X-300)[0], X+300, y+38);
+    ctx.fillStyle = '#9ba8b7'; ctx.font = '600 30px '+font;
+    ctx.fillText(set.stage, X+300, y+84);
+    y += rowHeight; shown++;
+  }
+  if (shown < sets.length) {
+    ctx.fillStyle = '#9ba8b7'; ctx.font = '600 32px '+font;
+    ctx.fillText('+ '+(sets.length-shown)+' andere sets', X, y+20);
+  }
+  ctx.fillStyle = '#9ba8b7'; ctx.font = '700 28px '+font;
+  ctx.fillText('UPTEMPO · FESTIVAL PLANNER', X, H-110);
+  return canvas;
+}
+
+async function sharePlan(festival) {
+  const sets = scheduledSets(festival).filter(set => favoriteSets.includes(set.key));
+  if (!sets.length) return toast('Markeer eerst sets met een hartje.');
+  const canvas = planImage(festival, sets);
+  const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+  const name = (festival.name || 'festival').replace(/[^\w\- ]+/g,'').trim().replace(/\s+/g,'-')+'-planning.png';
+  const file = new File([blob], name, {type:'image/png'});
+  if (navigator.canShare?.({files:[file]})) {
+    try { await navigator.share({files:[file], title:'Mijn planning · '+festival.name}); return; }
+    catch (error) { if (error.name === 'AbortError') return; }
+  }
+  const link = document.createElement('a');
+  link.href = URL.createObjectURL(blob);
+  link.download = name;
+  document.body.append(link);
+  link.click();
+  link.remove();
+  setTimeout(() => URL.revokeObjectURL(link.href), 10000);
+  toast('Afbeelding van je planning opgeslagen');
+}
+
+document.addEventListener('click', event => {
+  if (!event.target.closest('[data-share-plan]')) return;
+  const festival = getSelectedLineup();
+  if (festival) sharePlan(festival);
 });
 
 // Each stage uses the same time scale so simultaneous sets line up vertically.

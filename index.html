@@ -133,7 +133,7 @@ button,input,select,textarea{font:inherit}button{cursor:pointer;color:inherit}bu
 .untimedSlots{display:grid;grid-template-columns:repeat(auto-fill,minmax(145px,1fr));gap:6px}
 .profileList{margin:15px 0;padding:12px 0;border-block:1px solid var(--line)}.profileList summary{cursor:pointer;font-weight:650}.profileList button{width:100%;padding:8px 0}
 #toast{position:fixed;left:50%;bottom:calc(92px + env(safe-area-inset-bottom));z-index:20;width:max-content;max-width:calc(100vw - 32px);padding:12px 16px;border:1px solid rgba(214,255,66,.3);border-radius:14px;background:#151b24f2;backdrop-filter:blur(12px);color:var(--txt);font-size:14px;font-weight:650;box-shadow:0 12px 30px rgba(0,0,0,.35);opacity:0;transform:translate(-50%,10px);pointer-events:none;transition:opacity .2s,transform .2s}#toast.show{opacity:1;transform:translate(-50%,0)}
-.planCard{margin:12px 0;padding:14px 15px;border:1px solid var(--line);border-radius:16px;background:var(--card)}.planCard h3{margin:0 0 8px;font-size:16px}.planWarn{border-color:rgba(255,155,102,.45);background:rgba(255,155,102,.06)}.planWarn h3{color:var(--orange)}.planCard p{margin:10px 0 0;line-height:1.45}.planCard small{color:var(--muted)}.nnRow{display:grid;grid-template-columns:minmax(70px,30%) 1fr;gap:10px;padding:9px 0;border-top:1px solid var(--line);font-size:14px;line-height:1.45}.nnRow:first-of-type{border-top:0}.nnNow{display:inline-block;padding:1px 7px;border-radius:99px;background:var(--pink);color:#11150a;font-size:11px;font-weight:900}.nnNext{color:var(--pink);font-weight:800;font-variant-numeric:tabular-nums}.nnFav{color:var(--pink)}.planAgenda{width:100%;margin:4px 0 8px}
+.planCard{margin:12px 0;padding:14px 15px;border:1px solid var(--line);border-radius:16px;background:var(--card)}.planCard h3{margin:0 0 8px;font-size:16px}.planWarn{border-color:rgba(255,155,102,.45);background:rgba(255,155,102,.06)}.planWarn h3{color:var(--orange)}.planCard p{margin:6px 0 0;line-height:1.4;font-size:14px}.planCard small{color:var(--muted)}.nnRow{display:grid;grid-template-columns:minmax(70px,30%) 1fr;gap:10px;padding:9px 0;border-top:1px solid var(--line);font-size:14px;line-height:1.45}.nnRow:first-of-type{border-top:0}.nnNow{display:inline-block;padding:1px 7px;border-radius:99px;background:var(--pink);color:#11150a;font-size:11px;font-weight:900}.nnNext{color:var(--pink);font-weight:800;font-variant-numeric:tabular-nums}.nnFav{color:var(--pink)}
 
 /* Subtle finish: flat accents, no glows, muted imagery that matches the artist photos. */
 .btn{background:var(--pink);box-shadow:none;border-radius:13px}
@@ -168,6 +168,7 @@ button,input,select,textarea{font:inherit}button{cursor:pointer;color:inherit}bu
 @media(max-width:430px){.app:has(#dashboard.active) .brand-mark{width:54px}.app:has(#dashboard.active) .brand{font-size:23px;letter-spacing:.05em}.app:has(#dashboard.active) .brand-sub{font-size:9px}}
 .calendarFestival{display:block;width:100%;margin-top:3px;padding:2px 4px;border:0;border-radius:5px;background:rgba(214,255,66,.12);color:var(--pink);font-size:9px;font-weight:700;text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .nnWith{color:var(--muted)}.slotFriends{position:absolute;top:7px;left:8px;display:flex;z-index:1}.slotFriends i{display:grid;place-items:center;width:19px;height:19px;margin-right:-4px;border:1.5px solid #000;border-radius:50%;background:#2b313b;color:#d9dee6;font-size:9px;font-style:normal;font-weight:750}
+.planActions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:4px 0 8px}.planActions .btn2{width:100%;padding:11px 8px;font-size:13px}
 </style>
 </head>
 
@@ -351,6 +352,6 @@ button,input,select,textarea{font:inherit}button{cursor:pointer;color:inherit}bu
     <div class="artistMembers"></div>
     <a hidden target="_blank" rel="noopener noreferrer"></a>
   </dialog>
-  <script type="module" src="app.js?v=festivalgids-10"></script>
+  <script type="module" src="app.js?v=festivalgids-11"></script>
 
 
