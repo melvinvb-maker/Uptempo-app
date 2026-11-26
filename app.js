@@ -1460,7 +1460,18 @@ if ($('#addLineup')) $('#addLineup').onclick = addLineupItem;
 
 
 if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('service-worker.js');
+  // When a new version takes over, reload once so the new screens show at once.
+  // Skipped on the very first install, when no older version was in control.
+  const hadController = Boolean(navigator.serviceWorker.controller);
+  let reloading = false;
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    if (!hadController || reloading) return;
+    reloading = true;
+    location.reload();
+  });
+  navigator.serviceWorker.register('service-worker.js', {updateViaCache: 'none'})
+    .then(registration => registration.update())
+    .catch(() => {});
 }
 
 setInterval(countdown, 1000);
