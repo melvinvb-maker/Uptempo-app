@@ -16,7 +16,7 @@ const MAP_FILE = new URL("auto-photos.js", ROOT);
 const MAX_NEW_PER_RUN = 40;
 const MAX_BYTES = 8 * 1024 * 1024;
 
-// The same name rules as the app (app.js), so a photo is found under the name the app looks up.
+// The same name rules as the app (artists.js), so a photo is found under the name the app looks up.
 const normalize = (value) => String(value || "").normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().replace(/[^a-z0-9]/g, "");
 const artistKey = (value) => normalize(String(value).replace(/ø/gi, "o"));
 const profileName = (label) => label.split(":")[0].replace(/\s*\[[^\]]*\]/g, "").replace(/\s+live$/i, "").trim() || label;
@@ -41,16 +41,17 @@ async function readExisting() {
   return JSON.parse(text.slice(text.indexOf("{"), text.lastIndexOf("}") + 1));
 }
 
-// Names that already have a hand-picked photo in app.js (group photos) or timetable-photos.js.
+// Names that already have a hand-picked photo in artists.js (group photos) or timetable-photos.js.
 async function curatedKeys() {
-  const app = await readFile(new URL("app.js", ROOT), "utf8");
-  const block = app.match(/const officialActPhotos = \{([\s\S]*?)\n\};/)?.[1] || "";
+  const artists = await readFile(new URL("artists.js", ROOT), "utf8");
+  const block = artists.match(/const officialActPhotos = \{([\s\S]*?)\n\};/)?.[1] || "";
+  if (!block) throw new Error("officialActPhotos not found in artists.js");
   const groupNames = [...block.matchAll(/"([^"]+)":/g)].map((match) => match[1]);
   return [...Object.keys(artistPortraits), ...groupNames];
 }
 
 // True when the credit is one of the names, or starts with one of them as a whole word
-// ("D-STURB UNIVERSE" belongs to D-Sturb), mirroring photoFor() in app.js.
+// ("D-STURB UNIVERSE" belongs to D-Sturb), mirroring photoFor() in artists.js.
 function coveredBy(names, credit) {
   const key = artistKey(credit);
   const lower = credit.toLowerCase();
