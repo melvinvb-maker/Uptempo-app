@@ -2,12 +2,12 @@
 // The app's own images (artist photos, icons): served from the cache and refreshed in the background.
 // Images from other sites are left to the browser: Safari does not reliably show those when a
 // service worker passes them on, which left festival images blank on iPhone.
-const CACHE = 'uptempo-app-v19';
+const CACHE = 'uptempo-app-v20';
 const IMAGES = 'uptempo-images-v2';
 const MAX_IMAGES = 400;
 const scope = self.registration.scope;
 const offlinePage = new URL('offline.html', scope).href;
-const shell = ['./', 'index.html', 'offline.html', 'manifest.json', 'app.js?v=festivalgids-16', 'utils.js', 'artists.js', 'planning.js', 'festival-data.js', 'festival-guide.js?v=4',
+const shell = ['./', 'index.html', 'offline.html', 'manifest.json', 'app.js?v=festivalgids-17', 'utils.js', 'artists.js', 'planning.js', 'festival-data.js', 'festival-guide.js?v=4',
   'artist-bios.js', 'timetable-photos.js', 'auto-photos.js', 'confused-editions.mjs', 'firebase-config.js',
   'uptempo-192.png', 'uptempo-512.png', 'apple-touch-icon.png'].map(path => new URL(path, scope).href);
 
@@ -27,7 +27,9 @@ self.addEventListener('activate', event => event.waitUntil((async () => {
 async function networkFirst(request) {
   const cache = await caches.open(CACHE);
   try {
-    const response = await fetch(request);
+    // Ask the server whether the file changed instead of trusting the browser's cached copy
+    // (GitHub Pages lets browsers keep files for 10 minutes), so updates arrive straight away.
+    const response = await fetch(request, {cache: 'no-cache'});
     if (response.ok) cache.put(request, response.clone());
     return response;
   } catch (error) {
