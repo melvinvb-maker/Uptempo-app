@@ -1,5 +1,6 @@
 // Publicity portraits from the official Annihilation, Second 2 None and Most Wanted artist rosters.
 export const artistPortraits = {
+  "DJ Isaac": "https://www.independent-artistsagency.com/wp-content/uploads/2023/10/DJ-Isaac-profile.jpg",
   // Press photos from The Bassline Agency roster, stored locally.
   "Alpha Twins": "images/acts/alpha-twins.webp",
   "DJ Thera": "images/acts/dj-thera.webp",

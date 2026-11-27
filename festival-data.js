@@ -4,6 +4,223 @@ import { confusedEditions } from './confused-editions.mjs';
 import { rebirthSets } from './timetable-photos.js';
 
 export const bundledLineups = [
+{
+  "festival": "I AM HARDSTYLE – 25 Years Brennan Heart",
+  "date": "2026-11-28",
+  "dateEnd": "2026-11-29",
+  "location": "Autotron, Rosmalen",
+  "catalogKey": "25yearsbrennanheart20261128",
+  "host": "Villain",
+  "imageUrl": "https://25yearsbrennanheart.iamhardstyle.com/wp-content/uploads/sites/3/2026/08/text-25yrsbh-narrow-1-1024x515.png",
+  "lineupSource": "https://25yearsbrennanheart.iamhardstyle.com/nl/timetable/",
+  "lineup": [
+    {
+      "artist": "Scot Project",
+      "start": "13:00",
+      "end": "",
+      "day": "Saturday",
+      "stage": ""
+    },
+    {
+      "artist": "DJ Isaac",
+      "start": "14:00",
+      "end": "",
+      "day": "Saturday",
+      "stage": ""
+    },
+    {
+      "artist": "25 Years Brennan Heart",
+      "start": "15:30",
+      "end": "",
+      "day": "Saturday",
+      "stage": ""
+    }
+  ],
+  "officialCatalog": true,
+  "lineupEditionYear": 2026
+},
+{
+  "festival": "Gearbox Classics – Legacy of Legends",
+  "date": "2027-03-06",
+  "dateEnd": "2027-03-07",
+  "location": "Klokgebouw, Eindhoven",
+  "catalogKey": "gearboxclassics20270306",
+  "host": "MC Focus · MC Barricade",
+  "imageUrl": "https://gearboxdigital.com/wp-content/uploads/GearboxClassics1080p-1.jpg",
+  "lineupSource": "https://gearboxdigital.com/classics/",
+  "lineup": [
+    {
+      "artist": "Adventum vs Re-Mind",
+      "start": "",
+      "end": "",
+      "day": "Saturday",
+      "stage": "",
+      "era": "2012–2019"
+    },
+    {
+      "artist": "Avi8",
+      "start": "",
+      "end": "",
+      "day": "Saturday",
+      "stage": "",
+      "era": "2012–2019"
+    },
+    {
+      "artist": "Luminite",
+      "start": "",
+      "end": "",
+      "day": "Saturday",
+      "stage": "",
+      "era": "2012–2019"
+    },
+    {
+      "artist": "Malice",
+      "start": "",
+      "end": "",
+      "day": "Saturday",
+      "stage": "",
+      "era": "2012–2019"
+    },
+    {
+      "artist": "Ncrypta",
+      "start": "",
+      "end": "",
+      "day": "Saturday",
+      "stage": "",
+      "era": "2012–2019"
+    },
+    {
+      "artist": "Rebelion",
+      "start": "",
+      "end": "",
+      "day": "Saturday",
+      "stage": "",
+      "era": "2012–2019"
+    },
+    {
+      "artist": "Rebelion vs Malice",
+      "start": "",
+      "end": "",
+      "day": "Saturday",
+      "stage": "",
+      "era": "2012–2019"
+    },
+    {
+      "artist": "Regain",
+      "start": "",
+      "end": "",
+      "day": "Saturday",
+      "stage": "",
+      "era": "2012–2019"
+    },
+    {
+      "artist": "Rooler",
+      "start": "",
+      "end": "",
+      "day": "Saturday",
+      "stage": "",
+      "era": "2012–2019"
+    },
+    {
+      "artist": "Sickmode",
+      "start": "",
+      "end": "",
+      "day": "Saturday",
+      "stage": "",
+      "era": "2012–2019"
+    },
+    {
+      "artist": "Thyron vs Physika",
+      "start": "",
+      "end": "",
+      "day": "Saturday",
+      "stage": "",
+      "era": "2012–2019"
+    },
+    {
+      "artist": "Unresolved",
+      "start": "",
+      "end": "",
+      "day": "Saturday",
+      "stage": "",
+      "era": "2012–2019"
+    },
+    {
+      "artist": "Adjuzt",
+      "start": "",
+      "end": "",
+      "day": "Saturday",
+      "stage": "",
+      "era": "2020–2023"
+    },
+    {
+      "artist": "Anderex",
+      "start": "",
+      "end": "",
+      "day": "Saturday",
+      "stage": "",
+      "era": "2020–2023"
+    },
+    {
+      "artist": "Deezl",
+      "start": "",
+      "end": "",
+      "day": "Saturday",
+      "stage": "",
+      "era": "2020–2023"
+    },
+    {
+      "artist": "Exproz",
+      "start": "",
+      "end": "",
+      "day": "Saturday",
+      "stage": "",
+      "era": "2020–2023"
+    },
+    {
+      "artist": "Fraw",
+      "start": "",
+      "end": "",
+      "day": "Saturday",
+      "stage": "",
+      "era": "2020–2023"
+    },
+    {
+      "artist": "Mutilator",
+      "start": "",
+      "end": "",
+      "day": "Saturday",
+      "stage": "",
+      "era": "2020–2023"
+    },
+    {
+      "artist": "Riot Shift",
+      "start": "",
+      "end": "",
+      "day": "Saturday",
+      "stage": "",
+      "era": "2020–2023"
+    },
+    {
+      "artist": "So Juice",
+      "start": "",
+      "end": "",
+      "day": "Saturday",
+      "stage": "",
+      "era": "2020–2023"
+    },
+    {
+      "artist": "The Straikerz",
+      "start": "",
+      "end": "",
+      "day": "Saturday",
+      "stage": "",
+      "era": "2020–2023"
+    }
+  ],
+  "officialCatalog": true,
+  "lineupEditionYear": 2027
+},
 ...confusedEditions,
 {
   "festival": "Supremacy 2027 – Return to the Classics",
@@ -1097,6 +1314,8 @@ export const bundledLineups = [
 },
 {
   "festival": "White Noise",
+  "host": "DV8",
+  "lineupRevision": 1,
   "date": "2027-03-13",
   "dateEnd": "2027-03-13",
   "location": "013 Poppodium, Tilburg",
@@ -1156,13 +1375,6 @@ export const bundledLineups = [
     },
     {
       "artist": "Jones",
-      "stage": "Main",
-      "day": "Saturday",
-      "start": "",
-      "end": ""
-    },
-    {
-      "artist": "DV8 (host)",
       "stage": "Main",
       "day": "Saturday",
       "start": "",
