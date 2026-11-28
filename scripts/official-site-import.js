@@ -4,6 +4,50 @@ import { FieldValue } from "firebase-admin/firestore";
 
 export const OFFICIAL_SOURCES = [
 {
+  "festival": "Reminder – Cathedral of Classics",
+  "date": "2027-03-13",
+  "dateEnd": "2027-03-13",
+  "location": "Hemkade 48, Zaandam",
+  "hours": "13:00–00:00",
+  "imageUrl": "https://reminderhardstyleclassics.com/wp-content/uploads/2026/10/reminder-cathedral-of-classics-2027-social-preview.jpg",
+  "host": "Da Syndrome (Mainstage) · MC Renegade (Area 2)",
+  "catalogId": "remindercathedral20270313",
+  "editionYear": 2027,
+  "aliases": [],
+  "url": "https://reminderhardstyleclassics.com/event-cathedral-of-classics/",
+  "staticLineup": [
+    {"artist":"A-Lusion","stage":"Mainstage","day":"Saturday","start":"","end":""},
+    {"artist":"Abyss & Judge: The Final Chapter","stage":"Mainstage","day":"Saturday","start":"","end":""},
+    {"artist":"Adaro vs Crypsis","stage":"Mainstage","day":"Saturday","start":"","end":""},
+    {"artist":"Equal Mindz","stage":"Mainstage","day":"Saturday","start":"","end":""},
+    {"artist":"Jason Payne: Millenium Goldschool","stage":"Mainstage","day":"Saturday","start":"","end":""},
+    {"artist":"Josh & Wesz","stage":"Mainstage","day":"Saturday","start":"","end":""},
+    {"artist":"Max Enforcer: The Golden Era","stage":"Mainstage","day":"Saturday","start":"","end":""},
+    {"artist":"Tatanka vs Zatox: Wild Motherfuckers","stage":"Mainstage","day":"Saturday","start":"","end":""},
+    {"artist":"The One","stage":"Mainstage","day":"Saturday","start":"","end":""},
+    {"artist":"The Pitcher","stage":"Mainstage","day":"Saturday","start":"","end":""},
+    {"artist":"Zany: The Sound of Fusion","stage":"Mainstage","day":"Saturday","start":"","end":""},
+    {"artist":"Alpha Twins","stage":"Area 2","day":"Saturday","start":"","end":""},
+    {"artist":"Deepack","stage":"Area 2","day":"Saturday","start":"","end":""},
+    {"artist":"DJ Luna","stage":"Area 2","day":"Saturday","start":"","end":""},
+    {"artist":"DJ Mani","stage":"Area 2","day":"Saturday","start":"","end":""},
+    {"artist":"DJ Thera & Geck-O: 180","stage":"Area 2","day":"Saturday","start":"","end":""},
+    {"artist":"Dozer","stage":"Area 2","day":"Saturday","start":"","end":""},
+    {"artist":"Krusaders","stage":"Area 2","day":"Saturday","start":"","end":""},
+    {"artist":"Charon: 20 YRS Anniversary","stage":"Charon 20 Years x RWND 10YRS","day":"Saturday","start":"","end":""},
+    {"artist":"Deenis","stage":"Charon 20 Years x RWND 10YRS","day":"Saturday","start":"","end":""},
+    {"artist":"Disruptiv","stage":"Charon 20 Years x RWND 10YRS","day":"Saturday","start":"","end":""},
+    {"artist":"Dozer & The Dizzorder: 2 Dangerous Show","stage":"Charon 20 Years x RWND 10YRS","day":"Saturday","start":"","end":""},
+    {"artist":"History of Hardstyle","stage":"Charon 20 Years x RWND 10YRS","day":"Saturday","start":"","end":""},
+    {"artist":"Low Frequency","stage":"Charon 20 Years x RWND 10YRS","day":"Saturday","start":"","end":""},
+    {"artist":"Mat Manfridi","stage":"Charon 20 Years x RWND 10YRS","day":"Saturday","start":"","end":""},
+    {"artist":"Monkey Kong","stage":"Charon 20 Years x RWND 10YRS","day":"Saturday","start":"","end":""},
+    {"artist":"NXT Identity","stage":"Charon 20 Years x RWND 10YRS","day":"Saturday","start":"","end":""},
+    {"artist":"Resonance","stage":"Charon 20 Years x RWND 10YRS","day":"Saturday","start":"","end":""},
+    {"artist":"The Force","stage":"Charon 20 Years x RWND 10YRS","day":"Saturday","start":"","end":""}
+  ]
+},
+{
   "festival": "I AM HARDSTYLE – 25 Years Brennan Heart",
   "date": "2026-11-28",
   "dateEnd": "2026-11-29",
@@ -450,6 +494,8 @@ export const OFFICIAL_SOURCES = [
 },
 {
   "festival": "Dimitri K – Sacrifice Day",
+  "host": "Da Mouth of Madness & MC Robs",
+  "lineupRevision": 1,
   "date": "2026-11-28",
   "dateEnd": "2026-11-28",
   "location": "Breepark, Breda",
@@ -580,13 +626,6 @@ export const OFFICIAL_SOURCES = [
     },
     {
       "artist": "Guizcore pres. Adrenaline Surge Live",
-      "day": "Saturday",
-      "stage": "",
-      "start": "",
-      "end": ""
-    },
-    {
-      "artist": "Da Mouth of Madness & MC Robs (hosts)",
       "day": "Saturday",
       "stage": "",
       "start": "",

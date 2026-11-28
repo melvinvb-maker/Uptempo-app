@@ -1,4 +1,5 @@
 export const artistBios = [
+  ["Zany", "Zany is de artiestennaam van Raoul van Grinsven. Hij is lid van de Donkey Rollers en bracht de albums The Fusion of Sound en Planet Zany uit.", "https://www.thebassline-agency.com/acts/zany"],
   ["DJ Isaac", "Roel Schutrups treedt op als DJ Isaac. Hij speelde op Qlimax en Defqon.1 en maakt de podcast Isaac’s Hardstyle Sessions.", "https://www.independent-artistsagency.com/dj-isaac/"],
   ["Promo","Promo is de artiestennaam van Sebastian Hoff. Hij begon in 1992 als dj en produceerde onder meer anthems voor Thunderdome.","https://www.thebassline-agency.com/acts/promo"],
   ["Korsakoff","Korsakoff is sinds het begin van de jaren 2000 actief in de hardcore. Ze is verbonden aan Masters of Hardcore en bracht vier artiestenalbums uit.","https://mostwanted.dj/en/artists/korsakoff"],
